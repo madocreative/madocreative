@@ -108,17 +108,17 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Product Name</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#f2b90d] outline-none" required />
+                        <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none" required />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Price ($)</label>
-                            <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#f2b90d] outline-none" required />
+                            <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none" required />
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Stock Status</label>
-                            <select value={formData.inStock.toString()} onChange={e => setFormData({ ...formData, inStock: e.target.value === 'true' })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white appearance-none outline-none focus:border-[#f2b90d]">
+                            <select value={formData.inStock.toString()} onChange={e => setFormData({ ...formData, inStock: e.target.value === 'true' })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white appearance-none outline-none focus:border-[#ffc000]">
                                 <option value="true">In Stock</option>
                                 <option value="false">Out of Stock</option>
                             </select>
@@ -127,10 +127,10 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Description</label>
-                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} rows={6} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#f2b90d] outline-none resize-none" required />
+                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} rows={6} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none resize-none" required />
                     </div>
 
-                    <button type="submit" disabled={status === 'saving'} className="mt-4 bg-[#f2b90d] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
+                    <button type="submit" disabled={status === 'saving'} className="mt-4 bg-[#ffc000] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
                         {status === 'saving' ? 'Saving...' : 'Save Changes'}
                     </button>
                     {status === 'success' && <p className="text-green-400 text-sm text-center">Product updated successfully!</p>}
@@ -140,7 +140,7 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                 <div className="bg-[#1a1812] border border-white/10 p-6 rounded-xl h-fit">
                     <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
                         <h3 className="font-bold text-white text-lg">Product Images</h3>
-                        <label className="cursor-pointer bg-[#f2b90d]/10 text-[#f2b90d] border border-[#f2b90d]/30 px-4 py-2 rounded-lg text-sm font-bold uppercase hover:bg-[#f2b90d]/20 transition-colors flex items-center gap-2">
+                        <label className="cursor-pointer bg-[#ffc000]/10 text-[#ffc000] border border-[#ffc000]/30 px-4 py-2 rounded-lg text-sm font-bold uppercase hover:bg-[#ffc000]/20 transition-colors flex items-center gap-2">
                             <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} disabled={uploading} />
                             <span className="material-symbols-outlined text-sm">cloud_upload</span>
                             {uploading ? 'Uploading...' : 'Upload Photos'}

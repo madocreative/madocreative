@@ -16,10 +16,10 @@ export default function AdminPagesList() {
                     <a
                         key={p.id}
                         href={`/admin/pages/${p.id}`}
-                        className="bg-[#1a1812] border border-white/10 p-6 rounded-xl hover:border-[#f2b90d] transition-all group flex items-center justify-between"
+                        className="bg-[#1a1812] border border-white/10 p-6 rounded-xl hover:border-[#ffc000] transition-all group flex items-center justify-between"
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-[#f2b90d]/10 group-hover:text-[#f2b90d] transition-colors">
+                            <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-[#ffc000]/10 group-hover:text-[#ffc000] transition-colors">
                                 <span className="material-symbols-outlined">{p.icon}</span>
                             </div>
                             <div>
@@ -27,7 +27,7 @@ export default function AdminPagesList() {
                                 <p className="text-slate-500 text-sm">/{p.id === 'home' ? '' : p.id}</p>
                             </div>
                         </div>
-                        <span className="material-symbols-outlined text-slate-500 group-hover:text-[#f2b90d]">edit</span>
+                        <span className="material-symbols-outlined text-slate-500 group-hover:text-[#ffc000]">edit</span>
                     </a>
                 ))}
             </div>

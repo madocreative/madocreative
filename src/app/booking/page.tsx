@@ -59,8 +59,8 @@ export default function BookingPage() {
                             onClick={() => setFormData({ ...formData, date: `2024-10-${day.toString().padStart(2, '0')}` })}
                             className={`
                 aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all
-                ${isPast ? 'text-slate-600 opacity-50 cursor-not-allowed' : 'hover:border-[#f2b90d] hover:text-[#f2b90d] border border-transparent'}
-                ${isSelected ? 'bg-[#f2b90d] text-[#0a0a08] font-bold border-[#f2b90d]' : 'text-slate-300'}
+                ${isPast ? 'text-slate-600 opacity-50 cursor-not-allowed' : 'hover:border-[#ffc000] hover:text-[#ffc000] border border-transparent'}
+                ${isSelected ? 'bg-[#ffc000] text-[#0a0a08] font-bold border-[#ffc000]' : 'text-slate-300'}
                 ${!isSelected && !isPast ? 'bg-white/5' : ''}
               `}
                         >
@@ -108,14 +108,14 @@ export default function BookingPage() {
 
                         <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-[#f2b90d]">schedule</span>
+                                <span className="material-symbols-outlined text-[#ffc000]">schedule</span>
                                 <span className="text-sm text-slate-300">All sessions start at 9:00 AM CET</span>
                             </div>
                         </div>
 
                         {formData.date && (
-                            <div className="mt-4 p-4 bg-[#f2b90d]/10 border border-[#f2b90d]/30 rounded-lg text-center">
-                                <p className="text-[#f2b90d] font-bold">Selected: {formData.date}</p>
+                            <div className="mt-4 p-4 bg-[#ffc000]/10 border border-[#ffc000]/30 rounded-lg text-center">
+                                <p className="text-[#ffc000] font-bold">Selected: {formData.date}</p>
                             </div>
                         )}
                     </div>
@@ -129,24 +129,24 @@ export default function BookingPage() {
                                 Select Package
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label className={`cursor-pointer group relative p-6 rounded-xl border transition-all ${formData.package === 'editorial' ? 'border-[#f2b90d] bg-[#f2b90d]/5' : 'border-white/10 bg-[#1a1812] hover:border-white/30'}`}>
+                                <label className={`cursor-pointer group relative p-6 rounded-xl border transition-all ${formData.package === 'editorial' ? 'border-[#ffc000] bg-[#ffc000]/5' : 'border-white/10 bg-[#1a1812] hover:border-white/30'}`}>
                                     <input type="radio" value="editorial" checked={formData.package === 'editorial'} onChange={(e) => setFormData({ ...formData, package: e.target.value })} className="hidden" />
                                     <div className="flex justify-between items-start mb-4">
                                         <h4 className="font-bold text-white text-lg">Editorial</h4>
-                                        <span className={`material-symbols-outlined ${formData.package === 'editorial' ? 'text-[#f2b90d]' : 'text-slate-600'}`}>{formData.package === 'editorial' ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
+                                        <span className={`material-symbols-outlined ${formData.package === 'editorial' ? 'text-[#ffc000]' : 'text-slate-600'}`}>{formData.package === 'editorial' ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
                                     </div>
                                     <p className="text-slate-400 text-sm mb-4">Perfect for magazine submissions and high-fashion spreads.</p>
-                                    <p className="font-display font-bold text-[#f2b90d]">From $2,500</p>
+                                    <p className="font-display font-bold text-[#ffc000]">From $2,500</p>
                                 </label>
 
-                                <label className={`cursor-pointer group relative p-6 rounded-xl border transition-all ${formData.package === 'campaign' ? 'border-[#f2b90d] bg-[#f2b90d]/5' : 'border-white/10 bg-[#1a1812] hover:border-white/30'}`}>
+                                <label className={`cursor-pointer group relative p-6 rounded-xl border transition-all ${formData.package === 'campaign' ? 'border-[#ffc000] bg-[#ffc000]/5' : 'border-white/10 bg-[#1a1812] hover:border-white/30'}`}>
                                     <input type="radio" value="campaign" checked={formData.package === 'campaign'} onChange={(e) => setFormData({ ...formData, package: e.target.value })} className="hidden" />
                                     <div className="flex justify-between items-start mb-4">
                                         <h4 className="font-bold text-white text-lg">Campaign</h4>
-                                        <span className={`material-symbols-outlined ${formData.package === 'campaign' ? 'text-[#f2b90d]' : 'text-slate-600'}`}>{formData.package === 'campaign' ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
+                                        <span className={`material-symbols-outlined ${formData.package === 'campaign' ? 'text-[#ffc000]' : 'text-slate-600'}`}>{formData.package === 'campaign' ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
                                     </div>
                                     <p className="text-slate-400 text-sm mb-4">Comprehensive commercial shoots for major brand releases.</p>
-                                    <p className="font-display font-bold text-[#f2b90d]">From $8,000</p>
+                                    <p className="font-display font-bold text-[#ffc000]">From $8,000</p>
                                 </label>
                             </div>
                         </div>
@@ -160,20 +160,20 @@ export default function BookingPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
-                                    <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors" placeholder="Jane Doe" />
+                                    <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors" placeholder="Jane Doe" />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
-                                    <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors" placeholder="jane@brand.com" />
+                                    <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors" placeholder="jane@brand.com" />
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Project Details</label>
-                                <textarea required value={formData.projectDetails} onChange={e => setFormData({ ...formData, projectDetails: e.target.value })} rows={4} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors resize-none" placeholder="Briefly describe your vision, location preferences, and any specific requirements..."></textarea>
+                                <textarea required value={formData.projectDetails} onChange={e => setFormData({ ...formData, projectDetails: e.target.value })} rows={4} className="bg-[#1a1812] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors resize-none" placeholder="Briefly describe your vision, location preferences, and any specific requirements..."></textarea>
                             </div>
 
                             <div className="mt-6">
-                                <button type="submit" disabled={status === 'loading'} className="w-full bg-[#f2b90d] text-[#0a0a08] py-4 rounded-lg font-bold text-lg uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2">
+                                <button type="submit" disabled={status === 'loading'} className="w-full bg-[#ffc000] text-[#0a0a08] py-4 rounded-lg font-bold text-lg uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2">
                                     {status === 'loading' ? 'Processing...' : (
                                         <>
                                             Request Booking <span className="material-symbols-outlined">arrow_right_alt</span>

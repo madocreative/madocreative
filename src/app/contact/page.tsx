@@ -43,7 +43,7 @@ export default function ContactPage() {
                 <div className="absolute inset-0 bg-cover bg-center grayscale opacity-60" style={{ backgroundImage: "url('https://maps.googleapis.com/maps/api/staticmap?center=Paris,France&zoom=13&size=1920x600&maptype=roadmap&style=feature:all|element:labels.text.fill|color:0x808080&style=feature:landscape|element:all|color:0x202020&style=feature:poi|element:all|color:0x303030&style=feature:road|element:all|color:0x404040&style=feature:transit|element:all|color:0x303030&style=feature:water|element:all|color:0x101010')" }}></div>
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#221e10] to-transparent"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <div className="w-16 h-16 bg-[#f2b90d] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(242,185,13,0.3)] mb-4">
+                    <div className="w-16 h-16 bg-[#ffc000] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(242,185,13,0.3)] mb-4">
                         <span className="material-symbols-outlined text-[#0a0a08] text-3xl">location_on</span>
                     </div>
                     <div className="bg-[#1a1812]/90 backdrop-blur-md px-6 py-4 rounded-lg border border-white/10 text-center shadow-xl">
@@ -65,17 +65,17 @@ export default function ContactPage() {
                     <div className="flex flex-col gap-10">
                         <div className="flex items-start gap-6">
                             <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-[#f2b90d]">mail</span>
+                                <span className="material-symbols-outlined text-[#ffc000]">mail</span>
                             </div>
                             <div>
                                 <h4 className="text-white font-bold tracking-widest uppercase text-sm mb-2">Email Us</h4>
-                                <a href="mailto:hello@madocreatives.com" className="text-xl text-slate-300 hover:text-[#f2b90d] transition-colors">hello@madocreatives.com</a>
+                                <a href="mailto:hello@madocreatives.com" className="text-xl text-slate-300 hover:text-[#ffc000] transition-colors">hello@madocreatives.com</a>
                             </div>
                         </div>
 
                         <div className="flex items-start gap-6">
                             <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-[#f2b90d]">phone_in_talk</span>
+                                <span className="material-symbols-outlined text-[#ffc000]">phone_in_talk</span>
                             </div>
                             <div>
                                 <h4 className="text-white font-bold tracking-widest uppercase text-sm mb-2">Call Us</h4>
@@ -98,7 +98,7 @@ export default function ContactPage() {
                                     required
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors"
+                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors"
                                     placeholder="Jane Doe"
                                 />
                             </div>
@@ -110,7 +110,7 @@ export default function ContactPage() {
                                     required
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors"
+                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors"
                                     placeholder="jane@example.com"
                                 />
                             </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
                             <div className="flex flex-col gap-2">
                                 <label className="text-xs uppercase tracking-widest text-slate-500 font-bold ml-1">Inquiry Type</label>
                                 <select
-                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors appearance-none"
+                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors appearance-none"
                                     value={formData.inquiryType}
                                     onChange={e => setFormData({ ...formData, inquiryType: e.target.value })}
                                 >
@@ -136,7 +136,7 @@ export default function ContactPage() {
                                     rows={4}
                                     value={formData.message}
                                     onChange={e => setFormData({ ...formData, message: e.target.value })}
-                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#f2b90d] transition-colors resize-none"
+                                    className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white focus:outline-none focus:border-[#ffc000] transition-colors resize-none"
                                     placeholder="Tell us about your project..."
                                 ></textarea>
                             </div>
@@ -145,7 +145,7 @@ export default function ContactPage() {
                         <button
                             type="submit"
                             disabled={status === 'loading'}
-                            className="mt-6 bg-[#f2b90d] text-[#0a0a08] w-full py-4 rounded-lg font-bold text-lg uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex justify-center"
+                            className="mt-6 bg-[#ffc000] text-[#0a0a08] w-full py-4 rounded-lg font-bold text-lg uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 flex justify-center"
                         >
                             {status === 'loading' ? 'Sending...' : 'Submit Inquiry'}
                         </button>

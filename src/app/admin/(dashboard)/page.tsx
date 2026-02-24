@@ -40,16 +40,16 @@ export default function AdminWelcomePage() {
                     <h3 className="text-lg font-bold text-white">Quick Actions</h3>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <a href="/admin/pages" className="flex items-center justify-between p-4 rounded-lg bg-[#221e10] border border-white/5 hover:border-[#f2b90d] transition-colors group">
+                    <a href="/admin/pages" className="flex items-center justify-between p-4 rounded-lg bg-[#221e10] border border-white/5 hover:border-[#ffc000] transition-colors group">
                         <div className="flex items-center gap-4">
-                            <span className="material-symbols-outlined text-slate-400 group-hover:text-[#f2b90d]">edit_document</span>
+                            <span className="material-symbols-outlined text-slate-400 group-hover:text-[#ffc000]">edit_document</span>
                             <span className="font-medium text-white">Edit Homepage Text</span>
                         </div>
                         <span className="material-symbols-outlined text-slate-600">arrow_forward</span>
                     </a>
-                    <a href="/admin/galleries" className="flex items-center justify-between p-4 rounded-lg bg-[#221e10] border border-white/5 hover:border-[#f2b90d] transition-colors group">
+                    <a href="/admin/galleries" className="flex items-center justify-between p-4 rounded-lg bg-[#221e10] border border-white/5 hover:border-[#ffc000] transition-colors group">
                         <div className="flex items-center gap-4">
-                            <span className="material-symbols-outlined text-slate-400 group-hover:text-[#f2b90d]">add_photo_alternate</span>
+                            <span className="material-symbols-outlined text-slate-400 group-hover:text-[#ffc000]">add_photo_alternate</span>
                             <span className="font-medium text-white">Upload New Portfolio Images</span>
                         </div>
                         <span className="material-symbols-outlined text-slate-600">arrow_forward</span>

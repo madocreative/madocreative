@@ -32,11 +32,11 @@ export default async function BlogPage() {
                                     />
                                 </div>
 
-                                <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#f2b90d] mb-4">
+                                <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-[#ffc000] mb-4">
                                     <span>{new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                 </div>
 
-                                <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 group-hover:text-[#f2b90d] transition-colors">
+                                <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 group-hover:text-[#ffc000] transition-colors">
                                     {post.title}
                                 </h2>
 
@@ -44,7 +44,7 @@ export default async function BlogPage() {
                                     {post.excerpt}
                                 </p>
 
-                                <span className="inline-flex items-center gap-2 text-white font-medium border-b border-transparent group-hover:border-[#f2b90d] pb-1 transition-colors uppercase text-sm tracking-wider">
+                                <span className="inline-flex items-center gap-2 text-white font-medium border-b border-transparent group-hover:border-[#ffc000] pb-1 transition-colors uppercase text-sm tracking-wider">
                                     Read Article <span className="material-symbols-outlined text-sm">arrow_forward</span>
                                 </span>
                             </Link>

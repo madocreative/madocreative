@@ -28,6 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
+      </head>
       <body
         className={`${notoSans.variable} ${notoSerif.variable} antialiased bg-[#221e10] text-slate-100 min-h-screen flex flex-col font-sans`}
       >

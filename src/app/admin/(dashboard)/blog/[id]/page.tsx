@@ -95,17 +95,17 @@ export default function BlogEditor({ params }: { params: Promise<{ id: string }>
                 <form onSubmit={handleSave} className="lg:col-span-3 flex flex-col gap-6 bg-[#1a1812] border border-white/10 p-6 rounded-xl h-fit">
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Post Title</label>
-                        <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-2xl font-bold text-white focus:border-[#f2b90d] outline-none" required />
+                        <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-2xl font-bold text-white focus:border-[#ffc000] outline-none" required />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Excerpt (Short Summary)</label>
-                        <textarea value={formData.excerpt} onChange={e => setFormData({ ...formData, excerpt: e.target.value })} rows={2} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-slate-300 focus:border-[#f2b90d] outline-none resize-none" required />
+                        <textarea value={formData.excerpt} onChange={e => setFormData({ ...formData, excerpt: e.target.value })} rows={2} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-slate-300 focus:border-[#ffc000] outline-none resize-none" required />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Body Content (HTML allowed)</label>
-                        <textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} rows={15} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-sm leading-relaxed focus:border-[#f2b90d] outline-none resize-y" required />
+                        <textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} rows={15} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-sm leading-relaxed focus:border-[#ffc000] outline-none resize-y" required />
                     </div>
                 </form>
 
@@ -123,7 +123,7 @@ export default function BlogEditor({ params }: { params: Promise<{ id: string }>
                                 {formData.published ? 'Published' : 'Draft'}
                             </button>
                         </div>
-                        <button onClick={handleSave} disabled={status === 'saving'} className="w-full bg-[#f2b90d] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
+                        <button onClick={handleSave} disabled={status === 'saving'} className="w-full bg-[#ffc000] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
                             {status === 'saving' ? 'Saving...' : 'Save Draft'}
                         </button>
                         {status === 'success' && <p className="text-green-400 text-sm pl-2 text-center mt-2">Saved!</p>}
@@ -134,7 +134,7 @@ export default function BlogEditor({ params }: { params: Promise<{ id: string }>
                         <div className="aspect-video relative overflow-hidden rounded-lg bg-[#221e10] border border-dashed border-white/20 mb-4">
                             <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-cover opacity-80" />
                         </div>
-                        <label className="cursor-pointer block bg-[#221e10] border border-white/10 text-center py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:border-[#f2b90d] transition-all">
+                        <label className="cursor-pointer block bg-[#221e10] border border-white/10 text-center py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:border-[#ffc000] transition-all">
                             <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                             {uploading ? 'Uploading...' : 'Set Featured Image'}
                         </label>

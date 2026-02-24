@@ -50,7 +50,7 @@ export default function ShopList() {
                 </div>
                 <button
                     onClick={handleCreate}
-                    className="bg-[#f2b90d] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
+                    className="bg-[#ffc000] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
                 >
                     <span className="material-symbols-outlined">add</span>
                     New Product
@@ -66,13 +66,13 @@ export default function ShopList() {
                         <div className="p-4">
                             <h3 className="font-bold text-white truncate mb-1">{product.name}</h3>
                             <div className="flex justify-between items-center mb-4">
-                                <p className="text-[#f2b90d] font-bold">${product.price}</p>
+                                <p className="text-[#ffc000] font-bold">${product.price}</p>
                                 <span className={`text-xs px-2 py-1 rounded-full ${product.inStock ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                     {product.inStock ? 'In Stock' : 'Out of Stock'}
                                 </span>
                             </div>
 
-                            <Link href={`/admin/shop/${product._id}`} className="block text-center bg-[#221e10] text-sm font-bold uppercase tracking-wider text-white border border-white/10 py-2 rounded-lg hover:border-[#f2b90d] hover:text-[#f2b90d] transition-colors">
+                            <Link href={`/admin/shop/${product._id}`} className="block text-center bg-[#221e10] text-sm font-bold uppercase tracking-wider text-white border border-white/10 py-2 rounded-lg hover:border-[#ffc000] hover:text-[#ffc000] transition-colors">
                                 Edit Product
                             </Link>
                         </div>

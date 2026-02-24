@@ -10,7 +10,7 @@ export default function AdminDashboardLayout({
             {/* Sidebar */}
             <aside className="w-64 bg-[#1a1812] border-r border-white/10 flex flex-col hidden md:flex">
                 <div className="p-6 border-b border-white/10 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#f2b90d] rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#ffc000] rounded-full flex items-center justify-center">
                         <span className="material-symbols-outlined text-[#0a0a08] text-sm">construction</span>
                     </div>
                     <span className="font-display font-bold text-lg tracking-wider">Mado Admin</span>

@@ -45,7 +45,7 @@ export default function GalleryList() {
                 </div>
                 <button
                     onClick={handleCreate}
-                    className="bg-[#f2b90d] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
+                    className="bg-[#ffc000] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
                 >
                     <span className="material-symbols-outlined">add</span>
                     New Gallery
@@ -62,7 +62,7 @@ export default function GalleryList() {
                             <h3 className="text-xl font-bold text-white mb-1">{gallery.title}</h3>
                             <p className="text-slate-500 text-sm mb-4">/{gallery.slug} • {gallery.images?.length || 0} Images</p>
 
-                            <Link href={`/admin/galleries/${gallery._id}`} className="block text-center bg-[#221e10] text-white border border-white/10 py-3 rounded-lg hover:border-[#f2b90d] hover:text-[#f2b90d] transition-colors">
+                            <Link href={`/admin/galleries/${gallery._id}`} className="block text-center bg-[#221e10] text-white border border-white/10 py-3 rounded-lg hover:border-[#ffc000] hover:text-[#ffc000] transition-colors">
                                 Edit Gallery
                             </Link>
                         </div>

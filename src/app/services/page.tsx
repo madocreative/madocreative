@@ -34,11 +34,11 @@ export default function ServicesPage() {
                     </p>
                     <div className="grid grid-cols-2 gap-x-12 gap-y-6 pt-4 md:pt-0">
                         <div>
-                            <p className="text-[#f2b90d] font-bold text-3xl font-display mb-1">15+</p>
+                            <p className="text-[#ffc000] font-bold text-3xl font-display mb-1">15+</p>
                             <p className="text-sm text-slate-500 uppercase tracking-wider">Years Experience</p>
                         </div>
                         <div>
-                            <p className="text-[#f2b90d] font-bold text-3xl font-display mb-1">200+</p>
+                            <p className="text-[#ffc000] font-bold text-3xl font-display mb-1">200+</p>
                             <p className="text-sm text-slate-500 uppercase tracking-wider">Global Clients</p>
                         </div>
                     </div>
@@ -64,7 +64,7 @@ export default function ServicesPage() {
 
                             <div className="w-full lg:w-1/2 flex flex-col justify-center">
                                 <div className="flex items-center gap-4 mb-6">
-                                    <span className="text-[#f2b90d] font-mono pr-4 border-r border-[#f2b90d]/30">0{index + 1}</span>
+                                    <span className="text-[#ffc000] font-mono pr-4 border-r border-[#ffc000]/30">0{index + 1}</span>
                                     <div className="flex gap-2">
                                         {service.tags.map((tag, i) => (
                                             <span key={i} className="text-xs uppercase tracking-widest text-slate-500 bg-white/5 px-3 py-1 rounded-full">
@@ -81,10 +81,10 @@ export default function ServicesPage() {
                                     {service.description}
                                 </p>
 
-                                <a href="/portfolio" className="group flex items-center gap-4 text-white font-bold uppercase tracking-widest text-sm w-max hover:text-[#f2b90d] transition-colors">
+                                <a href="/portfolio" className="group flex items-center gap-4 text-white font-bold uppercase tracking-widest text-sm w-max hover:text-[#ffc000] transition-colors">
                                     <span className="relative overflow-hidden">
                                         <span className="block transition-transform duration-300 group-hover:-translate-y-full">View Related Work</span>
-                                        <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-300 group-hover:translate-y-0 text-[#f2b90d]">View Related Work</span>
+                                        <span className="absolute top-0 left-0 block translate-y-full transition-transform duration-300 group-hover:translate-y-0 text-[#ffc000]">View Related Work</span>
                                     </span>
                                     <span className="material-symbols-outlined transform transition-transform duration-300 group-hover:translate-x-2">arrow_right_alt</span>
                                 </a>
@@ -95,7 +95,7 @@ export default function ServicesPage() {
             </div>
 
             {/* CTA Section */}
-            <section className="w-full bg-[#f2b90d] py-32 mt-20">
+            <section className="w-full bg-[#ffc000] py-32 mt-20">
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <h2 className="text-4xl md:text-6xl font-display font-bold text-[#0a0a08] mb-8 leading-tight">Ready to elevate your visual identity?</h2>
                     <p className="text-xl text-[#0a0a08]/80 mb-12 max-w-2xl mx-auto font-medium">

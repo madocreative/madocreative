@@ -36,13 +36,8 @@ export default function Header() {
         >
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-3">
-                    <div className="text-[#f2b90d]">
-                        <span className="material-symbols-outlined text-4xl">filter_vintage</span>
-                    </div>
-                    <h2 className="text-xl font-extrabold tracking-tighter uppercase text-white">
-                        Mado <span className="text-[#f2b90d]">Creatives</span>
-                    </h2>
+                <Link href="/" className="flex items-center">
+                    <img src="/logo.png" alt="Mado Creatives" className="h-5 md:h-6 w-auto object-contain" />
                 </Link>
 
                 {/* Desktop Nav */}
@@ -51,7 +46,7 @@ export default function Header() {
                         <Link
                             key={link.name}
                             href={link.path}
-                            className={`text-sm font-medium uppercase tracking-widest transition-colors hover:text-[#f2b90d] ${pathname === link.path ? 'text-[#f2b90d] border-b border-[#f2b90d]' : 'text-slate-300'
+                            className={`text-sm font-medium uppercase tracking-widest transition-colors hover:text-[#ffc000] ${pathname === link.path ? 'text-[#ffc000] border-b border-[#ffc000]' : 'text-slate-300'
                                 }`}
                         >
                             {link.name}
@@ -63,7 +58,7 @@ export default function Header() {
                 <div className="flex items-center gap-6">
                     <Link
                         href="/booking"
-                        className="hidden sm:flex bg-[#f2b90d] text-[#0a0a08] px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-tighter hover:scale-105 transition-transform"
+                        className="hidden sm:flex bg-[#ffc000] text-[#0a0a08] px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-tighter hover:scale-105 transition-transform"
                     >
                         Book a Session
                     </Link>
@@ -86,7 +81,7 @@ export default function Header() {
                             key={link.name}
                             href={link.path}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`text-lg font-bold uppercase tracking-widest ${pathname === link.path ? 'text-[#f2b90d]' : 'text-white'
+                            className={`text-lg font-bold uppercase tracking-widest ${pathname === link.path ? 'text-[#ffc000]' : 'text-white'
                                 }`}
                         >
                             {link.name}
@@ -95,7 +90,7 @@ export default function Header() {
                     <Link
                         href="/booking"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="bg-[#f2b90d] text-[#0a0a08] text-center px-6 py-3 rounded-full font-bold uppercase tracking-tighter mt-4"
+                        className="bg-[#ffc000] text-[#0a0a08] text-center px-6 py-3 rounded-full font-bold uppercase tracking-tighter mt-4"
                     >
                         Book a Session
                     </Link>

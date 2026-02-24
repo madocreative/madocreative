@@ -50,7 +50,7 @@ export default function BlogList() {
                 </div>
                 <button
                     onClick={handleCreate}
-                    className="bg-[#f2b90d] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
+                    className="bg-[#ffc000] text-[#0a0a08] px-6 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-2"
                 >
                     <span className="material-symbols-outlined">add</span>
                     New Draft
@@ -76,7 +76,7 @@ export default function BlogList() {
                                 </p>
                             </div>
 
-                            <Link href={`/admin/blog/${post._id}`} className="block text-center bg-[#221e10] text-sm font-bold uppercase tracking-wider text-white border border-white/10 py-3 rounded-lg hover:border-[#f2b90d] hover:text-[#f2b90d] transition-colors">
+                            <Link href={`/admin/blog/${post._id}`} className="block text-center bg-[#221e10] text-sm font-bold uppercase tracking-wider text-white border border-white/10 py-3 rounded-lg hover:border-[#ffc000] hover:text-[#ffc000] transition-colors">
                                 Edit Post
                             </Link>
                         </div>

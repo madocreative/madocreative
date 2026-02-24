@@ -40,7 +40,7 @@ export default function TeamPage() {
                     <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight tracking-tight text-white">
                         The Collective Vision
                     </h1>
-                    <div className="h-1 w-24 bg-[#f2b90d] rounded-full"></div>
+                    <div className="h-1 w-24 bg-[#ffc000] rounded-full"></div>
                     <p className="text-slate-400 text-lg md:text-xl font-normal leading-relaxed">
                         A curated group of visionaries dedicated to the art of high-fashion photography and visual storytelling.
                         At Mado Creatives, we blend raw emotion with sophisticated aesthetics to redefine modern elegance.
@@ -57,7 +57,7 @@ export default function TeamPage() {
                                 src={member.image}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#221e10]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
-                                <p className="text-[#f2b90d] font-display text-2xl font-bold">{member.name}</p>
+                                <p className="text-[#ffc000] font-display text-2xl font-bold">{member.name}</p>
                                 <p className="text-slate-300 text-sm tracking-widest uppercase mt-1">{member.role}</p>
                             </div>
                         </div>
@@ -70,7 +70,7 @@ export default function TeamPage() {
                     <p className="text-slate-400 text-lg mb-10">Let&apos;s create something extraordinary together.</p>
                     <a
                         href="/contact"
-                        className="inline-block bg-[#f2b90d] text-[#0a0a08] px-12 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform active:scale-95"
+                        className="inline-block bg-[#ffc000] text-[#0a0a08] px-12 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform active:scale-95"
                     >
                         Get in Touch
                     </a>

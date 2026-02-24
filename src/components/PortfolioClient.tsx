@@ -13,7 +13,7 @@ export default function PortfolioClient({ galleries }: { galleries: any[] }) {
                     transition={{ duration: 0.8 }}
                     className="mb-20 text-center"
                 >
-                    <p className="text-[#f2b90d] font-bold uppercase tracking-widest text-sm mb-6">Our Work</p>
+                    <p className="text-[#ffc000] font-bold uppercase tracking-widest text-sm mb-6">Our Work</p>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-medium mb-6">Selected Archives</h1>
                     <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto">
                         A curated collection of our finest editorial, commercial, and high-fashion photography campaigns.
@@ -31,11 +31,11 @@ export default function PortfolioClient({ galleries }: { galleries: any[] }) {
                     >
                         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-white/10 pb-6 gap-4">
                             <div>
-                                <h2 className="text-4xl md:text-5xl font-display font-bold text-white group-hover:text-[#f2b90d] transition-colors">
+                                <h2 className="text-4xl md:text-5xl font-display font-bold text-white group-hover:text-[#ffc000] transition-colors">
                                     {gallery.title}
                                 </h2>
                                 {gallery.category && (
-                                    <p className="text-[#f2b90d] font-bold uppercase tracking-widest text-xs mt-3">
+                                    <p className="text-[#ffc000] font-bold uppercase tracking-widest text-xs mt-3">
                     // {gallery.category}
                                     </p>
                                 )}

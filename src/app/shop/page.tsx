@@ -38,7 +38,7 @@ export default async function ShopPage() {
 
                             <div className="flex justify-between items-start gap-4">
                                 <div>
-                                    <h3 className="text-2xl font-bold font-display group-hover:text-[#f2b90d] transition-colors">{product.name}</h3>
+                                    <h3 className="text-2xl font-bold font-display group-hover:text-[#ffc000] transition-colors">{product.name}</h3>
                                     <p className="text-slate-400 mt-2 line-clamp-2">{product.description}</p>
                                 </div>
                                 <div className="text-xl font-medium whitespace-nowrap">${product.price.toFixed(2)}</div>
@@ -46,7 +46,7 @@ export default async function ShopPage() {
 
                             <button
                                 disabled={!product.inStock}
-                                className="w-full mt-6 py-4 bg-white text-[#0a0a08] font-bold uppercase tracking-widest text-sm hover:bg-[#f2b90d] transition-colors disabled:opacity-50 disabled:hover:bg-white rounded-lg"
+                                className="w-full mt-6 py-4 bg-white text-[#0a0a08] font-bold uppercase tracking-widest text-sm hover:bg-[#ffc000] transition-colors disabled:opacity-50 disabled:hover:bg-white rounded-lg"
                             >
                                 {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                             </button>

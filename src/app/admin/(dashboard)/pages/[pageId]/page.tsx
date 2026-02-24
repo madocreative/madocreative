@@ -68,7 +68,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
                         type="text"
                         value={formData.title}
                         onChange={e => setFormData({ ...formData, title: e.target.value })}
-                        className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f2b90d] transition-colors"
+                        className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#ffc000] transition-colors"
                         placeholder="E.g., Capturing The Unseen"
                     />
                 </div>
@@ -79,7 +79,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
                         value={formData.subtitle}
                         onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
                         rows={4}
-                        className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f2b90d] transition-colors resize-none"
+                        className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#ffc000] transition-colors resize-none"
                         placeholder="E.g., We are Mado Creatives..."
                     />
                 </div>
@@ -92,7 +92,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
                     <button
                         type="submit"
                         disabled={status === 'saving'}
-                        className="bg-[#f2b90d] text-[#0a0a08] px-8 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+                        className="bg-[#ffc000] text-[#0a0a08] px-8 py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
                     >
                         {status === 'saving' ? 'Saving...' : (
                             <><span className="material-symbols-outlined text-sm">save</span> Publish Changes</>

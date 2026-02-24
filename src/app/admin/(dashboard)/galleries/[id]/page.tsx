@@ -112,17 +112,17 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Title</label>
-                        <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#f2b90d] outline-none" required />
+                        <input type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none" required />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Category / Client</label>
-                        <input type="text" value={formData.category || ''} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#f2b90d] outline-none" placeholder="E.g., Editorial" />
+                        <input type="text" value={formData.category || ''} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none" placeholder="E.g., Editorial" />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Layout Style</label>
-                        <select value={formData.layout || 'masonry'} onChange={e => setFormData({ ...formData, layout: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white appearance-none outline-none focus:border-[#f2b90d]">
+                        <select value={formData.layout || 'masonry'} onChange={e => setFormData({ ...formData, layout: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white appearance-none outline-none focus:border-[#ffc000]">
                             <option value="masonry">Masonry (Uneven)</option>
                             <option value="grid">Grid (Uniform)</option>
                         </select>
@@ -133,13 +133,13 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                         <div className="aspect-video relative overflow-hidden rounded-lg bg-[#221e10] border border-dashed border-white/20 mb-2">
                             <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-cover opacity-80" />
                         </div>
-                        <label className="cursor-pointer bg-[#221e10] border border-white/10 text-center py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:border-[#f2b90d] transition-all">
+                        <label className="cursor-pointer bg-[#221e10] border border-white/10 text-center py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:border-[#ffc000] transition-all">
                             <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, true)} disabled={uploading} />
                             {uploading ? 'Uploading...' : 'Change Cover Image'}
                         </label>
                     </div>
 
-                    <button type="submit" disabled={status === 'saving'} className="mt-4 bg-[#f2b90d] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
+                    <button type="submit" disabled={status === 'saving'} className="mt-4 bg-[#ffc000] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">
                         {status === 'saving' ? 'Saving...' : 'Save Changes'}
                     </button>
                     {status === 'success' && <p className="text-green-400 text-sm text-center">Settings saved!</p>}
@@ -149,7 +149,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                 <div className="lg:col-span-2 bg-[#1a1812] border border-white/10 p-6 rounded-xl">
                     <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
                         <h3 className="font-bold text-white text-lg">Detailed Gallery Images ({formData.images?.length || 0})</h3>
-                        <label className="cursor-pointer bg-[#f2b90d]/10 text-[#f2b90d] border border-[#f2b90d]/30 px-4 py-2 rounded-lg text-sm font-bold uppercase hover:bg-[#f2b90d]/20 transition-colors flex items-center gap-2">
+                        <label className="cursor-pointer bg-[#ffc000]/10 text-[#ffc000] border border-[#ffc000]/30 px-4 py-2 rounded-lg text-sm font-bold uppercase hover:bg-[#ffc000]/20 transition-colors flex items-center gap-2">
                             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFileUpload(e, false)} disabled={uploading} />
                             <span className="material-symbols-outlined text-sm">cloud_upload</span>
                             {uploading ? 'Uploading...' : 'Upload Images'}
