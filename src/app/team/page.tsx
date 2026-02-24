@@ -67,7 +67,7 @@ export default function TeamPage() {
                 {/* CTA Section */}
                 <div className="mt-32 text-center py-20 border-t border-slate-800">
                     <h3 className="text-white font-display text-4xl font-bold mb-4">Have a project in mind?</h3>
-                    <p className="text-slate-400 text-lg mb-10">Let's create something extraordinary together.</p>
+                    <p className="text-slate-400 text-lg mb-10">Let&apos;s create something extraordinary together.</p>
                     <a
                         href="/contact"
                         className="inline-block bg-[#f2b90d] text-[#0a0a08] px-12 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform active:scale-95"

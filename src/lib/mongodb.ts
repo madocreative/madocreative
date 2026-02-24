@@ -16,11 +16,11 @@ if (!MONGODB_URI) {
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
-// @ts-ignore
+// @ts-expect-error - Next.js handles global var pollution differently during dev reload
 let cached = global.mongoose;
 
 if (!cached) {
-    // @ts-ignore
+    // @ts-expect-error - Next.js handles global var pollution differently during dev reload
     cached = global.mongoose = { conn: null, promise: null };
 }
 
@@ -34,8 +34,8 @@ async function dbConnect() {
             bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-            return mongoose;
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+            return mongooseInstance;
         });
     }
 

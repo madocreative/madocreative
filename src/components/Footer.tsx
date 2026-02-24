@@ -77,7 +77,7 @@ export default function Footer() {
                         Contact
                     </h4>
                     <ul className="space-y-4">
-                        <li className="text-slate-500">12 Rue de l'Avenir, Paris</li>
+                        <li className="text-slate-500">12 Rue de l&apos;Avenir, Paris</li>
                         <li className="text-slate-500">hello@madocreatives.com</li>
                         <li className="text-slate-500">+33 (0) 1 23 45 67 89</li>
                     </ul>
