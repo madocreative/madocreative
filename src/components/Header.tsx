@@ -22,14 +22,16 @@ export default function Header() {
         { name: 'Services', path: '/services' },
         { name: 'Portfolio', path: '/portfolio' },
         { name: 'Team', path: '/team' },
+        { name: 'Shop', path: '/shop' },
+        { name: 'Blog', path: '/blog' },
         { name: 'Contact', path: '/contact' },
     ];
 
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? 'bg-[#0a0a08]/90 backdrop-blur-md border-b border-white/10 py-4 shadow-lg'
-                    : 'bg-transparent py-6 border-b border-transparent'
+                ? 'bg-[#0a0a08]/90 backdrop-blur-md border-b border-white/10 py-4 shadow-lg'
+                : 'bg-transparent py-6 border-b border-transparent'
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
