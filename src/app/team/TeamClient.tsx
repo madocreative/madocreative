@@ -20,19 +20,8 @@ export default function TeamClient({ data }: { data: PageData }) {
 
     return (
         <div className="flex flex-col bg-[#0a0a08]">
-            {/* ── Hero — portrait collage ─────────────────────────────── */}
-            <section className="relative h-[72vh] overflow-hidden">
-                {heroImgs.length > 0 ? (
-                    <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-px">
-                        {heroImgs.slice(0, 6).map((img, i) => (
-                            <div key={i} className={`overflow-hidden ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
-                                <img src={img} alt="" className="w-full h-full object-cover" />
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="absolute inset-0 bg-[#111109]" />
-                )}
+            {/* ── Hero — solid background ─────────────────────────────── */}
+            <section className="relative h-[72vh] overflow-hidden bg-[#111109]">
                 {/* Tint */}
                 <div className="absolute inset-0 bg-[#0a0a08]/25 pointer-events-none" />
                 {/* Hard solid bottom bar */}
