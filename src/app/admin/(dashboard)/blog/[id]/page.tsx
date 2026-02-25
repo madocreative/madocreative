@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function BlogEditor({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
@@ -105,7 +106,29 @@ export default function BlogEditor({ params }: { params: Promise<{ id: string }>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Body Content (HTML allowed)</label>
-                        <textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} rows={15} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-sm leading-relaxed focus:border-[#ffc000] outline-none resize-y" required />
+                        <div className="rounded-lg overflow-hidden border border-white/10">
+                            <Editor
+                                apiKey="no-api-key"
+                                value={formData.content}
+                                onEditorChange={(content) => setFormData({ ...formData, content: content })}
+                                init={{
+                                    height: 600,
+                                    menubar: false,
+                                    plugins: [
+                                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                    ],
+                                    toolbar: 'undo redo | blocks | ' +
+                                        'bold italic forecolor | alignleft aligncenter ' +
+                                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                                        'removeformat | help',
+                                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; background-color: #221e10; color: white; }',
+                                    skin: 'oxide-dark',
+                                    content_css: 'dark'
+                                }}
+                            />
+                        </div>
                     </div>
                 </form>
 

@@ -1,43 +1,84 @@
 @import "tailwindcss";
 
+/* ─── Brand tokens ─────────────────────────────────────────────────── */
 :root {
-  --background: #f8f8f5;
-  --foreground: #171717;
+  --gold:        #ffc000;
+  --gold-dim:    rgba(255,192,0,0.15);
+  --bg-void:     #0a0a08;      /* deepest background */
+  --bg-dark:     #111109;      /* main dark sections */
+  --bg-card:     #1a1812;      /* card / sidebar surfaces */
+  --bg-input:    #221e10;      /* inputs / subtle panels */
+  --foreground:  #f0ede6;      /* warm white text */
 }
 
-.dark {
-  --background: #221e10;
-  --foreground: #ededed;
-}
+/* ─── Base ──────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: var(--background);
+  background-color: var(--bg-void);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Font utilities ────────────────────────────────────────────────── */
 .font-display {
-  font-family: var(--font-display);
+  font-family: var(--font-display, var(--font-noto-serif, Georgia, serif));
+  letter-spacing: -0.01em;
 }
 
-/* Masonry grid specifics from the portfolio designs */
-.masonry-grid {
-  column-count: 1;
-  column-gap: 1rem;
+/* ─── Selection colour ──────────────────────────────────────────────── */
+::selection {
+  background: var(--gold);
+  color: var(--bg-void);
 }
 
-@media (min-width: 640px) {
-  .masonry-grid {
-    column-count: 2;
-  }
+/* ─── Scrollbar (webkit) ─────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; height: 6px; }
+::-webkit-scrollbar-track        { background: var(--bg-void); }
+::-webkit-scrollbar-thumb        { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--gold); }
+
+/* ─── Solid editorial helpers ────────────────────────────────────────── */
+/* Hard colour block on top of a photo — no gradients */
+.editorial-bar {
+  background: var(--bg-void);
+  padding: 0.25rem 0.75rem;
+  display: inline-block;
 }
 
-@media (min-width: 1024px) {
-  .masonry-grid {
-    column-count: 3;
-  }
+/* Full-bleed hero grid (used across multiple pages) */
+.hero-collage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2px;
+  position: absolute;
+  inset: 0;
+}
+.hero-collage > *:first-child {
+  grid-column: span 2;
+  grid-row:    span 2;
 }
 
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 1rem;
+/* Gold underline accent */
+.gold-rule {
+  border-bottom: 2px solid var(--gold);
 }
+
+/* ─── TinyMCE prose reset ────────────────────────────────────────────── */
+.prose-dark h1, .prose-dark h2, .prose-dark h3 { color: var(--foreground); }
+.prose-dark p  { color: #94a3b8; line-height: 1.8; }
+.prose-dark a  { color: var(--gold); }
+.prose-dark blockquote {
+  border-left: 3px solid var(--gold);
+  padding-left: 1rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ─── Masonry (CSS columns) ──────────────────────────────────────────── */
+.masonry-grid          { column-count: 1; column-gap: 2px; }
+@media (min-width: 640px)  { .masonry-grid { column-count: 2; } }
+@media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
+.masonry-item { break-inside: avoid; margin-bottom: 2px; }

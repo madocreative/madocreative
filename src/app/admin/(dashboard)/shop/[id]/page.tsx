@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function ProductEditor({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
@@ -127,7 +128,29 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Description</label>
-                        <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} rows={6} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none resize-none" required />
+                        <div className="rounded-lg overflow-hidden border border-white/10">
+                            <Editor
+                                apiKey="no-api-key"
+                                value={formData.description}
+                                onEditorChange={(content) => setFormData({ ...formData, description: content })}
+                                init={{
+                                    height: 300,
+                                    menubar: false,
+                                    plugins: [
+                                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                    ],
+                                    toolbar: 'undo redo | blocks | ' +
+                                        'bold italic forecolor | alignleft aligncenter ' +
+                                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                                        'removeformat | help',
+                                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; background-color: #221e10; color: white; }',
+                                    skin: 'oxide-dark',
+                                    content_css: 'dark'
+                                }}
+                            />
+                        </div>
                     </div>
 
                     <button type="submit" disabled={status === 'saving'} className="mt-4 bg-[#ffc000] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all disabled:opacity-50">

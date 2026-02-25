@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
+import dbConnect from '@/lib/mongodb';
+import MediaItem from '@/models/MediaItem';
 
 export async function POST(req: Request) {
     try {
@@ -15,12 +17,31 @@ export async function POST(req: Request) {
         return new Promise<NextResponse>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 { folder: 'mado-creatives' },
-                (error, result) => {
-                    if (error) {
+                async (error, result) => {
+                    if (error || !result) {
                         console.error('Cloudinary Upload Error:', error);
                         reject(NextResponse.json({ success: false, error: 'Upload failed' }, { status: 500 }));
                     } else {
-                        resolve(NextResponse.json({ success: true, url: result?.secure_url }, { status: 200 }));
+                        // Save to MediaItem library
+                        try {
+                            await dbConnect();
+                            await MediaItem.findOneAndUpdate(
+                                { url: result.secure_url },
+                                {
+                                    url:      result.secure_url,
+                                    publicId: result.public_id,
+                                    filename: file.name,
+                                    width:    result.width,
+                                    height:   result.height,
+                                    format:   result.format,
+                                    bytes:    result.bytes,
+                                },
+                                { upsert: true }
+                            );
+                        } catch (dbErr) {
+                            console.error('MediaItem save error:', dbErr);
+                        }
+                        resolve(NextResponse.json({ success: true, url: result.secure_url }, { status: 200 }));
                     }
                 }
             );

@@ -32,7 +32,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
       </head>
       <body
-        className={`${notoSans.variable} ${notoSerif.variable} antialiased bg-[#221e10] text-slate-100 min-h-screen flex flex-col font-sans`}
+        className={`${notoSans.variable} ${notoSerif.variable} antialiased bg-[#0a0a08] text-[#f0ede6] min-h-screen flex flex-col font-sans`}
       >
         <Header />
         <main className="flex-1">

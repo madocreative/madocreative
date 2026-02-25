@@ -37,7 +37,7 @@ export default function Header() {
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
-                    <img src="/logo.png" alt="Mado Creatives" className="h-5 md:h-6 w-auto object-contain" />
+                    <img src="/logo.png" alt="Mado Creatives" className="h-16 md:h-24 w-auto object-contain scale-[1.3] origin-left" />
                 </Link>
 
                 {/* Desktop Nav */}
@@ -58,7 +58,7 @@ export default function Header() {
                 <div className="flex items-center gap-6">
                     <Link
                         href="/booking"
-                        className="hidden sm:flex bg-[#ffc000] text-[#0a0a08] px-6 py-2.5 rounded-full font-bold text-sm uppercase tracking-tighter hover:scale-105 transition-transform"
+                        className="hidden sm:flex bg-[#ffc000] text-[#0a0a08] px-6 py-2.5 font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors"
                     >
                         Book a Session
                     </Link>
@@ -90,7 +90,7 @@ export default function Header() {
                     <Link
                         href="/booking"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="bg-[#ffc000] text-[#0a0a08] text-center px-6 py-3 rounded-full font-bold uppercase tracking-tighter mt-4"
+                        className="bg-[#ffc000] text-[#0a0a08] text-center px-6 py-3 font-bold uppercase tracking-wider hover:bg-white transition-colors mt-4"
                     >
                         Book a Session
                     </Link>
