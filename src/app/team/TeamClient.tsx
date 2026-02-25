@@ -51,7 +51,7 @@ export default function TeamClient({ data }: { data: PageData }) {
             </section>
 
             {/* ── Subtitle ─────────────────────────────────────────────── */}
-            <section className="bg-[#0a0a08] py-14 border-b border-white/5">
+            <section className="bg-[#0a0a08] py-8 border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <motion.p
                         initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}

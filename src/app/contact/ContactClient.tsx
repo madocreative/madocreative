@@ -67,7 +67,7 @@ export default function ContactClient({ data }: { data: PageData }) {
             </section>
 
             {/* ── Content ───────────────────────────────────────────────── */}
-            <section className="max-w-7xl mx-auto px-6 lg:px-16 py-20 grid grid-cols-1 lg:grid-cols-2 gap-16 w-full">
+            <section className="max-w-7xl mx-auto px-6 lg:px-16 py-12 grid grid-cols-1 lg:grid-cols-2 gap-16 w-full">
                 {/* Left — contact info */}
                 <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ duration: 0.7 }}
                     className="flex flex-col"

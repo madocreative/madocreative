@@ -54,7 +54,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
             </section>
 
             {/* Subtitle + stats */}
-            <section className="bg-[#0a0a08] py-16 border-b border-white/5">
+            <section className="bg-[#0a0a08] py-10 border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col md:flex-row gap-10 md:gap-20 items-start">
                     <motion.p
                         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}

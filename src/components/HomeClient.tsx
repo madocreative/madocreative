@@ -85,8 +85,8 @@ export default function HomeClient({ content, galleries }: { content: any; galle
             </section>
 
             {/* ── Featured Works ─────────────────────────────────────────── */}
-            <section className="py-32 bg-[#0a0a08]">
-                <div className="max-w-7xl mx-auto px-6 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <section className="py-16 bg-[#0a0a08]">
+                <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <motion.div
                         initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }} transition={{ duration: 0.8 }}
