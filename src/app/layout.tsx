@@ -3,6 +3,7 @@ import { Noto_Serif, Noto_Sans } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import HideOnAdmin from '@/components/HideOnAdmin';
 
 const notoSerif = Noto_Serif({
   subsets: ['latin'],
@@ -34,11 +35,15 @@ export default function RootLayout({
       <body
         className={`${notoSans.variable} ${notoSerif.variable} antialiased bg-[#0a0a08] text-[#f0ede6] min-h-screen flex flex-col font-sans`}
       >
-        <Header />
+        <HideOnAdmin>
+          <Header />
+        </HideOnAdmin>
         <main className="flex-1">
           {children}
         </main>
-        <Footer />
+        <HideOnAdmin>
+          <Footer />
+        </HideOnAdmin>
       </body>
     </html>
   );
