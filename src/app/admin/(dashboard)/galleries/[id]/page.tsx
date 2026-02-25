@@ -94,7 +94,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
     if (!formData) return <div className="text-red-400 p-6">Failed to load gallery.</div>;
 
     return (
-        <div className="max-w-5xl">
+        <div className="max-w-6xl mx-auto pb-24">
             {/* Media Picker Modal */}
             {showMediaPicker && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -145,120 +145,160 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
             )}
 
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <button onClick={() => router.back()} className="w-10 h-10 bg-[#1a1812] border border-white/10 rounded-lg flex items-center justify-center hover:bg-white/5 text-white">
-                        <span className="material-symbols-outlined">arrow_back</span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-4">
+                <div className="flex items-center gap-5">
+                    <button onClick={() => router.back()} className="w-12 h-12 bg-[#111109] border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/5 hover:border-[#ffc000]/50 hover:text-[#ffc000] text-slate-400 transition-all shadow-md group">
+                        <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
                     </button>
                     <div>
-                        <h1 className="text-2xl font-display font-bold text-white">{formData.title}</h1>
-                        <p className="text-slate-500 text-sm">/{formData.slug} &middot; {formData.images?.length || 0} images</p>
+                        <h1 className="text-4xl font-display font-extrabold text-white tracking-tight">{formData.title}</h1>
+                        <p className="text-slate-400 text-sm mt-1">/{formData.slug} &middot; {formData.images?.length || 0} images</p>
                     </div>
                 </div>
-                <button onClick={handleDelete} className="text-red-400 hover:text-red-300 text-sm font-bold uppercase tracking-wider px-4 py-2 border border-red-900/50 rounded-lg hover:bg-red-900/20 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[14px]">delete</span> Delete
+                <button onClick={handleDelete} className="group flex items-center gap-2 text-red-400 hover:text-white font-bold text-xs tracking-widest uppercase px-6 py-3.5 border border-red-900/50 rounded-xl hover:bg-red-500 hover:border-red-500 transition-all shadow-sm">
+                    <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">delete</span>
+                    Delete Gallery
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Settings sidebar */}
-                <form onSubmit={handleSave} className="lg:col-span-1 flex flex-col gap-5 bg-[#1a1812] border border-white/10 p-6 rounded-xl h-fit">
-                    <h3 className="font-bold text-white border-b border-white/10 pb-4 flex items-center gap-2 text-sm">
-                        <span className="material-symbols-outlined text-[#ffc000] text-[16px]">tune</span> Gallery Settings
+                <form onSubmit={handleSave} className="lg:col-span-4 flex flex-col gap-6 bg-[#111109] border border-white/5 p-6 md:p-8 rounded-2xl shadow-lg relative overflow-hidden h-fit order-last lg:order-first">
+                    <div className="absolute top-0 left-0 w-64 h-64 bg-[#ffc000]/5 blur-[80px] pointer-events-none" />
+
+                    <h3 className="font-display font-bold text-white text-lg border-b border-white/5 pb-4 flex items-center gap-3 relative z-10">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                            <span className="material-symbols-outlined text-[#ffc000] text-[18px]">tune</span>
+                        </div>
+                        Gallery Settings
                     </h3>
 
-                    {[['Title', 'title', 'text', ''], ['Category', 'category', 'text', 'Editorial, Campaign...']].map(([label, key, type, ph]) => (
-                        <div key={key} className="flex flex-col gap-1.5">
-                            <label className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</label>
-                            <input type={type} value={formData[key] || ''} onChange={e => setFormData({ ...formData, [key]: e.target.value })}
-                                className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none text-sm"
-                                placeholder={ph} />
-                        </div>
-                    ))}
+                    <div className="space-y-5 relative z-10">
+                        {[['Title', 'title', 'text', ''], ['Category', 'category', 'text', 'Editorial, Campaign...']].map(([label, key, type, ph]) => (
+                            <div key={key} className="flex flex-col gap-2 relative group">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1 group-focus-within:text-[#ffc000] transition-colors">{label}</label>
+                                <input type={type} value={formData[key] || ''} onChange={e => setFormData({ ...formData, [key]: e.target.value })}
+                                    className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 outline-none transition-all shadow-inner text-sm"
+                                    placeholder={ph} />
+                            </div>
+                        ))}
 
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Layout</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {['masonry', 'grid'].map(l => (
-                                <button key={l} type="button" onClick={() => setFormData({ ...formData, layout: l })}
-                                    className={`py-2.5 rounded-lg text-sm font-bold capitalize border transition-all ${formData.layout === l ? 'bg-[#ffc000] text-[#0a0a08] border-[#ffc000]' : 'bg-[#221e10] text-slate-400 border-white/10 hover:border-white/30'}`}>
-                                    {l}
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1">Layout</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {['masonry', 'grid'].map(l => (
+                                    <button key={l} type="button" onClick={() => setFormData({ ...formData, layout: l })}
+                                        className={`py-3 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all ${formData.layout === l ? 'bg-[#ffc000]/10 text-[#ffc000] border-[#ffc000]/30 shadow-inner' : 'bg-[#1a1812] text-slate-400 border-white/10 hover:border-[#ffc000]/30 hover:text-white'}`}>
+                                        {l}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1">Cover Image</label>
+                            <div className="aspect-video rounded-xl overflow-hidden bg-[#0a0a08] border border-white/10 shadow-inner mb-2 group relative">
+                                {formData.featuredImage ? (
+                                    <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-slate-600"><span className="material-symbols-outlined text-4xl">broken_image</span></div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
+                            <div className="flex gap-3">
+                                <button type="button" onClick={() => openMediaPicker('featured')}
+                                    className="flex-1 py-3 text-[11px] uppercase tracking-widest font-bold border border-white/10 bg-white/5 rounded-xl text-slate-300 hover:text-[#0a0a08] hover:bg-[#ffc000] hover:border-[#ffc000] transition-all flex items-center justify-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">photo_library</span> Library
                                 </button>
-                            ))}
+                                <label className="flex-1 cursor-pointer py-3 text-[11px] uppercase tracking-widest font-bold border border-white/10 bg-white/5 rounded-xl text-slate-300 hover:text-[#0a0a08] hover:bg-[#ffc000] hover:border-[#ffc000] transition-all flex items-center justify-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">upload</span> Upload
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, true)} disabled={uploading} />
+                                </label>
+                            </div>
                         </div>
                     </div>
-
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Cover Image</label>
-                        <div className="aspect-video rounded-lg overflow-hidden bg-[#221e10] border border-dashed border-white/20 mb-1">
-                            {formData.featuredImage && <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-cover" />}
-                        </div>
-                        <div className="flex gap-2">
-                            <button type="button" onClick={() => openMediaPicker('featured')}
-                                className="flex-1 py-2 text-xs font-bold border border-white/10 rounded-lg text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000] flex items-center justify-center gap-1">
-                                <span className="material-symbols-outlined text-[12px]">photo_library</span> Library
-                            </button>
-                            <label className="flex-1 cursor-pointer py-2 text-xs font-bold border border-white/10 rounded-lg text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000] flex items-center justify-center gap-1">
-                                <span className="material-symbols-outlined text-[12px]">upload</span> Upload
-                                <input type="file" accept="image/*" className="hidden" onChange={e => handleFileUpload(e, true)} disabled={uploading} />
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="submit" disabled={status === 'saving'}
-                        className="bg-[#ffc000] text-[#0a0a08] py-3 rounded-lg font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 disabled:opacity-50 text-sm flex items-center justify-center gap-2">
-                        {status === 'saving' ? <><div className="w-4 h-4 border-2 border-[#0a0a08]/40 border-t-[#0a0a08] rounded-full animate-spin"></div> Saving...</> : <><span className="material-symbols-outlined text-[14px]">save</span> Save Changes</>}
-                    </button>
-                    {status === 'success' && <p className="text-green-400 text-xs text-center flex items-center justify-center gap-1"><span className="material-symbols-outlined text-[12px]">check_circle</span> Saved!</p>}
                 </form>
 
+                {/* Main fixed save bar overrides this save. Placing Fixed Save Bar outside grid.*/}
+
                 {/* Image grid */}
-                <div className="lg:col-span-2 bg-[#1a1812] border border-white/10 p-6 rounded-xl">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
-                        <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                            <span className="material-symbols-outlined text-[#ffc000] text-[16px]">collections</span>
-                            Images ({formData.images?.length || 0})
+                <div className="lg:col-span-8 bg-[#111109] border border-white/5 p-6 md:p-8 rounded-2xl shadow-lg relative overflow-hidden h-fit">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#ffc000]/5 blur-[80px] pointer-events-none" />
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/5 pb-5 mb-6 relative z-10 gap-4">
+                        <h3 className="font-display font-bold text-white text-xl flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                                <span className="material-symbols-outlined text-[#ffc000] text-[18px]">collections</span>
+                            </div>
+                            Gallery Content <span className="text-slate-500 font-normal text-sm ml-2">({formData.images?.length || 0} images)</span>
                         </h3>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3 w-full sm:w-auto">
                             <button type="button" onClick={() => openMediaPicker('gallery')}
-                                className="bg-white/5 border border-white/10 px-3 py-2 rounded-lg text-xs font-bold text-slate-300 hover:border-[#ffc000] hover:text-[#ffc000] flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-[12px]">photo_library</span> From Library
+                                className="flex-1 sm:flex-none bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-300 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                <span className="material-symbols-outlined text-[16px]">photo_library</span> Pick from Library
                             </button>
-                            <label className="cursor-pointer bg-[#ffc000]/10 text-[#ffc000] border border-[#ffc000]/30 px-3 py-2 rounded-lg text-xs font-bold hover:bg-[#ffc000]/20 flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-[12px]">cloud_upload</span>
-                                {uploading ? 'Uploading...' : 'Upload'}
+                            <label className="flex-1 sm:flex-none cursor-pointer bg-[#ffc000]/10 text-[#ffc000] border border-[#ffc000]/30 px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#ffc000]/20 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                <span className="material-symbols-outlined text-[16px]">cloud_upload</span>
+                                {uploading ? 'Uploading...' : 'Upload New'}
                                 <input type="file" accept="image/*" multiple className="hidden" onChange={e => handleFileUpload(e, false)} disabled={uploading} />
                             </label>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 relative z-10">
                         {formData.images?.map((url: string, i: number) => (
-                            <div key={i} className="relative rounded-xl overflow-hidden group border border-white/5 aspect-square">
-                                <img src={url} alt="" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <div key={i} className="aspect-square relative rounded-xl overflow-hidden group border border-white/10 shadow-sm bg-[#0a0a08]">
+                                <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                                     <button type="button" onClick={() => setAsCover(url)} title="Set as cover"
-                                        className="w-9 h-9 bg-[#ffc000]/90 hover:bg-[#ffc000] text-[#0a0a08] rounded-full flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-[14px]">star</span>
+                                        className="w-10 h-10 bg-[#ffc000]/90 hover:bg-[#ffc000] text-[#0a0a08] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 backdrop-blur-sm">
+                                        <span className="material-symbols-outlined text-[18px]">star</span>
                                     </button>
-                                    <button type="button" onClick={() => removeImage(i)}
-                                        className="w-9 h-9 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-[14px]">delete</span>
+                                    <button type="button" onClick={() => removeImage(i)} title="Remove from gallery"
+                                        className="w-10 h-10 bg-red-500/90 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 backdrop-blur-sm">
+                                        <span className="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </div>
                                 {url === formData.featuredImage && (
-                                    <div className="absolute top-2 left-2 bg-[#ffc000] text-[#0a0a08] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Cover</div>
+                                    <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#ffc000]">Cover Image</span>
+                                    </div>
                                 )}
                             </div>
                         ))}
                         {!formData.images?.length && (
-                            <div className="col-span-full py-16 text-center text-slate-600 text-sm border-2 border-dashed border-white/10 rounded-xl">
-                                <span className="material-symbols-outlined text-4xl block mb-2">add_photo_alternate</span>
-                                Add images from Library or upload new ones
+                            <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-xl bg-white/[0.02]">
+                                <div className="w-16 h-16 rounded-2xl bg-[#ffc000]/10 flex items-center justify-center mb-4 border border-[#ffc000]/20">
+                                    <span className="material-symbols-outlined text-[32px] text-[#ffc000]">add_photo_alternate</span>
+                                </div>
+                                <h3 className="text-white font-bold text-lg mb-2">Build Your Gallery</h3>
+                                <p className="text-slate-500 text-sm max-w-sm text-center px-4">Upload new photos or select existing ones from your media library to curate this collection.</p>
                             </div>
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* Fixed Save Bar */}
+            <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08]/80 backdrop-blur-xl border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-3">
+                    {status === 'success' && <p className="text-green-400 font-medium flex items-center gap-2 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/20"><span className="material-symbols-outlined text-sm">check_circle</span> Gallery Updated</p>}
+                    {status === 'error' && <p className="text-red-400 font-medium flex items-center gap-2 bg-red-500/10 px-4 py-2 rounded-lg border border-red-500/20"><span className="material-symbols-outlined text-sm">error</span> Failed to save.</p>}
+                    {status === 'idle' && <p className="text-slate-500 text-sm hidden sm:block">Ready to update when you are.</p>}
+                </div>
+                <button
+                    onClick={handleSave}
+                    disabled={status === 'saving'}
+                    className="group relative bg-[#ffc000] text-[#0a0a08] px-8 py-3.5 rounded-xl font-bold uppercase tracking-widest overflow-hidden transition-all disabled:opacity-50 flex items-center gap-3 shadow-[0_0_20px_rgba(255,192,0,0.2)] hover:shadow-[0_0_30px_rgba(255,192,0,0.4)] hover:-translate-y-0.5"
+                >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                    <span className="relative z-10 flex items-center gap-2">
+                        {status === 'saving'
+                            ? <><div className="w-5 h-5 border-2 border-[#0a0a08]/40 border-t-[#0a0a08] rounded-full animate-spin"></div> Saving...</>
+                            : <><span className="material-symbols-outlined text-[18px]">save</span> Save Changes</>
+                        }
+                    </span>
+                </button>
             </div>
         </div>
     );
