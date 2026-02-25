@@ -67,12 +67,10 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
             <div className="absolute top-[-10%] left-[-20%] w-[140%] h-[40%] bg-[#ffc000]/5 blur-[100px] pointer-events-none" />
 
             <div className="p-6 border-b border-white/5 flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#ffc000] to-[#b38600] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(255,192,0,0.2)]">
-                        <span className="material-symbols-outlined text-[#0a0a08] text-[20px]">diamond</span>
-                    </div>
-                    <span className="font-display font-bold text-lg tracking-widest uppercase text-white drop-shadow-md">Mado <span className="text-[#ffc000]">Admin</span></span>
-                </div>
+                <Link href="/" className="flex items-center gap-2" title="Go to Website">
+                    <img src="/logo.png" alt="Mado Creatives Admin" className="h-10 w-auto object-contain" />
+                    <span className="font-display font-bold text-xs tracking-widest uppercase text-[#ffc000] mt-1 drop-shadow-md">Admin</span>
+                </Link>
                 {onClose && (
                     <button onClick={onClose} className="text-slate-400 hover:text-white md:hidden transition-transform hover:rotate-90">
                         <span className="material-symbols-outlined text-2xl">close</span>
