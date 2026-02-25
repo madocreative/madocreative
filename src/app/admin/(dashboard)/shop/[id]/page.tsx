@@ -112,6 +112,17 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                         <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#ffc000] outline-none" required />
                     </div>
 
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Category</label>
+                        <select value={formData.category || 'Other'} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-[#221e10] border border-white/10 rounded-lg px-4 py-3 text-white appearance-none outline-none focus:border-[#ffc000]">
+                            <option value="Smartphones">Smartphones</option>
+                            <option value="Laptops & Computers">Laptops & Computers</option>
+                            <option value="Cameras & Equipment">Cameras & Equipment</option>
+                            <option value="Audio & Gadgets">Audio & Gadgets</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Price ($)</label>
