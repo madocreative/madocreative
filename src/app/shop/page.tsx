@@ -2,6 +2,8 @@ import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 import ShopClient from './ShopClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Shop | Mado Creatives',
     description: 'Premium electronics store — smartphones, laptops, cameras, and creator equipment. Available in Addis Ababa, Kigali, Nairobi & Dubai.',

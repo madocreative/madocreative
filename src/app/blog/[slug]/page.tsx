@@ -3,6 +3,8 @@ import Post from '@/models/Post';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     await dbConnect();
     const { slug } = await params;

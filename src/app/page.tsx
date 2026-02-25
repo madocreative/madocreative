@@ -3,6 +3,8 @@ import Content from '@/models/Content';
 import Gallery from '@/models/Gallery';
 import HomeClient from '@/components/HomeClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Mado Creatives | Luxury Visual Studio',
   description: 'Independent studio crafting premium imagery for visionaries.',

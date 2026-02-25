@@ -2,6 +2,8 @@ import dbConnect from '@/lib/mongodb';
 import Content from '@/models/Content';
 import ServicesClient from './ServicesClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Services | Mado Creatives',
     description: 'Creative production, brand strategy & design, and premium electronics from Mado Creatives.',
@@ -30,7 +32,7 @@ const defaultServices = [
 
 const defaultStats = [
     { value: '15+', label: 'Years Experience' },
-    { value: '4',   label: 'Locations' },
+    { value: '4', label: 'Locations' },
 ];
 
 export default async function ServicesPage() {
@@ -40,13 +42,13 @@ export default async function ServicesPage() {
     const sections = content?.sections || {};
 
     const pageData = {
-        title:      content?.title   || 'Our Services',
-        subtitle:   content?.subtitle || 'We provide comprehensive creative solutions for absolute visionaries. Our approach is bespoke, ensuring every project is an authentic reflection of your brand\'s unique narrative.',
-        stats:      sections.stats    || defaultStats,
-        services:   sections.services || defaultServices,
-        ctaTitle:   sections.ctaTitle  || 'Ready to elevate your visual identity?',
+        title: content?.title || 'Our Services',
+        subtitle: content?.subtitle || 'We provide comprehensive creative solutions for absolute visionaries. Our approach is bespoke, ensuring every project is an authentic reflection of your brand\'s unique narrative.',
+        stats: sections.stats || defaultStats,
+        services: sections.services || defaultServices,
+        ctaTitle: sections.ctaTitle || 'Ready to elevate your visual identity?',
         ctaSubtitle: sections.ctaSubtitle || 'Contact us today to discuss your vision and how Mado Creatives can bring it to life.',
-        ctaButton:  sections.ctaButton || 'Start a Project',
+        ctaButton: sections.ctaButton || 'Start a Project',
     };
 
     return <ServicesClient data={pageData} />;

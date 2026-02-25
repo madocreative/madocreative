@@ -2,6 +2,8 @@ import dbConnect from '@/lib/mongodb';
 import Gallery from '@/models/Gallery';
 import PortfolioClient from '@/components/PortfolioClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Portfolio | Mado Creatives',
     description: 'View our curated galleries of luxury photography.',

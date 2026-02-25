@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(git add src/app/admin/\\\\\\(dashboard\\\\\\)/shop/[id]/page.tsx src/app/shop/page.tsx src/app/shop/ShopClient.tsx src/models/Product.ts)",
+      "Bash(git commit:*)",
+      "Bash(git push origin main)",
+      "Bash(git add src/components/HomeClient.tsx src/app/services/ServicesClient.tsx src/app/team/TeamClient.tsx src/app/contact/ContactClient.tsx)",
+      "Bash(ls -la \"/c/Users/HP/Downloads/\"*.jpg)",
+      "Bash(ls -la \"/c/Users/HP/Downloads/photo_2026\"*.jpg)",
+      "Bash(ls \"/c/Users/HP/Downloads/Telegram Desktop/\"*.jpg)",
+      "Bash(node -e \":*)",
+      "Bash(git add src/app/videography/page.tsx src/app/digital-marketing/page.tsx src/components/Header.tsx)",
+      "Bash(git add src/app/videography/page.tsx src/app/videography/VideographyClient.tsx src/app/digital-marketing/page.tsx src/app/digital-marketing/DigitalMarketingClient.tsx)"
+    ]
+  }
+}

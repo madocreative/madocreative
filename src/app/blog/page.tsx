@@ -2,6 +2,8 @@ import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Journal | Mado Creatives',
     description: 'Thoughts, tutorials, and behind-the-scenes from the creative studio.',
