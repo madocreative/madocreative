@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { v2 as cloudinary } from 'cloudinary';
 import * as dotenv from 'dotenv';
-import Gallery from './src/models/Gallery.ts';
+import Gallery from './src/models/Gallery';
 
 dotenv.config({ path: '.env.local' });
 
