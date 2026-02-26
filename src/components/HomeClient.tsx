@@ -29,7 +29,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
                             <div key={i} className={`overflow-hidden ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
                                 <motion.img
                                     src={img}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain bg-[#111109]"
                                     initial={{ scale: 1.06, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={{ duration: 1.8, delay: i * 0.08, ease: 'easeOut' }}
