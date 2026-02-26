@@ -4,15 +4,19 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const CATEGORIES = ['All', 'Smartphones', 'Laptops & Computers', 'Cameras & Equipment', 'Audio & Gadgets'];
+const CATEGORIES = [
+    { label: 'All', icon: 'storefront', hasChildren: false },
+    { label: 'Smartphones', icon: 'smartphone', hasChildren: true },
+    { label: 'Laptops & Computers', icon: 'laptop', hasChildren: true },
+    { label: 'Cameras & Equipment', icon: 'photo_camera', hasChildren: true },
+    { label: 'Audio & Gadgets', icon: 'headphones', hasChildren: true },
+];
 
-const CATEGORY_ICONS: Record<string, string> = {
-    'All': 'storefront',
-    'Smartphones': 'smartphone',
-    'Laptops & Computers': 'laptop',
-    'Cameras & Equipment': 'photo_camera',
-    'Audio & Gadgets': 'headphones',
-};
+const FEATURED_LINKS = [
+    { label: 'New Arrivals', icon: 'new_releases' },
+    { label: 'Best Sellers', icon: 'star' },
+    { label: 'Special Deals', icon: 'local_offer' },
+];
 
 interface Product {
     _id: string;
@@ -39,6 +43,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
     const [sort, setSort] = useState<SortOption>('newest');
     const [search, setSearch] = useState('');
     const [quickView, setQuickView] = useState<Product | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const filtered = useMemo(() => {
         let items = activeCategory === 'All'
@@ -59,9 +64,9 @@ export default function ShopClient({ products }: { products: Product[] }) {
         return items;
     }, [products, activeCategory, search, sort]);
 
-    const whatsappInquiry = (product: Product) => {
-        const msg = encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${product.name}* (Price: $${product.price.toLocaleString()}). Please share more details.`);
-        return `https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C`;
+    const handleCategory = (cat: string) => {
+        setActiveCategory(cat);
+        setSidebarOpen(false);
     };
 
     return (
@@ -95,83 +100,178 @@ export default function ShopClient({ products }: { products: Product[] }) {
                     </div>
                 </div>
 
-                {/* Category chips */}
-                <div className="flex gap-2 flex-wrap py-5 border-b border-white/5">
-                    {CATEGORIES.map(cat => (
-                        <button key={cat} onClick={() => setActiveCategory(cat)}
-                            className={`flex items-center gap-1.5 px-3.5 py-2 text-[11px] font-bold uppercase tracking-widest transition-all border
-                                ${activeCategory === cat
-                                    ? 'bg-[#ffc000] text-[#0a0a08] border-[#ffc000]'
-                                    : 'bg-transparent text-slate-500 border-white/10 hover:border-white/30 hover:text-white'}`}>
-                            <span className="material-symbols-outlined text-[13px]">{CATEGORY_ICONS[cat]}</span>
-                            {cat}
-                        </button>
-                    ))}
-                    <span className="ml-auto self-center text-slate-600 text-xs uppercase tracking-widest font-bold">
-                        {filtered.length} {filtered.length === 1 ? 'item' : 'items'}
-                    </span>
-                </div>
+                {/* Main layout: Sidebar + Products */}
+                <div className="flex gap-6 mt-6">
 
-                {/* Product Grid — marketplace style, compact cards */}
-                {filtered.length === 0 ? (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="py-24 text-center border border-white/5 mt-8">
-                        <span className="material-symbols-outlined text-4xl text-slate-700 mb-4 block">inventory_2</span>
-                        <p className="text-lg text-slate-500 font-display uppercase tracking-wider mb-1">
-                            {search ? 'No results found' : 'No items in this category'}
-                        </p>
-                        <p className="text-sm text-slate-600">
-                            {search ? 'Try a different search term.' : 'New stock arriving soon — contact us to inquire.'}
-                        </p>
-                    </motion.div>
-                ) : (
-                    <motion.div layout
-                        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-px mt-px bg-white/5">
-                        <AnimatePresence mode="popLayout">
-                            {filtered.map((product, index) => (
-                                <motion.div key={product._id} layout
-                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.3) }}
-                                    className="group bg-[#0a0a08] cursor-pointer flex flex-col"
-                                    onClick={() => setQuickView(product)}
-                                >
-                                    {/* Image — square, compact */}
-                                    <div className="aspect-square relative overflow-hidden bg-[#111109]">
-                                        <img
-                                            src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
-                                            alt={product.name}
-                                            className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
-                                        />
-                                        {!product.inStock && (
-                                            <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
-                                                <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
-                                                    Out of Stock
-                                                </span>
-                                            </div>
-                                        )}
-                                        {product.inStock && (
-                                            <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500" title="In Stock" />
-                                        )}
-                                    </div>
+                    {/* ── SIDEBAR (desktop always visible, mobile overlay) ── */}
+                    <>
+                        {/* Mobile overlay backdrop */}
+                        {sidebarOpen && (
+                            <div
+                                className="fixed inset-0 z-30 bg-black/60 lg:hidden"
+                                onClick={() => setSidebarOpen(false)}
+                            />
+                        )}
 
-                                    {/* Info */}
-                                    <div className="px-3 py-2.5 flex flex-col gap-1.5 flex-1 bg-[#0d0d0b] border-t border-white/5">
-                                        <p className="text-[#ffc000] text-[9px] font-bold uppercase tracking-widest">{product.category}</p>
-                                        <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors">
-                                            {product.name}
-                                        </h3>
-                                        <div className="flex items-center justify-between mt-auto pt-1">
-                                            <span className="text-[#ffc000] font-bold text-sm">
-                                                ${product.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        <aside className={`
+                            fixed top-0 left-0 z-40 h-full w-72 bg-[#0d0d0b] border-r border-white/5 overflow-y-auto transition-transform duration-300
+                            lg:static lg:z-auto lg:h-auto lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:border lg:border-white/5 lg:self-start lg:sticky lg:top-6
+                            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                        `}>
+                            {/* All Departments Header — gold bar */}
+                            <div className="flex items-center gap-3 bg-[#ffc000] px-4 py-3.5">
+                                <span className="material-symbols-outlined text-[#0a0a08] text-[20px]">format_list_bulleted</span>
+                                <span className="font-extrabold uppercase tracking-wider text-[#0a0a08] text-sm">All Categories</span>
+                                {/* Close btn mobile */}
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="ml-auto lg:hidden text-[#0a0a08]">
+                                    <span className="material-symbols-outlined text-[20px]">close</span>
+                                </button>
+                            </div>
+
+                            {/* Featured Links */}
+                            <div className="border-b border-white/5 py-2">
+                                {FEATURED_LINKS.map(item => (
+                                    <button
+                                        key={item.label}
+                                        onClick={() => handleCategory('All')}
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-[#ffc000] hover:bg-white/5 transition-colors text-left"
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">{item.icon}</span>
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Category List */}
+                            <ul className="py-1">
+                                {CATEGORIES.map(cat => (
+                                    <li key={cat.label}>
+                                        <button
+                                            onClick={() => handleCategory(cat.label)}
+                                            className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all text-left border-l-2 group
+                                                ${activeCategory === cat.label
+                                                    ? 'bg-[#ffc000]/10 border-[#ffc000] text-[#ffc000] font-bold'
+                                                    : 'border-transparent text-slate-300 hover:bg-white/5 hover:text-white hover:border-[#ffc000]/40'
+                                                }`}
+                                        >
+                                            <span className={`material-symbols-outlined text-[16px] flex-shrink-0 ${activeCategory === cat.label ? 'text-[#ffc000]' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                                                {cat.icon}
                                             </span>
-                                            <span className="material-symbols-outlined text-slate-600 text-[14px] group-hover:text-[#ffc000] transition-colors">chevron_right</span>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
-                    </motion.div>
-                )}
+                                            <span className="flex-1">{cat.label}</span>
+                                            {cat.hasChildren && (
+                                                <span className={`material-symbols-outlined text-[14px] flex-shrink-0 transition-transform ${activeCategory === cat.label ? 'text-[#ffc000]' : 'text-slate-600 group-hover:text-slate-400'}`}>
+                                                    chevron_right
+                                                </span>
+                                            )}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {/* Bottom promo block */}
+                            <div className="mx-3 mb-4 mt-2 bg-[#ffc000]/5 border border-[#ffc000]/10 p-4">
+                                <p className="text-[10px] uppercase tracking-widest text-[#ffc000] font-bold mb-1">Need Help?</p>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-3">Contact us for custom quotes and bulk orders.</p>
+                                <Link href="/contact"
+                                    className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#ffc000] hover:underline">
+                                    <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                                    Get in Touch
+                                </Link>
+                            </div>
+                        </aside>
+                    </>
+
+                    {/* ── MAIN CONTENT ── */}
+                    <div className="flex-1 min-w-0">
+
+                        {/* Mobile: category toggle button + active label */}
+                        <div className="flex items-center gap-3 mb-4 lg:hidden">
+                            <button
+                                onClick={() => setSidebarOpen(true)}
+                                className="flex items-center gap-2 bg-[#ffc000] text-[#0a0a08] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wider"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">format_list_bulleted</span>
+                                Categories
+                            </button>
+                            <span className="text-slate-500 text-xs">
+                                Showing: <span className="text-[#ffc000] font-bold">{activeCategory}</span>
+                            </span>
+                            <span className="ml-auto text-slate-600 text-xs font-bold">{filtered.length} items</span>
+                        </div>
+
+                        {/* Desktop: result count + active category label */}
+                        <div className="hidden lg:flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="text-slate-500 text-xs">Browsing:</span>
+                                <span className="text-[#ffc000] text-xs font-bold uppercase tracking-widest">{activeCategory}</span>
+                            </div>
+                            <span className="text-slate-600 text-xs font-bold">{filtered.length} {filtered.length === 1 ? 'item' : 'items'}</span>
+                        </div>
+
+                        {/* Product Grid */}
+                        {filtered.length === 0 ? (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                className="py-24 text-center border border-white/5">
+                                <span className="material-symbols-outlined text-4xl text-slate-700 mb-4 block">inventory_2</span>
+                                <p className="text-lg text-slate-500 font-display uppercase tracking-wider mb-1">
+                                    {search ? 'No results found' : 'No items in this category'}
+                                </p>
+                                <p className="text-sm text-slate-600">
+                                    {search ? 'Try a different search term.' : 'New stock arriving soon — contact us to inquire.'}
+                                </p>
+                            </motion.div>
+                        ) : (
+                            <motion.div layout
+                                className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-px bg-white/5">
+                                <AnimatePresence mode="popLayout">
+                                    {filtered.map((product, index) => (
+                                        <motion.div key={product._id} layout
+                                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.3) }}
+                                            className="group bg-[#0a0a08] cursor-pointer flex flex-col"
+                                            onClick={() => setQuickView(product)}
+                                        >
+                                            {/* Image */}
+                                            <div className="aspect-square relative overflow-hidden bg-[#111109]">
+                                                <img
+                                                    src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
+                                                    alt={product.name}
+                                                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                                                />
+                                                {!product.inStock && (
+                                                    <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
+                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
+                                                            Out of Stock
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {product.inStock && (
+                                                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500" title="In Stock" />
+                                                )}
+                                            </div>
+
+                                            {/* Info */}
+                                            <div className="px-3 py-2.5 flex flex-col gap-1.5 flex-1 bg-[#0d0d0b] border-t border-white/5">
+                                                <p className="text-[#ffc000] text-[9px] font-bold uppercase tracking-widest">{product.category}</p>
+                                                <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors">
+                                                    {product.name}
+                                                </h3>
+                                                <div className="flex items-center justify-between mt-auto pt-1">
+                                                    <span className="text-[#ffc000] font-bold text-sm">
+                                                        ${product.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                                    </span>
+                                                    <span className="material-symbols-outlined text-slate-600 text-[14px] group-hover:text-[#ffc000] transition-colors">chevron_right</span>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
+                        )}
+                    </div>
+                </div>
 
                 {/* Trust Badges */}
                 <div className="mt-16 pt-10 border-t border-white/5">
@@ -234,7 +334,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
                             transition={{ duration: 0.25 }}
-                            className="bg-[#111109] max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                            className="bg-[#111109] max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
                             onClick={e => e.stopPropagation()}>
 
                             {/* Image */}
@@ -279,14 +379,12 @@ export default function ShopClient({ products }: { products: Product[] }) {
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     {quickView.inStock ? (
                                         <>
-                                            {/* WhatsApp inquiry */}
                                             <a href={`https://wa.me/?text=${encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${quickView.name}* — Price: $${quickView.price.toLocaleString()}. Please share more details.`)}`}
                                                 target="_blank" rel="noopener noreferrer"
                                                 className="sm:col-span-2 flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all">
                                                 <WhatsAppIcon />
                                                 Inquire via WhatsApp
                                             </a>
-                                            {/* Contact page inquiry */}
                                             <Link href={`/contact?inquiry=shop&product=${encodeURIComponent(quickView.name)}`}
                                                 className="flex items-center justify-center gap-2 bg-[#ffc000] text-[#0a0a08] py-3 font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all">
                                                 Contact Us
