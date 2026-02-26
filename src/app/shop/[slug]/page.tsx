@@ -6,9 +6,10 @@ import ProductDetailClient from './ProductDetailClient';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     await dbConnect();
-    const product = await Product.findOne({ slug: params.slug }).lean() as any;
+    const { slug } = await params;
+    const product = await Product.findOne({ slug }).lean() as any;
     if (!product) return { title: 'Product Not Found' };
     return {
         title: `${product.name} | Mado Creatives Shop`,
@@ -19,9 +20,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     await dbConnect();
-    const raw = await Product.findOne({ slug: params.slug }).lean() as any;
+    const { slug } = await params;
+    const raw = await Product.findOne({ slug }).lean() as any;
     if (!raw) notFound();
 
     const product = {
@@ -38,7 +40,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
     // Fetch related products (same category, exclude current)
     const relatedRaw = await Product.find({
         category: product.category,
-        slug: { $ne: params.slug },
+        slug: { $ne: slug },
     }).limit(4).lean() as any[];
 
     const related = relatedRaw.map((p: any) => ({
@@ -46,6 +48,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         name: p.name,
         slug: p.slug,
         price: p.price,
+        description: p.description || '',
         category: p.category || 'Other',
         images: p.images || [],
         inStock: p.inStock ?? true,
