@@ -13,6 +13,9 @@ export default function SettingsPage() {
         instagramUrl: '',
         twitterUrl: '',
         youtubeUrl: '',
+        facebookUrl: '',
+        telegramUrl: '',
+        whatsappUrl: '',
         bookingCta: 'Book a Session',
         acceptingClients: true,
     });
@@ -159,8 +162,11 @@ export default function SettingsPage() {
 
                         <div className="flex flex-col gap-6 relative z-10">
                             <Field label="Instagram URL" name="instagramUrl" placeholder="https://instagram.com/..." />
-                            <Field label="Twitter / X URL" name="twitterUrl" placeholder="https://twitter.com/..." />
                             <Field label="YouTube URL" name="youtubeUrl" placeholder="https://youtube.com/..." />
+                            <Field label="Facebook URL" name="facebookUrl" placeholder="https://facebook.com/..." />
+                            <Field label="Telegram URL / Channel" name="telegramUrl" placeholder="https://t.me/..." />
+                            <Field label="WhatsApp Channel URL" name="whatsappUrl" placeholder="https://whatsapp.com/channel/..." />
+                            <Field label="Twitter / X URL" name="twitterUrl" placeholder="https://twitter.com/..." />
                         </div>
                     </section>
                 </div>

@@ -97,7 +97,7 @@ export default function BookingClient({ data }: { data: PageData }) {
     return (
         <div className="flex flex-col bg-[#0a0a08] min-h-screen">
             {/* ── Hero — horizontal photo strip ──────────────────────── */}
-            <section className="relative h-[50vh] overflow-hidden">
+            <section className="relative h-[38vh] overflow-hidden">
                 <div className="absolute inset-0 flex gap-px">
                     {BOOKING_HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
@@ -105,19 +105,16 @@ export default function BookingClient({ data }: { data: PageData }) {
                         </div>
                     ))}
                 </div>
-                {/* Dark tint */}
                 <div className="absolute inset-0 bg-[#0a0a08]/35 pointer-events-none" />
-                {/* Hard solid bottom bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0a08]" />
-                {/* Text */}
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-16 max-w-7xl mx-auto w-full">
+                <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0a08]" />
+                <div className="absolute inset-0 flex flex-col items-start justify-end pb-20 px-6 lg:px-16 max-w-7xl mx-auto w-full">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-3">Schedule a Session</p>
-                        <div className="flex items-end gap-6 flex-wrap">
-                            <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none">
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-2">Schedule a Session</p>
+                        <div className="flex items-end gap-5 flex-wrap">
+                            <h1 className="text-4xl md:text-6xl font-display font-extrabold uppercase text-white leading-none">
                                 {data.title}
                             </h1>
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-1">
                                 <span className={`w-2.5 h-2.5 rounded-full ${data.acceptingClients ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                 <span className="text-white font-bold text-sm">{data.acceptingClients ? 'Accepting Clients' : 'Fully Booked'}</span>
                             </div>

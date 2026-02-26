@@ -53,11 +53,11 @@ export default function HomeClient({ content, galleries }: { content: any; galle
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, delay: 0.6 }}
                     >
-                        <p className="text-[#ffc000] font-bold tracking-[0.45em] uppercase text-xs mb-4">
+                        <p className="text-[#ffc000] font-bold tracking-[0.45em] uppercase text-xs mb-3">
                             Visual Storytelling
                         </p>
                         <h1
-                            className="text-5xl md:text-8xl lg:text-[9rem] font-display font-extrabold uppercase text-white leading-none mb-8"
+                            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold uppercase text-white leading-none mb-6"
                             dangerouslySetInnerHTML={{ __html: title }}
                         />
                         <div className="flex items-center gap-5 flex-wrap">
@@ -85,8 +85,8 @@ export default function HomeClient({ content, galleries }: { content: any; galle
             </section>
 
             {/* ── Featured Works ─────────────────────────────────────────── */}
-            <section className="py-16 bg-[#0a0a08]">
-                <div className="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <section className="py-10 bg-[#0a0a08]">
+                <div className="max-w-7xl mx-auto px-6 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <motion.div
                         initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }} transition={{ duration: 0.8 }}
@@ -139,7 +139,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
             </section>
 
             {/* ── Stats strip ───────────────────────────────────────────── */}
-            <section className="bg-[#111109] py-20 border-t border-b border-white/5">
+            <section className="bg-[#111109] py-12 border-t border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -167,7 +167,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
             </section>
 
             {/* ── CTA strip ─────────────────────────────────────────────── */}
-            <section className="bg-[#ffc000] py-24">
+            <section className="bg-[#ffc000] py-16">
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}

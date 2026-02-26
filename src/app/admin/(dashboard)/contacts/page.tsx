@@ -8,21 +8,26 @@ interface ContactMsg {
     email: string;
     inquiryType: string;
     message: string;
+    read: boolean;
     createdAt: string;
 }
 
-const inquiryBadge: Record<string, string> = {
-    general: 'bg-blue-500/20 text-blue-400',
-    project: 'bg-[#ffc000]/20 text-[#ffc000]',
-    press: 'bg-purple-500/20 text-purple-400',
-    careers: 'bg-green-500/20 text-green-400',
+const INQUIRY_STYLE: Record<string, string> = {
+    general:     'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    project:     'bg-[#ffc000]/10 text-[#ffc000] border-[#ffc000]/20',
+    press:       'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    careers:     'bg-green-500/10 text-green-400 border-green-500/20',
+    shop:        'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    'bulk-order':'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
 };
 
 export default function ContactsPage() {
-    const [msgs, setMsgs] = useState<ContactMsg[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [msgs,     setMsgs]     = useState<ContactMsg[]>([]);
+    const [loading,  setLoading]  = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [expanded, setExpanded] = useState<string | null>(null);
+    const [copied,   setCopied]   = useState<string | null>(null);
+    const [filter,   setFilter]   = useState<'all' | 'unread' | 'read'>('all');
 
     const load = () => {
         setLoading(true);
@@ -46,93 +51,178 @@ export default function ContactsPage() {
         load();
     };
 
+    const handleRead = async (id: string, read: boolean) => {
+        await fetch('/api/admin/contacts', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, read }),
+        });
+        setMsgs(ms => ms.map(m => m._id === id ? { ...m, read } : m));
+    };
+
+    const markReadOnExpand = (id: string) => {
+        const isExpanding = expanded !== id;
+        setExpanded(isExpanding ? id : null);
+        if (isExpanding) {
+            const msg = msgs.find(m => m._id === id);
+            if (msg && !msg.read) handleRead(id, true);
+        }
+    };
+
+    const copyEmail = (email: string, id: string) => {
+        navigator.clipboard.writeText(email).then(() => {
+            setCopied(id);
+            setTimeout(() => setCopied(null), 2000);
+        });
+    };
+
+    const unreadCount = msgs.filter(m => !m.read).length;
+    const filtered = filter === 'all' ? msgs : filter === 'unread' ? msgs.filter(m => !m.read) : msgs.filter(m => m.read);
+
     return (
-        <div className="max-w-6xl mx-auto space-y-8 pb-24">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="max-w-6xl mx-auto space-y-6 pb-24">
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-tight">Contact Messages</h1>
-                    <p className="text-slate-400">All inquiries submitted via the contact form on your website.</p>
+                    <h1 className="text-3xl font-display font-bold text-white mb-1 tracking-tight">Contact Messages</h1>
+                    <p className="text-slate-400 text-sm">Inquiries submitted via the contact form on your website.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    {unreadCount > 0 && (
+                        <span className="text-xs font-bold uppercase tracking-widest text-[#ffc000] bg-[#ffc000]/10 border border-[#ffc000]/20 px-3 py-1.5">
+                            {unreadCount} unread
+                        </span>
+                    )}
+                    <button onClick={load}
+                        className="flex items-center gap-2 bg-white/5 border border-white/10 text-slate-400 px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all">
+                        <span className="material-symbols-outlined text-[14px]">refresh</span>Refresh
+                    </button>
                 </div>
             </div>
 
+            {/* Filter tabs */}
+            <div className="flex gap-px bg-[#111109] border border-white/5 w-fit">
+                {([
+                    { key: 'all',    label: 'All',    count: msgs.length },
+                    { key: 'unread', label: 'Unread', count: unreadCount },
+                    { key: 'read',   label: 'Read',   count: msgs.length - unreadCount },
+                ] as { key: typeof filter; label: string; count: number }[]).map(t => (
+                    <button key={t.key} onClick={() => setFilter(t.key)}
+                        className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${filter === t.key ? 'bg-[#ffc000] text-[#0a0a08]' : 'text-slate-500 hover:text-white'}`}>
+                        {t.label}
+                        <span className={`text-[9px] px-1.5 py-0.5 font-bold min-w-[1.25rem] text-center ${filter === t.key ? 'bg-[#0a0a08]/20 text-[#0a0a08]' : 'bg-white/5 text-slate-600'}`}>
+                            {t.count}
+                        </span>
+                    </button>
+                ))}
+            </div>
+
+            {/* Body */}
             {loading ? (
                 <div className="flex items-center justify-center py-24">
-                    <div className="w-10 h-10 border-2 border-[#ffc000]/30 border-t-[#ffc000] rounded-full animate-spin"></div>
+                    <div className="w-10 h-10 border-2 border-[#ffc000]/30 border-t-[#ffc000] rounded-full animate-spin" />
                 </div>
-            ) : msgs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 px-6 border border-dashed border-white/10 rounded-3xl bg-[#111109]/50">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-                        <span className="material-symbols-outlined text-[32px] text-slate-500">mark_email_read</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Inbox Empty</h3>
-                    <p className="text-slate-500 text-center max-w-sm">When clients send a message through your contact page, it will appear here.</p>
+            ) : filtered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 border border-dashed border-white/10 bg-[#111109]/50">
+                    <span className="material-symbols-outlined text-[40px] text-slate-600 mb-3">mark_email_read</span>
+                    <p className="text-slate-500 text-sm">
+                        {filter === 'all' ? 'No messages yet.' : `No ${filter} messages.`}
+                    </p>
                 </div>
             ) : (
-                <div className="flex flex-col gap-4">
-                    {msgs.map(m => (
-                        <div key={m._id} className="group bg-[#111109] border border-white/5 rounded-2xl overflow-hidden hover:border-[#ffc000]/30 transition-all duration-300 shadow-sm hover:shadow-md">
-                            <div
-                                className="flex items-center justify-between p-6 cursor-pointer hover:bg-white/[0.02] transition-colors relative"
-                                onClick={() => setExpanded(expanded === m._id ? null : m._id)}
-                            >
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#ffc000] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 flex-1">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-[#1a1812] border border-white/10 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-[#ffc000]/10 group-hover:text-[#ffc000] transition-colors shadow-inner">
-                                            <span className="material-symbols-outlined text-[20px]">mail</span>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-white text-lg group-hover:text-[#ffc000] transition-colors">{m.name}</p>
-                                            <p className="text-slate-400 text-sm">{m.email}</p>
-                                        </div>
+                <div className="flex flex-col gap-2">
+                    {filtered.map(m => {
+                        const badgeClass = INQUIRY_STYLE[m.inquiryType] || 'bg-white/5 text-slate-400 border-white/10';
+                        return (
+                            <div key={m._id}
+                                className={`bg-[#111109] border overflow-hidden transition-all duration-300 ${expanded === m._id ? 'border-[#ffc000]/20' : m.read ? 'border-white/5 hover:border-white/15' : 'border-[#ffc000]/10 hover:border-[#ffc000]/25'}`}>
+
+                                {/* Row */}
+                                <div className="flex items-center gap-4 p-4 cursor-pointer select-none relative"
+                                    onClick={() => markReadOnExpand(m._id)}>
+
+                                    {/* Unread stripe */}
+                                    {!m.read && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#ffc000]" />}
+
+                                    {/* Avatar */}
+                                    <div className={`w-9 h-9 shrink-0 flex items-center justify-center border ${m.read ? 'bg-white/5 border-white/10 text-slate-500' : 'bg-[#ffc000]/10 border-[#ffc000]/20 text-[#ffc000]'}`}>
+                                        <span className="material-symbols-outlined text-[16px]">{m.read ? 'drafts' : 'mail'}</span>
                                     </div>
-                                    <div className="hidden md:flex items-center gap-4 lg:ml-auto">
-                                        <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full border ${inquiryBadge[m.inquiryType] || 'border-white/10 bg-white/5 text-slate-400'}`}>
-                                            {m.inquiryType}
+
+                                    {/* Name + email */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className={`font-bold text-sm ${m.read ? 'text-slate-300' : 'text-white'}`}>{m.name}</p>
+                                            {!m.read && <span className="text-[8px] uppercase font-bold tracking-widest px-1.5 py-0.5 bg-[#ffc000] text-[#0a0a08]">New</span>}
+                                            <span className={`text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 border ${badgeClass}`}>
+                                                {m.inquiryType}
+                                            </span>
+                                        </div>
+                                        <p className="text-slate-500 text-xs truncate">{m.email}</p>
+                                    </div>
+
+                                    {/* Date + chevron */}
+                                    <div className="flex items-center gap-3 shrink-0">
+                                        <span className="text-slate-700 text-xs hidden sm:block">{new Date(m.createdAt).toLocaleDateString()}</span>
+                                        <span className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${expanded === m._id ? 'rotate-180 text-[#ffc000]' : 'text-slate-600'}`}>
+                                            expand_more
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-end gap-2 ml-4 md:ml-8 shrink-0">
-                                    <span className="text-[11px] uppercase tracking-widest text-slate-500 font-bold">{new Date(m.createdAt).toLocaleDateString()}</span>
-                                    <div className={`w-8 h-8 rounded-full border border-white/10 flex items-center justify-center transition-all duration-500 ${expanded === m._id ? 'bg-[#ffc000] text-[#0a0a08] border-[#ffc000] rotate-180' : 'bg-[#1a1812] text-slate-400 group-hover:text-white'}`}>
-                                        <span className="material-symbols-outlined text-[18px]">expand_more</span>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded === m._id ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                <div className="border-t border-white/5 p-6 md:p-8 bg-[#0a0a08]">
-                                    <div className="mb-8">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 mb-4">
-                                            <div className="flex items-center gap-2 text-slate-500">
-                                                <span className="material-symbols-outlined text-[18px]">chat</span>
-                                                <p className="text-[11px] uppercase font-bold tracking-[0.2em]">Message Content</p>
+                                {/* Expanded */}
+                                <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${expanded === m._id ? 'max-h-[600px]' : 'max-h-0'}`}>
+                                    <div className="border-t border-white/5 p-5 bg-[#070706] space-y-4">
+
+                                        {/* Message */}
+                                        <div className="bg-[#111109] border border-white/5 p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-[9px] uppercase font-bold tracking-widest text-slate-600 flex items-center gap-1">
+                                                    <span className="material-symbols-outlined text-[11px]">chat</span>Message
+                                                </p>
+                                                <span className="text-slate-700 text-xs">{new Date(m.createdAt).toLocaleString()}</span>
                                             </div>
-                                            <p className="text-[11px] uppercase tracking-widest text-slate-500 font-bold">Received: {new Date(m.createdAt).toLocaleString()}</p>
+                                            <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{m.message}</p>
                                         </div>
-                                        <p className="text-slate-300 text-sm leading-relaxed bg-[#111109] p-6 rounded-xl border border-white/5 shadow-inner min-h-[100px] whitespace-pre-wrap">{m.message}</p>
-                                    </div>
 
-                                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-white/5">
-                                        <a href={`mailto:${m.email}`}
-                                            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#ffc000] text-[#0a0a08] px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-white transition-all shadow-md hover:-translate-y-0.5"
-                                        >
-                                            <span className="material-symbols-outlined text-[18px]">reply</span> Send Reply
-                                        </a>
-                                        <button onClick={() => handleDelete(m._id)} disabled={deleting === m._id}
-                                            className="w-full sm:w-auto flex items-center justify-center gap-2 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs transition-all disabled:opacity-50"
-                                        >
-                                            {deleting === m._id
-                                                ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                                : <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            }
-                                            Delete Message
-                                        </button>
+                                        {/* Actions */}
+                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+
+                                            {/* Mark read/unread */}
+                                            <button onClick={() => handleRead(m._id, !m.read)}
+                                                className={`flex items-center gap-1.5 border px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all ${m.read ? 'border-white/10 text-slate-500 hover:text-white hover:border-white/30' : 'border-[#ffc000]/20 text-[#ffc000]/70 hover:bg-[#ffc000]/10'}`}>
+                                                <span className="material-symbols-outlined text-[13px]">{m.read ? 'mark_email_unread' : 'mark_email_read'}</span>
+                                                Mark as {m.read ? 'Unread' : 'Read'}
+                                            </button>
+
+                                            <span className="flex-1" />
+
+                                            {/* Copy email */}
+                                            <button onClick={() => copyEmail(m.email, m._id)}
+                                                className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-slate-400 hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all">
+                                                <span className="material-symbols-outlined text-[13px]">{copied === m._id ? 'check' : 'content_copy'}</span>
+                                                {copied === m._id ? 'Copied!' : 'Copy Email'}
+                                            </button>
+
+                                            {/* Email reply */}
+                                            <a href={`mailto:${m.email}?subject=Re: Your Inquiry — ${m.inquiryType}&body=Hi ${m.name},%0A%0AThank you for reaching out.%0A%0A`}
+                                                className="flex items-center gap-1.5 bg-[#ffc000] text-[#0a0a08] px-4 py-2 text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all">
+                                                <span className="material-symbols-outlined text-[13px]">reply</span>Reply via Email
+                                            </a>
+
+                                            {/* Delete */}
+                                            <button onClick={() => handleDelete(m._id)} disabled={deleting === m._id}
+                                                className="flex items-center gap-1.5 border border-red-500/20 text-red-500/60 hover:bg-red-500 hover:text-white hover:border-red-500 px-4 py-2 text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50">
+                                                {deleting === m._id ? <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" /> : <span className="material-symbols-outlined text-[13px]">delete</span>}
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

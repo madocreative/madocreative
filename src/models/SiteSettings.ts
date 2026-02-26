@@ -18,6 +18,9 @@ const SiteSettingsSchema = new mongoose.Schema({
     instagramUrl: { type: String, default: '#' },
     twitterUrl: { type: String, default: '#' },
     youtubeUrl: { type: String, default: '#' },
+    facebookUrl: { type: String, default: '#' },
+    telegramUrl: { type: String, default: '#' },
+    whatsappUrl: { type: String, default: '#' },
 
     // Appearance
     accentColor: { type: String, default: '#ffc000' },

@@ -34,8 +34,8 @@ export default async function ShopPage() {
 
     return (
         <div className="bg-[#0a0a08] min-h-screen text-white">
-            {/* Hero — horizontal strip collage */}
-            <section className="relative h-[55vh] overflow-hidden">
+            {/* Hero — horizontal strip collage, compact */}
+            <section className="relative h-[38vh] overflow-hidden">
                 <div className="absolute inset-0 flex gap-px">
                     {SHOP_HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
@@ -43,13 +43,13 @@ export default async function ShopPage() {
                         </div>
                     ))}
                 </div>
-                <div className="absolute inset-0 bg-[#0a0a08]/30" />
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0a08]" />
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-12 max-w-7xl mx-auto w-full">
-                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-xs mb-3">
+                <div className="absolute inset-0 bg-[#0a0a08]/40" />
+                <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0a08]" />
+                <div className="absolute inset-0 flex flex-col items-start justify-end pb-20 px-6 lg:px-8 max-w-7xl mx-auto w-full">
+                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-xs mb-2">
                         Electronics Store
                     </p>
-                    <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none">
+                    <h1 className="text-4xl md:text-6xl font-display font-extrabold uppercase text-white leading-none">
                         Shop
                     </h1>
                 </div>

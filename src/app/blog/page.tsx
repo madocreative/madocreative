@@ -24,7 +24,7 @@ export default async function BlogPage() {
     return (
         <div className="bg-[#0a0a08] min-h-screen text-white">
             {/* Hero — photography collage */}
-            <section className="relative h-[55vh] overflow-hidden">
+            <section className="relative h-[38vh] overflow-hidden">
                 <div className="absolute inset-0 flex gap-px">
                     {BLOG_HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
@@ -33,16 +33,16 @@ export default async function BlogPage() {
                     ))}
                 </div>
                 <div className="absolute inset-0 bg-[#0a0a08]/30" />
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0a08]" />
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-12 max-w-5xl mx-auto w-full">
-                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-xs mb-3">The Journal</p>
-                    <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none">Journal</h1>
+                <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0a08]" />
+                <div className="absolute inset-0 flex flex-col items-start justify-end pb-20 px-6 lg:px-12 max-w-5xl mx-auto w-full">
+                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-xs mb-2">The Journal</p>
+                    <h1 className="text-4xl md:text-6xl font-display font-extrabold uppercase text-white leading-none">Journal</h1>
                 </div>
             </section>
 
-            <div className="max-w-5xl mx-auto px-6 lg:px-12 pb-24">
+            <div className="max-w-5xl mx-auto px-6 lg:px-12 pb-16">
                 {/* Subtitle */}
-                <div className="mb-16 pt-10 border-b border-white/5 pb-10">
+                <div className="mb-10 pt-8 border-b border-white/5 pb-8">
                     <p className="text-xl text-slate-400 font-light leading-relaxed max-w-2xl">
                         Thoughts on design, photography, and behind the scenes of our latest campaigns.
                     </p>
@@ -56,7 +56,7 @@ export default async function BlogPage() {
                 ) : (
                     <div className="flex flex-col gap-0">
                         {posts.map((post, idx) => (
-                            <article key={post._id.toString()} className={`group py-12 ${idx !== 0 ? 'border-t border-white/5' : ''}`}>
+                            <article key={post._id.toString()} className={`group py-8 ${idx !== 0 ? 'border-t border-white/5' : ''}`}>
                                 <Link href={`/blog/${post.slug}`} className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
                                     <div className="md:col-span-5 aspect-[16/10] relative overflow-hidden bg-[#111109]">
                                         <img

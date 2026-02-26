@@ -24,7 +24,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
     return (
         <div className="flex flex-col bg-[#0a0a08]">
             {/* Hero — photography collage */}
-            <section className="relative h-[72vh] overflow-hidden">
+            <section className="relative h-[55vh] overflow-hidden">
                 {heroImgs.length > 0 ? (
                     <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-px">
                         {heroImgs.slice(0, 6).map((img, i) => (
@@ -36,17 +36,14 @@ export default function ServicesClient({ data }: { data: PageData }) {
                 ) : (
                     <div className="absolute inset-0 bg-[#111109]" />
                 )}
-                {/* Tint */}
                 <div className="absolute inset-0 bg-[#0a0a08]/30 pointer-events-none" />
-                {/* Hard solid bottom bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0a08]" />
-                {/* Text */}
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-16 max-w-7xl mx-auto w-full">
+                <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#0a0a08]" />
+                <div className="absolute inset-0 flex flex-col items-start justify-end pb-20 px-6 lg:px-16 max-w-7xl mx-auto w-full">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
                     >
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-3">What We Do</p>
-                        <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none">
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-2">What We Do</p>
+                        <h1 className="text-4xl md:text-6xl font-display font-extrabold uppercase text-white leading-none">
                             {data.title}
                         </h1>
                     </motion.div>
@@ -106,7 +103,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                                 <motion.div
                                     variants={fadeUp} initial="hidden" whileInView="show"
                                     viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.9, delay: 0.2 }}
-                                    className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 py-16 lg:py-24"
+                                    className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-12 py-10 lg:py-14"
                                 >
                                     <div className="flex items-center gap-4 mb-8">
                                         <span className="text-[#ffc000] font-mono text-sm font-bold">0{index + 1}</span>
@@ -122,7 +119,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                                     <h2 className="text-3xl lg:text-5xl font-display font-extrabold text-white mb-6 leading-tight uppercase">
                                         {service.title}
                                     </h2>
-                                    <p className="text-lg text-slate-400 mb-12 leading-relaxed font-light">
+                                    <p className="text-base text-slate-400 mb-8 leading-relaxed font-light">
                                         {service.description}
                                     </p>
                                     <Link href="/portfolio"
@@ -142,7 +139,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
             <motion.section
                 variants={fadeUp} initial="hidden" whileInView="show"
                 viewport={{ once: true }} transition={{ duration: 0.8 }}
-                className="w-full bg-[#ffc000] py-32"
+                className="w-full bg-[#ffc000] py-16"
             >
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <h2 className="text-3xl md:text-6xl font-display font-extrabold text-[#0a0a08] mb-8 leading-tight uppercase">
