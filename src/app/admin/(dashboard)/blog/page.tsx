@@ -69,7 +69,7 @@ export default function BlogList() {
                             <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                             {/* Status Badge Overlay */}
                             <div className="absolute top-3 right-3 z-10">
-                                <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border ${post.published ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>
+                                <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full border ${post.published ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>
                                     {post.published ? 'Published' : 'Draft'}
                                 </span>
                             </div>

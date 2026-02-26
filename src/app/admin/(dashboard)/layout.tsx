@@ -39,7 +39,7 @@ const navGroups = [
 
 function NavLink({ href, icon, label, exact = false, onClick }: { href: string; icon: string; label: string; exact?: boolean; onClick?: () => void }) {
     const pathname = usePathname();
-    const active = exact ? pathname === href : pathname === href || pathname.startsWith(href + '/');
+    const active = exact ? pathname === href : pathname === href || (pathname.startsWith(href + '/') && !pathname.startsWith(href + '/categories'));
     return (
         <Link
             href={href}
@@ -118,17 +118,17 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     return (
         <div className="flex h-screen bg-[#070705] text-white selection:bg-[#ffc000]/30">
             {/* Desktop Sidebar (Glassmorphic) */}
-            <aside className="w-72 bg-[#0a0a08]/80 backdrop-blur-xl border-r border-white/5 hidden md:flex flex-col shadow-2xl z-20">
+            <aside className="w-72 bg-[#0a0a08] border-r border-white/5 hidden md:flex flex-col shadow-2xl z-20">
                 <Sidebar />
             </aside>
 
             {/* Mobile Sidebar Overlay */}
             {mobileOpen && (
                 <div className="fixed inset-0 z-[60] md:hidden flex">
-                    <div className="w-72 bg-[#0a0a08]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col shadow-2xl">
+                    <div className="w-72 bg-[#0a0a08] border-r border-white/10 flex flex-col shadow-2xl">
                         <Sidebar onClose={() => setMobileOpen(false)} />
                     </div>
-                    <div className="flex-1 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setMobileOpen(false)}></div>
+                    <div className="flex-1 bg-black/60 transition-opacity" onClick={() => setMobileOpen(false)}></div>
                 </div>
             )}
 
@@ -138,7 +138,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
                 {/* Mobile Header */}
-                <header className="md:hidden bg-[#0a0a08]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center z-10 sticky top-0">
+                <header className="md:hidden bg-[#0a0a08] border-b border-white/5 px-6 py-4 flex justify-between items-center z-10 sticky top-0">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-[#ffc000] to-[#b38600] rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(255,192,0,0.3)]">
                             <span className="material-symbols-outlined text-[#0a0a08] text-[16px]">diamond</span>

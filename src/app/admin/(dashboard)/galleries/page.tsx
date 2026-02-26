@@ -62,7 +62,7 @@ export default function GalleryList() {
                             <img src={gallery.featuredImage} alt={gallery.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111109] via-transparent to-transparent opacity-80" />
 
-                            <div className="absolute top-3 right-3 z-10 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2 shadow-sm">
+                            <div className="absolute top-3 right-3 z-10 bg-black/50 px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2 shadow-sm">
                                 <span className="material-symbols-outlined text-[14px] text-[#ffc000]">photo_library</span>
                                 <span className="text-[10px] font-bold tracking-widest text-white">{gallery.images?.length || 0}</span>
                             </div>

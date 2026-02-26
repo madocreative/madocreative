@@ -69,7 +69,7 @@ export default function ShopList() {
                             <img src={product.images?.[0] || 'https://placehold.co/600x600/111109/333333?text=No+Image'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                             {/* Stock Badge Overlay */}
                             <div className="absolute top-3 right-3 z-10">
-                                <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md border ${product.inStock ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                                <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full border ${product.inStock ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
                                     {product.inStock ? 'In Stock' : 'Out of Stock'}
                                 </span>
                             </div>

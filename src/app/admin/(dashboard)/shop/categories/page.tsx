@@ -98,7 +98,7 @@ export default function CategoriesAdmin() {
 
             {/* Form Modal */}
             {showForm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
                     <div className="bg-[#111109] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl">
                         <h2 className="text-xl font-bold text-white mb-5">{editingId ? 'Edit Category' : 'New Category'}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">

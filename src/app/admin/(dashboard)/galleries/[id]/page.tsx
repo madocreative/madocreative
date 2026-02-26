@@ -97,7 +97,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
         <div className="max-w-6xl mx-auto pb-24">
             {/* Media Picker Modal */}
             {showMediaPicker && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
                     <div className="bg-[#1a1812] border border-white/10 rounded-2xl w-full max-w-4xl max-h-[80vh] flex flex-col">
                         <div className="flex items-center justify-between p-5 border-b border-white/10">
                             <h3 className="font-bold text-white text-lg">
@@ -251,16 +251,16 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                                 <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                                     <button type="button" onClick={() => setAsCover(url)} title="Set as cover"
-                                        className="w-10 h-10 bg-[#ffc000]/90 hover:bg-[#ffc000] text-[#0a0a08] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 backdrop-blur-sm">
+                                        className="w-10 h-10 bg-[#ffc000]/90 hover:bg-[#ffc000] text-[#0a0a08] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110">
                                         <span className="material-symbols-outlined text-[18px]">star</span>
                                     </button>
                                     <button type="button" onClick={() => removeImage(i)} title="Remove from gallery"
-                                        className="w-10 h-10 bg-red-500/90 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 backdrop-blur-sm">
+                                        className="w-10 h-10 bg-red-500/90 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110">
                                         <span className="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </div>
                                 {url === formData.featuredImage && (
-                                    <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10">
+                                    <div className="absolute top-2 left-2 bg-black/60 px-2.5 py-1 rounded-md border border-white/10">
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-[#ffc000]">Cover Image</span>
                                     </div>
                                 )}
@@ -280,7 +280,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
             </div>
 
             {/* Fixed Save Bar */}
-            <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08]/80 backdrop-blur-xl border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+            <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08] border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                 <div className="flex items-center gap-3">
                     {status === 'success' && <p className="text-green-400 font-medium flex items-center gap-2 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/20"><span className="material-symbols-outlined text-sm">check_circle</span> Gallery Updated</p>}
                     {status === 'error' && <p className="text-red-400 font-medium flex items-center gap-2 bg-red-500/10 px-4 py-2 rounded-lg border border-red-500/20"><span className="material-symbols-outlined text-sm">error</span> Failed to save.</p>}

@@ -165,7 +165,7 @@ export default function MediaLibraryPage() {
                                             <button
                                                 type="button"
                                                 onClick={e => { e.stopPropagation(); copyUrl(item.url, item._id); }}
-                                                className={`text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-lg backdrop-blur-sm ${copied === item._id ? 'bg-green-500 text-white' : 'bg-white/90 text-[#0a0a08] hover:bg-[#ffc000]'}`}
+                                                className={`text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all shadow-lg ${copied === item._id ? 'bg-green-500 text-white' : 'bg-white/90 text-[#0a0a08] hover:bg-[#ffc000]'}`}
                                             >
                                                 <span className="material-symbols-outlined text-[14px]">{copied === item._id ? 'check' : 'content_copy'}</span>
                                                 {copied === item._id ? 'Copied' : 'Copy URL'}

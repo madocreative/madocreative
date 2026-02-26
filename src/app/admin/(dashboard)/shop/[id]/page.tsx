@@ -187,8 +187,7 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                         </div>
                     </div>
 
-                    {/* Save bar fixed to bottom */}
-                    <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08]/80 backdrop-blur-xl border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                    <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08] border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                         <div className="flex items-center gap-3">
                             {status === 'success' && <p className="text-green-400 font-medium flex items-center gap-2 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/20"><span className="material-symbols-outlined text-sm">check_circle</span> Product Updated</p>}
                             {status === 'error' && <p className="text-red-400 font-medium flex items-center gap-2 bg-red-500/10 px-4 py-2 rounded-lg border border-red-500/20"><span className="material-symbols-outlined text-sm">error</span> Failed to save.</p>}
@@ -234,12 +233,12 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                                 <div key={index} className="aspect-square relative rounded-xl overflow-hidden group border border-white/10 shadow-sm bg-[#0a0a08]">
                                     <img src={url} alt={`Product view ${index + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                                        <button type="button" onClick={() => removeImage(index)} className="self-end w-9 h-9 bg-red-500/90 hover:bg-red-500 text-white rounded-lg flex items-center justify-center transition-transform hover:scale-105 shadow-lg backdrop-blur-sm">
+                                        <button type="button" onClick={() => removeImage(index)} className="self-end w-9 h-9 bg-red-500/90 hover:bg-red-500 text-white rounded-lg flex items-center justify-center transition-transform hover:scale-105 shadow-lg">
                                             <span className="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     </div>
                                     {index === 0 && (
-                                        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10">
+                                        <div className="absolute top-2 left-2 bg-black/60 px-2.5 py-1 rounded-md border border-white/10">
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-[#ffc000]">Primary</span>
                                         </div>
                                     )}
