@@ -6,10 +6,10 @@ import Link from 'next/link';
 export default function HomeClient({ content, galleries }: { content: any; galleries: any[] }) {
     const sections = content?.sections || {};
 
-    const title      = content?.title    || "Capturing<br />The <span class='text-[#ffc000]'>Unseen</span>";
-    const subtitle   = content?.subtitle || 'We are Mado Creatives, an independent studio crafting premium imagery for visionaries.';
-    const ctaText    = sections.ctaText   || 'View Our Work';
-    const ctaLink    = sections.ctaLink   || '/portfolio';
+    const title = content?.title || "Capturing<br />The <span class='text-[#ffc000]'>Unseen</span>";
+    const subtitle = content?.subtitle || 'We are Mado Creatives, an independent studio crafting premium imagery for visionaries.';
+    const ctaText = sections.ctaText || 'View Our Work';
+    const ctaLink = sections.ctaLink || '/portfolio';
     const worksLabel = sections.worksLabel || 'Selected Works';
     const worksTitle = sections.worksTitle || 'Featured Portfolio';
 
@@ -25,7 +25,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
                 {/* Photography collage */}
                 {heroImgs.length > 0 && (
                     <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-px">
-                        {heroImgs.slice(0, 6).map((img, i) => (
+                        {heroImgs.slice(0, 3).map((img, i) => (
                             <div key={i} className={`overflow-hidden ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
                                 <motion.img
                                     src={img}
