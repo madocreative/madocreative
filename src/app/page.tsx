@@ -16,8 +16,8 @@ export default async function Home() {
   // Fetch dynamic page content from CMS
   const content = await Content.findOne({ page: 'home' });
 
-  // Fetch latest galleries for the preview section
-  const galleries = await Gallery.find({}).sort({ createdAt: -1 }).limit(4);
+  // Fetch latest galleries for hero collage and portfolio previews
+  const galleries = await Gallery.find({}).sort({ createdAt: -1 }).limit(8);
 
   // Pass non-Mongoose objects to the client
   return <HomeClient content={JSON.parse(JSON.stringify(content))} galleries={JSON.parse(JSON.stringify(galleries))} />;

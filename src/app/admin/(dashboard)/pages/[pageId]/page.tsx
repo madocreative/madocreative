@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 
 // ---------- types ----------
 interface ServiceItem { title: string; description: string; image: string; tags: string }
 interface TeamMember { name: string; role: string; image: string }
 interface PackageItem { name: string; description: string; price: string }
 interface StatItem { value: string; label: string }
+interface HighlightCard { stat: string; title: string; description: string }
+interface ServicePillar { title: string; description: string; note: string }
+interface ProcessStep { title: string; description: string }
+interface ClientLogo { name: string; image: string }
 
 // ---------- Upload helper ----------
 async function uploadImage(file: File): Promise<string> {
@@ -208,6 +211,94 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
 // HOME page fields
 // ────────────────────────────────────────────────────────────
 function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: string, fb?: unknown) => unknown; set: (k: string, v: unknown) => void }) {
+    const defaultHighlightCards: HighlightCard[] = [
+        {
+            stat: 'Creative + Tech',
+            title: 'Dual Expertise Under One Studio',
+            description: 'Photography, film, branding content, and premium electronics support under one creative ecosystem.',
+        },
+        {
+            stat: 'International Reach',
+            title: 'Multi-Country Presence',
+            description: 'Consistent production quality across Addis Ababa, Kigali, Nairobi, and Dubai.',
+        },
+    ];
+    const defaultServicePillars: ServicePillar[] = [
+        {
+            title: 'Luxury Weddings and Events',
+            description: 'Timeless coverage for engagements, celebrations, and destination events with cinematic delivery.',
+            note: 'Photography + Film',
+        },
+        {
+            title: 'Fashion and Editorial',
+            description: 'Modern visual direction for designers, model portfolios, and campaign launches.',
+            note: 'Editorial Production',
+        },
+        {
+            title: 'Commercial and Product',
+            description: 'Clean campaign visuals for products, promotions, and social-first brand storytelling.',
+            note: 'Brand Campaigns',
+        },
+    ];
+    const defaultProcessSteps: ProcessStep[] = [
+        { title: 'Consultation', description: 'Needs assessment and project alignment.' },
+        { title: 'Creative Direction', description: 'Concept, references, and strategic planning.' },
+        { title: 'Production', description: 'Photography and video execution with quality control.' },
+        { title: 'Delivery', description: 'Premium editing and final asset delivery.' },
+    ];
+    const defaultClientLogos: ClientLogo[] = [
+        { name: 'Legacy Studio', image: '/client-logos/legacy-studio.jpg' },
+        { name: 'Maraki Decorations', image: '/client-logos/maraki-decorations.jpg' },
+        { name: 'Photo Factory', image: '/client-logos/photo-factory.jpg' },
+        { name: 'Pop Studio', image: '/client-logos/pop-studio.jpg' },
+        { name: 'Lumvra Visa Solution', image: '/client-logos/lumvra-visa-solution.jpg' },
+        { name: 'Clicklvra Digital Marketing', image: '/client-logos/clicklvra.jpg' },
+    ];
+    const defaultStats: StatItem[] = [
+        { value: '15+', label: 'Years of Practice' },
+        { value: '500+', label: 'Projects Delivered' },
+        { value: '4', label: 'Operating Locations' },
+        { value: '24/7', label: 'Client Support' },
+    ];
+
+    const ensureList = <T,>(value: unknown, fallback: T[]): T[] => (Array.isArray(value) ? (value as T[]) : fallback);
+
+    const highlightCards: HighlightCard[] = ensureList(get('highlightCards', defaultHighlightCards), defaultHighlightCards);
+    const servicePillars: ServicePillar[] = ensureList(get('servicePillars', defaultServicePillars), defaultServicePillars);
+    const processSteps: ProcessStep[] = ensureList(get('processSteps', defaultProcessSteps), defaultProcessSteps);
+    const clientLogos: ClientLogo[] = ensureList(get('clientLogos', defaultClientLogos), defaultClientLogos);
+    const stats: StatItem[] = ensureList(get('stats', defaultStats), defaultStats);
+
+    const updateHighlight = (i: number, field: keyof HighlightCard, val: string) => {
+        set('highlightCards', highlightCards.map((c, idx) => (idx === i ? { ...c, [field]: val } : c)));
+    };
+    const addHighlight = () => set('highlightCards', [...highlightCards, { stat: 'New Stat', title: 'New Highlight', description: '' }]);
+    const removeHighlight = (i: number) => set('highlightCards', highlightCards.filter((_, idx) => idx !== i));
+
+    const updatePillar = (i: number, field: keyof ServicePillar, val: string) => {
+        set('servicePillars', servicePillars.map((p, idx) => (idx === i ? { ...p, [field]: val } : p)));
+    };
+    const addPillar = () => set('servicePillars', [...servicePillars, { title: 'New Pillar', description: '', note: '' }]);
+    const removePillar = (i: number) => set('servicePillars', servicePillars.filter((_, idx) => idx !== i));
+
+    const updateStep = (i: number, field: keyof ProcessStep, val: string) => {
+        set('processSteps', processSteps.map((s, idx) => (idx === i ? { ...s, [field]: val } : s)));
+    };
+    const addStep = () => set('processSteps', [...processSteps, { title: 'New Step', description: '' }]);
+    const removeStep = (i: number) => set('processSteps', processSteps.filter((_, idx) => idx !== i));
+
+    const updateLogo = (i: number, field: keyof ClientLogo, val: string) => {
+        set('clientLogos', clientLogos.map((logo, idx) => (idx === i ? { ...logo, [field]: val } : logo)));
+    };
+    const addLogo = () => set('clientLogos', [...clientLogos, { name: 'New Client', image: '' }]);
+    const removeLogo = (i: number) => set('clientLogos', clientLogos.filter((_, idx) => idx !== i));
+
+    const updateStat = (i: number, field: keyof StatItem, val: string) => {
+        set('stats', stats.map((s, idx) => (idx === i ? { ...s, [field]: val } : s)));
+    };
+    const addStat = () => set('stats', [...stats, { value: '0', label: 'New Metric' }]);
+    const removeStat = (i: number) => set('stats', stats.filter((_, idx) => idx !== i));
+
     return (
         <>
             <Section title="Hero Section" icon="star">
@@ -219,12 +310,174 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                         placeholder="We are Mado Creatives..." />
                 </div>
                 <ImageField label="Hero Background Image" value={String(get('heroImage', ''))} onChange={v => set('heroImage', v)} />
+                <TextInput label="Hero Label" value={String(get('heroLabel', 'Mado Creatives Studio'))} onChange={v => set('heroLabel', v)} />
                 <TextInput label="CTA Button Text" value={String(get('ctaText', 'View Our Work'))} onChange={v => set('ctaText', v)} />
                 <TextInput label="CTA Button Link" value={String(get('ctaLink', '/portfolio'))} onChange={v => set('ctaLink', v)} />
+                <TextInput label="Secondary CTA Text" value={String(get('secondaryCtaText', 'Start a Project'))} onChange={v => set('secondaryCtaText', v)} />
+                <TextInput label="Secondary CTA Link" value={String(get('secondaryCtaLink', '/contact'))} onChange={v => set('secondaryCtaLink', v)} />
             </Section>
+
+            <Section title="Studio Intro + Highlights" icon="auto_stories">
+                <TextInput label="Intro Label" value={String(get('introLabel', 'About the Studio'))} onChange={v => set('introLabel', v)} />
+                <TextInput label="Intro Title" value={String(get('introTitle', 'Creative Agency and Premium Production Partner'))} onChange={v => set('introTitle', v)} />
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Intro Description</label>
+                    <textarea rows={4} value={String(get('introDescription', ''))} onChange={e => set('introDescription', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+                <div className="flex flex-col gap-6">
+                    {highlightCards.map((card, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Highlight Card {i + 1}</span>
+                                <button type="button" onClick={() => removeHighlight(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Small Stat Label" value={card.stat} onChange={v => updateHighlight(i, 'stat', v)} />
+                            <TextInput label="Card Title" value={card.title} onChange={v => updateHighlight(i, 'title', v)} />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Card Description</label>
+                                <textarea rows={3} value={card.description} onChange={e => updateHighlight(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addHighlight}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Highlight Card
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Service Pillars" icon="camera">
+                <TextInput label="Section Label" value={String(get('servicePillarsLabel', 'Premium Photography Services'))} onChange={v => set('servicePillarsLabel', v)} />
+                <TextInput label="Section Title" value={String(get('servicePillarsTitle', 'Signature Service Pillars'))} onChange={v => set('servicePillarsTitle', v)} />
+                <div className="flex flex-col gap-6">
+                    {servicePillars.map((pillar, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Pillar {i + 1}</span>
+                                <button type="button" onClick={() => removePillar(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Title" value={pillar.title} onChange={v => updatePillar(i, 'title', v)} />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Description</label>
+                                <textarea rows={3} value={pillar.description} onChange={e => updatePillar(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                            <TextInput label="Bottom Note" value={pillar.note} onChange={v => updatePillar(i, 'note', v)} />
+                        </div>
+                    ))}
+                    <button type="button" onClick={addPillar}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Service Pillar
+                    </button>
+                </div>
+            </Section>
+
             <Section title="Featured Works Section" icon="photo_library">
-                <TextInput label="Section Label" value={String(get('worksLabel', 'Selected Works'))} onChange={v => set('worksLabel', v)} />
-                <TextInput label="Section Title" value={String(get('worksTitle', 'Featured Portfolio'))} onChange={v => set('worksTitle', v)} />
+                <TextInput label="Section Label" value={String(get('worksLabel', 'Portfolio Showcase'))} onChange={v => set('worksLabel', v)} />
+                <TextInput label="Section Title" value={String(get('worksTitle', 'Selected Work'))} onChange={v => set('worksTitle', v)} />
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Section Description</label>
+                    <textarea rows={3} value={String(get('worksDescription', ''))} onChange={e => set('worksDescription', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+            </Section>
+
+            <Section title="Client Process" icon="route">
+                <TextInput label="Section Label" value={String(get('processLabel', 'How We Work'))} onChange={v => set('processLabel', v)} />
+                <TextInput label="Section Title" value={String(get('processTitle', 'A Clear Production Flow'))} onChange={v => set('processTitle', v)} />
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Section Subtitle</label>
+                    <textarea rows={3} value={String(get('processSubtitle', ''))} onChange={e => set('processSubtitle', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+                <div className="flex flex-col gap-6">
+                    {processSteps.map((step, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Process Step {i + 1}</span>
+                                <button type="button" onClick={() => removeStep(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Step Title" value={step.title} onChange={v => updateStep(i, 'title', v)} />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Step Description</label>
+                                <textarea rows={2} value={step.description} onChange={e => updateStep(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addStep}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Process Step
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Client Logos Section" icon="verified">
+                <TextInput label="Section Label" value={String(get('clientLabel', 'Trusted by Past Clients'))} onChange={v => set('clientLabel', v)} />
+                <TextInput label="Section Title" value={String(get('clientTitle', 'Brands and Businesses We Worked With'))} onChange={v => set('clientTitle', v)} />
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Section Subtitle</label>
+                    <textarea rows={3} value={String(get('clientSubtitle', ''))} onChange={e => set('clientSubtitle', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {clientLogos.map((logo, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Client Logo {i + 1}</span>
+                                <button type="button" onClick={() => removeLogo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Client Name" value={logo.name} onChange={v => updateLogo(i, 'name', v)} />
+                            <ImageField label="Logo Image" value={logo.image} onChange={v => updateLogo(i, 'image', v)} />
+                        </div>
+                    ))}
+                </div>
+                <button type="button" onClick={addLogo}
+                    className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider mt-2">
+                    <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Client Logo
+                </button>
+            </Section>
+
+            <Section title="Stats and Final CTA" icon="campaign">
+                <TextInput label="Stats Label" value={String(get('statsLabel', 'Why Clients Choose Mado'))} onChange={v => set('statsLabel', v)} />
+                <TextInput label="Stats Title" value={String(get('statsTitle', 'Premium Quality with Measurable Impact'))} onChange={v => set('statsTitle', v)} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {stats.map((stat, i) => (
+                        <div key={i} className="bg-[#1a1812] p-4 rounded-xl border border-white/5 flex flex-col gap-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Stat {i + 1}</span>
+                                <button type="button" onClick={() => removeStat(i)} className="w-7 h-7 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[14px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Value" value={stat.value} onChange={v => updateStat(i, 'value', v)} />
+                            <TextInput label="Label" value={stat.label} onChange={v => updateStat(i, 'label', v)} />
+                        </div>
+                    ))}
+                </div>
+                <button type="button" onClick={addStat}
+                    className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Stat
+                </button>
+
+                <TextInput label="Final CTA Title" value={String(get('ctaTitle', 'Ready to build your next visual campaign?'))} onChange={v => set('ctaTitle', v)} />
+                <div className="flex flex-col gap-2">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Final CTA Subtitle</label>
+                    <textarea rows={3} value={String(get('ctaSubtitle', ''))} onChange={e => set('ctaSubtitle', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+                <TextInput label="Final CTA Button Text" value={String(get('ctaButtonText', 'Book a Session'))} onChange={v => set('ctaButtonText', v)} />
+                <TextInput label="Final CTA Button Link" value={String(get('ctaButtonLink', '/booking'))} onChange={v => set('ctaButtonLink', v)} />
             </Section>
         </>
     );
