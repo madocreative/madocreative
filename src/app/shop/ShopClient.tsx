@@ -30,6 +30,27 @@ interface Product {
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
+/** Strip all HTML tags and decode entities to plain readable text */
+function stripHtml(html: string): string {
+    if (!html) return '';
+    // Remove script/style blocks entirely
+    let text = html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
+    // Replace block tags with newlines
+    text = text.replace(/<\/?(p|div|br|li|h[1-6]|article|section)[^>]*>/gi, '\n');
+    // Strip all remaining tags
+    text = text.replace(/<[^>]+>/g, '');
+    // Decode common HTML entities
+    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, '');
+    // Collapse excess whitespace
+    text = text.replace(/\n{3,}/g, '\n\n').trim();
+    return text;
+}
+
+/** Returns true if string contains HTML tags */
+function isHtml(str: string): boolean {
+    return /<[a-z][\s\S]*>/i.test(str);
+}
+
 function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
     return (
         <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -366,7 +387,9 @@ export default function ShopClient({ products }: { products: Product[] }) {
                                 </div>
 
                                 {quickView.description && (
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-6">{quickView.description}</p>
+                                    <p className="text-slate-400 text-sm leading-relaxed mb-6 whitespace-pre-line">
+                                        {isHtml(quickView.description) ? stripHtml(quickView.description) : quickView.description}
+                                    </p>
                                 )}
 
                                 <div className="flex items-center gap-2 mb-6">
