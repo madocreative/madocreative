@@ -8,15 +8,21 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
     const resolvedParams = use(params);
     const router = useRouter();
     const [formData, setFormData] = useState<any>(null);
+    const [categories, setCategories] = useState<any[]>([]);
     const [status, setStatus] = useState<'loading' | 'idle' | 'saving' | 'success' | 'error'>('loading');
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
-        fetch(`/api/admin/products/${resolvedParams.id}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setFormData(data.data);
+        Promise.all([
+            fetch(`/api/admin/products/${resolvedParams.id}`).then(r => r.json()),
+            fetch('/api/admin/categories').then(r => r.json())
+        ])
+            .then(([productData, categoriesData]) => {
+                if (productData.success) {
+                    setFormData(productData.data);
+                    if (categoriesData.success) {
+                        setCategories(categoriesData.data);
+                    }
                     setStatus('idle');
                 } else {
                     setStatus('error');
@@ -129,11 +135,10 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                             <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors ml-1">Category</label>
                             <div className="relative">
                                 <select value={formData.category || 'Other'} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white appearance-none outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all shadow-inner text-sm">
-                                    <option value="Smartphones">Smartphones</option>
-                                    <option value="Laptops & Computers">Laptops & Computers</option>
-                                    <option value="Cameras & Equipment">Cameras & Equipment</option>
-                                    <option value="Audio & Gadgets">Audio & Gadgets</option>
                                     <option value="Other">Other</option>
+                                    {categories.map(c => (
+                                        <option key={c._id} value={c.name}>{c.name}</option>
+                                    ))}
                                 </select>
                                 <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
                             </div>

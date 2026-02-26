@@ -11,7 +11,29 @@
       "Bash(ls \"/c/Users/HP/Downloads/Telegram Desktop/\"*.jpg)",
       "Bash(node -e \":*)",
       "Bash(git add src/app/videography/page.tsx src/app/digital-marketing/page.tsx src/components/Header.tsx)",
-      "Bash(git add src/app/videography/page.tsx src/app/videography/VideographyClient.tsx src/app/digital-marketing/page.tsx src/app/digital-marketing/DigitalMarketingClient.tsx)"
+      "Bash(git add src/app/videography/page.tsx src/app/videography/VideographyClient.tsx src/app/digital-marketing/page.tsx src/app/digital-marketing/DigitalMarketingClient.tsx)",
+      "Bash(npm install -g pptxgenjs)",
+      "Bash(node life-presentation.js)",
+      "Bash(npm install pptxgenjs)",
+      "Bash(python \"C:\\\\Users\\\\HP\\\\.claude\\\\skills\\\\pptx\\\\scripts\\\\office\\\\soffice.py\" --headless --convert-to pdf life-presentation.pptx)",
+      "Bash(\"C:/Program Files/LibreOffice/program/soffice.exe\" --headless --convert-to pdf life-presentation.pptx)",
+      "Bash(where pdftoppm)",
+      "Bash(pip show pymupdf)",
+      "Bash(pip install pymupdf -q)",
+      "Bash(pip install pymupdf)",
+      "Bash(python -:*)",
+      "Bash(python3 /tmp/write_bookings.py)",
+      "Bash(ls \"/c/Users/HP/Pictures/madocreative/mado-creatives-nextjs/src/app/admin/\\(dashboard\\)/bookings/\")",
+      "Bash(printf '%s' \"const fs = require\\(''fs''\\);:*)",
+      "Bash(/c/Python313/python -c \"print\\(''hello''\\)\")",
+      "Bash(/c/Python313/python /tmp/write_bookings.py)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); fs.writeFileSync\\(''/tmp/wb.py'', ''print\\(42\\)''\\); console.log\\(''ok''\\);\")",
+      "Bash(printf 'hello world\\\\n')",
+      "Bash(xxd)",
+      "Bash(head -5 \"/c/Users/HP/Pictures/madocreative/mado-creatives-nextjs/src/app/admin/\\(dashboard\\)/bookings/page.tsx\")",
+      "Bash(python3 -:*)",
+      "Bash(py --version)",
+      "Bash(node --version)"
     ]
   }
 }

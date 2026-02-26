@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
     { label: 'All', icon: 'storefront', hasChildren: false },
     { label: 'Smartphones', icon: 'smartphone', hasChildren: true },
     { label: 'Laptops & Computers', icon: 'laptop', hasChildren: true },
@@ -21,11 +21,20 @@ const FEATURED_LINKS = [
 interface Product {
     _id: string;
     name: string;
+    slug: string;
     price: number;
     description: string;
     category: string;
     images: string[];
     inStock: boolean;
+}
+
+interface Category {
+    _id: string;
+    name: string;
+    slug: string;
+    icon: string;
+    parent: string | null;
 }
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
@@ -59,12 +68,25 @@ function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
     );
 }
 
-export default function ShopClient({ products }: { products: Product[] }) {
+export default function ShopClient({ products, categories = [] }: { products: Product[], categories?: Category[] }) {
     const [activeCategory, setActiveCategory] = useState('All');
     const [sort, setSort] = useState<SortOption>('newest');
     const [search, setSearch] = useState('');
     const [quickView, setQuickView] = useState<Product | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const parsedCategories = useMemo(() => {
+        if (!categories || categories.length === 0) return FALLBACK_CATEGORIES;
+        const parents = categories.filter(c => !c.parent);
+        return parents.map(p => {
+            const children = categories.filter(c => c.parent === p._id);
+            return {
+                label: p.name,
+                icon: p.icon,
+                hasChildren: children.length > 0,
+            };
+        });
+    }, [categories]);
 
     const filtered = useMemo(() => {
         let items = activeCategory === 'All'
@@ -129,14 +151,14 @@ export default function ShopClient({ products }: { products: Product[] }) {
                         {/* Mobile overlay backdrop */}
                         {sidebarOpen && (
                             <div
-                                className="fixed inset-0 z-30 bg-black/60 lg:hidden"
+                                className="fixed inset-0 z-[60] bg-black/60 lg:hidden"
                                 onClick={() => setSidebarOpen(false)}
                             />
                         )}
 
                         <aside className={`
-                            fixed top-0 left-0 z-40 h-full w-72 bg-[#0d0d0b] border-r border-white/5 overflow-y-auto transition-transform duration-300
-                            lg:static lg:z-auto lg:h-auto lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:border lg:border-white/5 lg:self-start lg:sticky lg:top-6
+                            fixed top-0 left-0 z-[70] h-full w-72 bg-[#0d0d0b] border-r border-white/5 overflow-y-auto transition-transform duration-300
+                            lg:static lg:z-[1] lg:h-auto lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:border lg:border-white/5 lg:self-start lg:sticky lg:top-6
                             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         `}>
                             {/* All Departments Header — gold bar */}
@@ -167,7 +189,7 @@ export default function ShopClient({ products }: { products: Product[] }) {
 
                             {/* Category List */}
                             <ul className="py-1">
-                                {CATEGORIES.map(cat => (
+                                {parsedCategories.map(cat => (
                                     <li key={cat.label}>
                                         <button
                                             onClick={() => handleCategory(cat.label)}
@@ -259,8 +281,15 @@ export default function ShopClient({ products }: { products: Product[] }) {
                                                 <img
                                                     src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
                                                     alt={product.name}
-                                                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                                                    className={`w-full h-full object-contain p-2 transition-all duration-500 ease-out ${product.images.length > 1 ? 'group-hover:opacity-0 group-hover:scale-105' : 'group-hover:scale-105'}`}
                                                 />
+                                                {product.images.length > 1 && (
+                                                    <img
+                                                        src={product.images[1]}
+                                                        alt={`${product.name} alternate view`}
+                                                        className="absolute inset-0 w-full h-full object-contain p-2 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
+                                                    />
+                                                )}
                                                 {!product.inStock && (
                                                     <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
                                                         <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
@@ -412,12 +441,22 @@ export default function ShopClient({ products }: { products: Product[] }) {
                                                 className="flex items-center justify-center gap-2 bg-[#ffc000] text-[#0a0a08] py-3 font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all">
                                                 Contact Us
                                             </Link>
+                                            <Link href={`/shop/${quickView.slug}`}
+                                                className="sm:col-span-3 flex items-center justify-center gap-2 bg-transparent border border-[#ffc000] text-[#ffc000] py-3 font-bold uppercase tracking-widest text-xs hover:bg-[#ffc000]/10 transition-all mt-2">
+                                                View Full Details
+                                            </Link>
                                         </>
                                     ) : (
-                                        <button disabled
-                                            className="sm:col-span-3 py-3 font-bold uppercase tracking-widest text-xs bg-white/5 text-slate-600 cursor-not-allowed">
-                                            Out of Stock
-                                        </button>
+                                        <>
+                                            <button disabled
+                                                className="sm:col-span-3 py-3 font-bold uppercase tracking-widest text-xs bg-white/5 text-slate-600 cursor-not-allowed">
+                                                Out of Stock
+                                            </button>
+                                            <Link href={`/shop/${quickView.slug}`}
+                                                className="sm:col-span-3 flex items-center justify-center gap-2 bg-transparent border border-slate-600 text-slate-400 py-3 font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition-all mt-2">
+                                                View Full Details
+                                            </Link>
+                                        </>
                                     )}
                                 </div>
                             </div>

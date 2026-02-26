@@ -19,6 +19,7 @@ const navGroups = [
             { href: '/admin/media', icon: 'perm_media', label: 'Media Library' },
             { href: '/admin/blog', icon: 'edit_note', label: 'Blog' },
             { href: '/admin/shop', icon: 'storefront', label: 'Shop' },
+            { href: '/admin/shop/categories', icon: 'category', label: 'Categories' },
         ],
     },
     {
@@ -123,7 +124,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
             {/* Mobile Sidebar Overlay */}
             {mobileOpen && (
-                <div className="fixed inset-0 z-50 md:hidden flex">
+                <div className="fixed inset-0 z-[60] md:hidden flex">
                     <div className="w-72 bg-[#0a0a08]/95 backdrop-blur-2xl border-r border-white/10 flex flex-col shadow-2xl">
                         <Sidebar onClose={() => setMobileOpen(false)} />
                     </div>
