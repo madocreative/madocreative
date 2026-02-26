@@ -201,7 +201,7 @@ export default function BlogEditor({ params }: { params: Promise<{ id: string }>
 
                         <div className="relative z-10">
                             <div className="aspect-[16/9] relative overflow-hidden rounded-xl bg-[#0a0a08] border border-white/10 shadow-inner mb-4 group">
-                                <img src={formData.featuredImage || 'https://placehold.co/1200x600/111109/333333?text=Cover+Image'} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                <img src={formData.featuredImage || 'https://placehold.co/1200x600/111109/333333?text=Cover+Image'} alt="Cover" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                                 </div>
                             </div>

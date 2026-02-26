@@ -160,7 +160,7 @@ export default function MediaLibraryPage() {
                                         onClick={() => setSelected(selected === item._id ? null : item._id)}
                                         className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer group border-2 transition-all shadow-sm ${selected === item._id ? 'border-[#ffc000] scale-[0.98]' : 'border-transparent hover:border-[#ffc000]/50 bg-[#0a0a08]'}`}
                                     >
-                                        <img src={item.url} alt={item.filename || ''} className="w-full h-full object-cover transition-opacity duration-300" />
+                                        <img src={item.url} alt={item.filename || ''} className="w-full h-full object-contain transition-opacity duration-300" />
                                         <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex items-end justify-center pb-3 ${selected === item._id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                                             <button
                                                 type="button"

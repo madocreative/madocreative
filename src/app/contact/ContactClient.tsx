@@ -47,7 +47,7 @@ export default function ContactClient({ data }: { data: PageData }) {
                 <div className="absolute inset-0 flex gap-px">
                     {CONTACT_HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <img src={img} alt="" className="w-full h-full object-contain" />
                         </div>
                     ))}
                 </div>

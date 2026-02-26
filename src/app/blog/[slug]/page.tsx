@@ -48,7 +48,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     <img
                         src={post.featuredImage || 'https://placehold.co/1200x600/221e10/f2b90d?text=Article'}
                         alt={post.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                     />
                 </div>
 

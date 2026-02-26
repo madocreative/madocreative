@@ -73,7 +73,7 @@ export default function VideographyClient() {
                 <div className="absolute inset-0 flex gap-px">
                     {HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <img src={img} alt="" className="w-full h-full object-contain" />
                         </div>
                     ))}
                 </div>
@@ -116,7 +116,7 @@ export default function VideographyClient() {
                                 <motion.div variants={fadeUp} initial="hidden" whileInView="show"
                                     viewport={{ once: true, margin: '-80px' }} transition={{ duration: 0.9 }}
                                     className="w-full lg:w-1/2 aspect-[4/5] lg:aspect-auto overflow-hidden group min-h-[400px]">
-                                    <img className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    <img className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                                         src={service.image} alt={service.title} />
                                 </motion.div>
                                 <motion.div variants={fadeUp} initial="hidden" whileInView="show"

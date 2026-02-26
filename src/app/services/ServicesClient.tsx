@@ -29,7 +29,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                     <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-px">
                         {heroImgs.slice(0, 6).map((img, i) => (
                             <div key={i} className={`overflow-hidden ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={img} alt="" className="w-full h-full object-contain" />
                             </div>
                         ))}
                     </div>
@@ -90,7 +90,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                                 >
                                     {service.image ? (
                                         <img
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                                             src={service.image}
                                             alt={service.title}
                                         />

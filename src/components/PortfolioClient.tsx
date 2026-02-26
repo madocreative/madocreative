@@ -32,7 +32,7 @@ export default function PortfolioClient({ galleries, allMediaUrls }: Props) {
                     <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-1">
                         {heroImgs.slice(0, 6).map((img: string, i: number) => (
                             <div key={i} className={`overflow-hidden ${i === 0 ? 'col-span-2 row-span-2' : ''}`}>
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={img} alt="" className="w-full h-full object-contain" />
                             </div>
                         ))}
                     </div>

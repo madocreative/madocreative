@@ -231,7 +231,7 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                         <div className="grid grid-cols-2 gap-4 relative z-10">
                             {formData.images?.map((url: string, index: number) => (
                                 <div key={index} className="aspect-square relative rounded-xl overflow-hidden group border border-white/10 shadow-sm bg-[#0a0a08]">
-                                    <img src={url} alt={`Product view ${index + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <img src={url} alt={`Product view ${index + 1}`} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
                                         <button type="button" onClick={() => removeImage(index)} className="self-end w-9 h-9 bg-red-500/90 hover:bg-red-500 text-white rounded-lg flex items-center justify-center transition-transform hover:scale-105 shadow-lg">
                                             <span className="material-symbols-outlined text-[18px]">delete</span>

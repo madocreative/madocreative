@@ -59,7 +59,7 @@ export default function GalleryList() {
                 {galleries.map((gallery: any) => (
                     <div key={gallery._id} className="group relative bg-[#111109] border border-white/5 rounded-2xl overflow-hidden hover:border-[#ffc000]/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(255,192,0,0.15)] flex flex-col">
                         <div className="aspect-[4/3] relative overflow-hidden bg-[#0a0a08]">
-                            <img src={gallery.featuredImage} alt={gallery.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <img src={gallery.featuredImage} alt={gallery.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111109] via-transparent to-transparent opacity-80" />
 
                             <div className="absolute top-3 right-3 z-10 bg-black/50 px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2 shadow-sm">

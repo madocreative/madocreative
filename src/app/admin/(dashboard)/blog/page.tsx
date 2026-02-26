@@ -66,7 +66,7 @@ export default function BlogList() {
 
                         {/* Image Container */}
                         <div className="aspect-[16/9] relative overflow-hidden bg-[#0a0a08]">
-                            <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                            <img src={post.featuredImage} alt={post.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                             {/* Status Badge Overlay */}
                             <div className="absolute top-3 right-3 z-10">
                                 <span className={`text-[10px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-full border ${post.published ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>

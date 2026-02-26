@@ -28,7 +28,7 @@ export default async function BlogPage() {
                 <div className="absolute inset-0 flex gap-px">
                     {BLOG_HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <img src={img} alt="" className="w-full h-full object-contain" />
                         </div>
                     ))}
                 </div>
@@ -62,7 +62,7 @@ export default async function BlogPage() {
                                         <img
                                             src={post.featuredImage || 'https://placehold.co/800x500/111109/ffc000?text=Article'}
                                             alt={post.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
                                         />
                                     </div>
                                     <div className="md:col-span-7 flex flex-col justify-center py-4">

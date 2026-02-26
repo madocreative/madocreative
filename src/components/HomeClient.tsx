@@ -30,7 +30,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
                                 <motion.img
                                     src={img}
                                     alt=""
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain"
                                     initial={{ scale: 1.06, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={{ duration: 1.8, delay: i * 0.08, ease: 'easeOut' }}
@@ -113,7 +113,7 @@ export default function HomeClient({ content, galleries }: { content: any; galle
                             className="group block cursor-pointer relative overflow-hidden">
                             <div className={`overflow-hidden relative ${idx % 3 === 0 ? 'aspect-[4/5]' : 'aspect-[4/3]'}`}>
                                 <img src={gallery.featuredImage} alt={gallery.title}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                    className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105" />
                                 {/* Hard solid colour bar at bottom — no gradient */}
                                 <div className="absolute bottom-0 left-0 right-0 bg-[#0a0a08] translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-between px-6 py-4">
                                     <div>

@@ -119,7 +119,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                                                 return (
                                                     <button key={item._id} type="button" onClick={() => pickMedia(item.url)}
                                                         className={`relative aspect-square rounded-lg overflow-hidden group border-2 transition-all ${inGallery && mediaPickerTarget === 'gallery' ? 'border-[#ffc000]/60 opacity-60' : 'border-transparent hover:border-[#ffc000]'}`}>
-                                                        <img src={item.url} alt="" className="w-full h-full object-cover" />
+                                                        <img src={item.url} alt="" className="w-full h-full object-contain" />
                                                         {inGallery && mediaPickerTarget === 'gallery' && (
                                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                                                 <span className="material-symbols-outlined text-[#ffc000]">check_circle</span>
@@ -199,7 +199,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                             <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1">Cover Image</label>
                             <div className="aspect-video rounded-xl overflow-hidden bg-[#0a0a08] border border-white/10 shadow-inner mb-2 group relative">
                                 {formData.featuredImage ? (
-                                    <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    <img src={formData.featuredImage} alt="Cover" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center text-slate-600"><span className="material-symbols-outlined text-4xl">broken_image</span></div>
                                 )}
@@ -248,7 +248,7 @@ export default function GalleryEditor({ params }: { params: Promise<{ id: string
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 relative z-10">
                         {formData.images?.map((url: string, i: number) => (
                             <div key={i} className="aspect-square relative rounded-xl overflow-hidden group border border-white/10 shadow-sm bg-[#0a0a08]">
-                                <img src={url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <img src={url} alt="" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
                                     <button type="button" onClick={() => setAsCover(url)} title="Set as cover"
                                         className="w-10 h-10 bg-[#ffc000]/90 hover:bg-[#ffc000] text-[#0a0a08] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110">

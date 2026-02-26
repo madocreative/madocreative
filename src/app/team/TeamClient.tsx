@@ -62,7 +62,7 @@ export default function TeamClient({ data }: { data: PageData }) {
                             >
                                 {member.image && (
                                     <img
-                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
                                         alt={`${member.name}, ${member.role}`}
                                         src={member.image}
                                     />

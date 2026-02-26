@@ -184,7 +184,7 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
             <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
             {value && (
                 <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-[#ffc000]/30 transition-colors">
-                    <img src={value} alt="" className="w-full h-48 md:h-64 object-cover" />
+                    <img src={value} alt="" className="w-full h-48 md:h-64 object-contain" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
                 </div>
             )}
