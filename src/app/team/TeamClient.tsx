@@ -177,9 +177,14 @@ export default function TeamClient({ data }: { data: PageData }) {
                             className="divide-y divide-white/8"
                         >
                             {data.teamMembers.slice(0, 4).map((m, i) => (
-                                <div key={i} className="flex items-center justify-between py-4">
-                                    <span className="text-white font-display font-bold text-lg">{m.name}</span>
-                                    <span className="text-[#5c5544] text-xs uppercase tracking-[0.28em] font-bold">{m.role}</span>
+                                <div key={i} className="flex items-start gap-4 py-4">
+                                    <span className="text-[#ffc000]/40 font-display font-bold text-xs w-6 flex-shrink-0 pt-1">
+                                        {String(i + 1).padStart(2, '0')}
+                                    </span>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-white font-display font-bold text-base leading-tight">{m.name}</p>
+                                        <p className="text-[#5c5544] text-[10px] uppercase tracking-[0.28em] font-bold mt-1">{m.role}</p>
+                                    </div>
                                 </div>
                             ))}
                         </motion.div>
