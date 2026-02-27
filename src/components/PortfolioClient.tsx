@@ -137,25 +137,33 @@ function LayoutMasonry({ imgs, title, onOpen }: { imgs: string[]; title: string;
    Equal-height square crops, clean and minimal
 ───────────────────────────────────────────────────────────────── */
 function LayoutGrid({ imgs, title, onOpen }: { imgs: string[]; title: string; onOpen: (i: number) => void }) {
-    const cols = imgs.length <= 4 ? 'grid-cols-2' :
-        imgs.length <= 6 ? 'grid-cols-2 md:grid-cols-3' :
-        imgs.length <= 9 ? 'grid-cols-3' :
-        'grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
+    // Use a numeric colCount so we can compute the remainder for the last row
+    const colCount = imgs.length <= 4 ? 2 : imgs.length <= 9 ? 3 : 4;
+    const colClass = colCount === 2
+        ? 'grid-cols-2'
+        : colCount === 3
+            ? 'grid-cols-2 md:grid-cols-3'
+            : 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
+    const remainder = imgs.length % colCount;
 
     return (
-        <div className={`grid ${cols} gap-0.5`}>
-            {imgs.map((img, i) => (
-                <div
-                    key={i}
-                    className="aspect-square overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
-                    onClick={() => onOpen(i)}
-                >
-                    <img
-                        src={img} alt={`${title} ${i + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700"
-                    />
-                </div>
-            ))}
+        <div className={`grid ${colClass} gap-0.5`}>
+            {imgs.map((img, i) => {
+                // Lone last item in an incomplete row → span full width, no empty cells
+                const isLone = remainder === 1 && i === imgs.length - 1;
+                return (
+                    <div
+                        key={i}
+                        className={`overflow-hidden cursor-zoom-in group bg-[#0d0c08] ${isLone ? 'col-span-full h-52 sm:h-64 md:h-80' : 'aspect-square'}`}
+                        onClick={() => onOpen(i)}
+                    >
+                        <img
+                            src={img} alt={`${title} ${i + 1}`}
+                            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700"
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -506,7 +514,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                         {heroImgs.map((img: string, i: number) => (
                             <div
                                 key={i}
-                                className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'flex-[2]' : 'flex-1'}${i >= 2 ? ' hidden md:block' : ''}`}
+                                className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'flex-[2]' : 'flex-1'}${i === 1 ? ' hidden sm:block' : ''}${i >= 2 ? ' hidden md:block' : ''}`}
                             >
                                 <motion.img
                                     src={img} alt=""
