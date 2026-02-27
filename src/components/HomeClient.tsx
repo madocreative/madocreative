@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import { useRef } from 'react';
 
 interface GalleryItem {
     _id: string;
@@ -112,6 +113,44 @@ function getString(value: unknown, fallback: string): string {
     return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
 }
 
+function ParallaxImage({
+    src,
+    alt,
+    containerClassName,
+    imageClassName,
+    movement = 36,
+    delay = 0,
+}: {
+    src: string;
+    alt: string;
+    containerClassName: string;
+    imageClassName: string;
+    movement?: number;
+    delay?: number;
+}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ['start end', 'end start'],
+    });
+    const y = useTransform(scrollYProgress, [0, 1], [movement, -movement]);
+
+    return (
+        <div ref={ref} className={containerClassName}>
+            <motion.img
+                src={src}
+                alt={alt}
+                className={imageClassName}
+                style={{ y }}
+                initial={{ opacity: 0, scale: 1.05 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: '-120px' }}
+                transition={{ duration: 1.1, delay, ease: 'easeOut' }}
+            />
+        </div>
+    );
+}
+
 export default function HomeClient({ content, galleries }: { content: HomeContent | null; galleries: GalleryItem[] }) {
     const sections = content?.sections || {};
 
@@ -173,48 +212,44 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
     const ctaButtonLink = getString(sections.ctaButtonLink, '/booking');
 
     const heroImgs = [content?.heroImage, ...galleries.flatMap(g => [g.featuredImage, ...(g.images || [])])]
-        .filter(Boolean)
+        .filter((img): img is string => typeof img === 'string' && img.length > 0)
         .filter((v, i, a) => a.indexOf(v) === i)
         .slice(0, 5);
 
     return (
         <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
-            <section className="relative min-h-[94vh] overflow-hidden border-b border-white/10">
+            <section className="relative min-h-[94vh] overflow-hidden border-b border-white/10 bg-[#0a0906]">
                 {heroImgs.length > 0 && (
-                    <div className="absolute inset-0 grid grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-px">
+                    <div className="absolute inset-0 grid grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-[2px]">
                         {heroImgs.map((img, i) => (
-                            <div
-                                key={i}
-                                className={`overflow-hidden bg-[#111109] ${i === 0 ? 'col-span-2 row-span-2 lg:col-span-2' : ''}`}
-                            >
-                                <motion.img
-                                    src={img}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                    initial={{ scale: 1.08, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 0.86 }}
-                                    transition={{ duration: 1.4, delay: i * 0.12, ease: 'easeOut' }}
-                                />
-                            </div>
+                            <ParallaxImage
+                                key={`${img}-${i}`}
+                                src={img}
+                                alt=""
+                                movement={i === 0 ? 22 : 14 + i * 3}
+                                delay={i * 0.08}
+                                containerClassName={`overflow-hidden bg-[#12100b] ${i === 0 ? 'col-span-2 row-span-2 lg:col-span-2' : ''}`}
+                                imageClassName="w-full h-full object-contain p-2 md:p-3"
+                            />
                         ))}
                     </div>
                 )}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,192,0,0.25),rgba(9,8,5,0.2)_35%,rgba(9,8,5,0.95)_80%)]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/80 to-[#090805]/20" />
+
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,8,5,0.22)_0%,rgba(10,8,5,0.28)_48%,rgba(10,8,5,0.68)_100%)]" />
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-16 pt-36 pb-20 md:pb-28 min-h-[94vh] flex items-end">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: 'easeOut' }}
-                        className="max-w-4xl"
+                        className="max-w-4xl bg-[#0a0906]/58 border border-white/20 px-5 py-6 md:px-8 md:py-8 backdrop-blur-[1px]"
                     >
-                        <p className="text-[#ffc000] font-bold tracking-[0.35em] uppercase text-[11px] mb-5">{heroLabel}</p>
+                        <p className="text-[#ffc000] font-bold tracking-[0.35em] uppercase text-[11px] mb-4">{heroLabel}</p>
                         <h1
-                            className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.98] mb-6"
+                            className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.98] mb-5"
                             dangerouslySetInnerHTML={{ __html: title }}
                         />
-                        <p className="text-base md:text-xl text-[#d9d3c4] max-w-3xl leading-relaxed mb-9">{subtitle}</p>
+                        <p className="text-base md:text-xl text-[#e8e2d3] max-w-3xl leading-relaxed mb-8">{subtitle}</p>
                         <div className="flex flex-wrap gap-3">
                             <Link
                                 href={ctaLink}
@@ -225,7 +260,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                             </Link>
                             <Link
                                 href={secondaryCtaLink}
-                                className="inline-flex items-center gap-2 border border-white/30 text-white px-7 py-3.5 text-sm font-bold uppercase tracking-[0.16em] hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
+                                className="inline-flex items-center gap-2 border border-white/45 text-white px-7 py-3.5 text-sm font-bold uppercase tracking-[0.16em] hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
                             >
                                 {secondaryCtaText}
                             </Link>
@@ -343,17 +378,19 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                 }`}
                             >
                                 {galleryImage ? (
-                                    <img
+                                    <ParallaxImage
                                         src={galleryImage}
                                         alt={gallery.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        movement={16 + (idx % 3) * 6}
+                                        containerClassName="absolute inset-0 overflow-hidden bg-[#100f0a]"
+                                        imageClassName="w-full h-full object-contain p-2 md:p-3 transition-transform duration-700 group-hover:scale-[1.03]"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-[#8a816f] text-sm uppercase tracking-widest">
                                         No Image
                                     </div>
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/92 via-[#090805]/35 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/80 via-[#090805]/20 to-transparent" />
                                 <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
                                     <p className="text-[#ffc000] uppercase tracking-[0.2em] text-[10px] font-bold mb-2">
                                         {gallery.category || 'Portfolio'}
