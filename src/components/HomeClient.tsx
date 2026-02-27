@@ -219,7 +219,7 @@ export default function HomeClient({
                             <span className="block w-10 h-px bg-[#ffc000]" />
                             Mado Creatives Studio
                         </p>
-                        <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.9] tracking-tight mb-8">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.9] tracking-tight mb-8">
                             Where Vision<br />Becomes<br />
                             <span className="text-[#ffc000]">Visual Legacy.</span>
                         </h1>

@@ -47,7 +47,7 @@ export default function Header() {
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
                 ? 'bg-[#0a0a08]/90 backdrop-blur-md border-b border-white/10 py-4 shadow-lg'
-                : 'bg-transparent py-6 border-b border-transparent'
+                : 'bg-gradient-to-b from-[#090805]/80 via-[#090805]/30 to-transparent py-6 border-b border-transparent'
                 }`}
         >
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
