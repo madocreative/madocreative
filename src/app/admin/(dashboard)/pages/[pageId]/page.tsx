@@ -83,7 +83,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
 
     const pageLabels: Record<string, string> = {
         home: 'Home', services: 'Services', team: 'Team',
-        booking: 'Booking', contact: 'Contact',
+        booking: 'Booking', contact: 'Contact', portfolio: 'Portfolio',
     };
 
     return (
@@ -114,6 +114,9 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
 
                 {/* ═══ CONTACT ═══ */}
                 {pageId === 'contact' && <ContactFields data={data} get={get} set={set} />}
+
+                {/* ═══ PORTFOLIO ═══ */}
+                {pageId === 'portfolio' && <PortfolioFields data={data} get={get} set={set} />}
 
                 {/* Save bar */}
                 <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-[#0a0a08] border-t border-white/10 py-5 px-6 md:px-12 flex items-center justify-between z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
@@ -568,7 +571,10 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
             <Section title="CTA Section" icon="campaign">
                 <TextInput label="CTA Headline" value={String(get('ctaTitle', 'Ready to elevate your visual identity?'))} onChange={v => set('ctaTitle', v)} />
                 <TextInput label="CTA Subtitle" value={String(get('ctaSubtitle', 'Contact us today to discuss your vision.'))} onChange={v => set('ctaSubtitle', v)} />
-                <TextInput label="CTA Button Text" value={String(get('ctaButton', 'Start a Project'))} onChange={v => set('ctaButton', v)} />
+                <TextInput label="Primary Button Text" value={String(get('ctaButton', 'Start a Project'))} onChange={v => set('ctaButton', v)} />
+                <TextInput label="Primary Button Link" value={String(get('ctaLink', '/contact'))} onChange={v => set('ctaLink', v)} placeholder="/contact" />
+                <TextInput label="Secondary Button Text" value={String(get('ctaSecondaryButton', 'View Portfolio'))} onChange={v => set('ctaSecondaryButton', v)} />
+                <TextInput label="Secondary Button Link" value={String(get('ctaSecondaryLink', '/portfolio'))} onChange={v => set('ctaSecondaryLink', v)} placeholder="/portfolio" />
             </Section>
         </>
     );
@@ -625,6 +631,15 @@ function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider mt-2">
                     <span className="material-symbols-outlined text-[18px]">person_add</span> Add Team Member
                 </button>
+            </Section>
+
+            <Section title="Philosophy Pull-Quote" icon="format_quote">
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Studio Philosophy Quote</label>
+                    <textarea rows={3} value={String(get('philosophyQuote', "We don't just take photographs — we craft visual narratives that outlive the moment."))} onChange={e => set('philosophyQuote', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+                <TextInput label="Attribution Line" value={String(get('philosophyAttribution', '— Mado Creatives Studio Philosophy'))} onChange={v => set('philosophyAttribution', v)} />
             </Section>
 
             <Section title="CTA Section" icon="handshake">
@@ -725,7 +740,8 @@ function ContactFields({ get, set }: { data: Record<string, unknown>; get: (k: s
             </Section>
 
             <Section title="Contact Info" icon="contacts">
-                <p className="text-slate-500 text-sm">These values pull from <strong className="text-slate-400">Settings → Contact Details</strong>. Edit them there.</p>
+                <p className="text-slate-500 text-sm">Email, phone and address pull from <strong className="text-slate-400">Settings → Contact Details</strong>. Edit them there.</p>
+                <TextInput label="Response Time Note" value={String(get('responseTime', 'We respond within 24 hours'))} onChange={v => set('responseTime', v)} placeholder="We respond within 24 hours" />
             </Section>
 
             <Section title="Inquiry Types (Dropdown Options)" icon="list">
@@ -744,6 +760,20 @@ function ContactFields({ get, set }: { data: Record<string, unknown>; get: (k: s
                         <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Inquiry Type
                     </button>
                 </div>
+            </Section>
+        </>
+    );
+}
+
+// ────────────────────────────────────────────────────────────
+// PORTFOLIO page fields
+// ────────────────────────────────────────────────────────────
+function PortfolioFields({ get, set }: { data: Record<string, unknown>; get: (k: string, fb?: unknown) => unknown; set: (k: string, v: unknown) => void }) {
+    return (
+        <>
+            <Section title="Hero Section" icon="photo_library">
+                <TextInput label="Hero Title" value={String(get('heroTitle', 'Portfolio'))} onChange={v => set('heroTitle', v)} placeholder="Portfolio" />
+                <TextInput label="Hero Label (small text above title)" value={String(get('heroLabel', 'Selected Archives'))} onChange={v => set('heroLabel', v)} placeholder="Selected Archives" />
             </Section>
         </>
     );

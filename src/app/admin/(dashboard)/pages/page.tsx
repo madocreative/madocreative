@@ -2,9 +2,10 @@ export default function AdminPagesList() {
     const pages = [
         { id: 'home', title: 'Homepage', icon: 'home', desc: 'Hero, CTA, featured works' },
         { id: 'services', title: 'Services', icon: 'design_services', desc: 'Services list, stats, CTA' },
-        { id: 'team', title: 'Team', icon: 'group', desc: 'Team members, header, CTA' },
+        { id: 'team', title: 'Team', icon: 'group', desc: 'Team members, header, philosophy quote' },
         { id: 'booking', title: 'Booking', icon: 'event', desc: 'Packages, session details' },
-        { id: 'contact', title: 'Contact', icon: 'mail', desc: 'Intro text, inquiry types' },
+        { id: 'contact', title: 'Contact', icon: 'mail', desc: 'Intro text, inquiry types, response time' },
+        { id: 'portfolio', title: 'Portfolio', icon: 'photo_library', desc: 'Hero title, label, gallery intro' },
     ];
 
     return (

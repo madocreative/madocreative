@@ -28,6 +28,7 @@ export default async function ContactPage() {
         email: settings?.email || 'hello@madocreatives.com',
         phone: settings?.phone || '+33 (0) 1 23 45 67 89',
         address: settings?.address || '12 Rue de l\'Avenir, Paris',
+        responseTime: sections.responseTime || 'We respond within 24 hours',
     };
 
     return <ContactClient data={pageData} />;

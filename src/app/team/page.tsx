@@ -31,6 +31,8 @@ export default async function TeamPage() {
         ctaTitle: sections.ctaTitle || 'Have a project in mind?',
         ctaSubtitle: sections.ctaSubtitle || "Let's create something extraordinary together.",
         ctaButton: sections.ctaButton || 'Get in Touch',
+        philosophyQuote: sections.philosophyQuote || "We don't just take photographs — we craft visual narratives that outlive the moment.",
+        philosophyAttribution: sections.philosophyAttribution || '— Mado Creatives Studio Philosophy',
     };
 
     return <TeamClient data={pageData} />;

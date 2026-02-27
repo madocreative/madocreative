@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface Props {
     galleries: any[];
     allMediaUrls: string[];
+    heroTitle?: string;
+    heroLabel?: string;
 }
 
-export default function PortfolioClient({ galleries, allMediaUrls }: Props) {
+export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, heroLabel }: Props) {
     const [lightbox, setLightbox] = useState<{ imgs: string[]; idx: number } | null>(null);
     const [activeCategory, setActiveCategory] = useState('All');
 
@@ -58,10 +60,10 @@ export default function PortfolioClient({ galleries, allMediaUrls }: Props) {
                     <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                         <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-4 flex items-center gap-4">
                             <span className="w-10 h-px bg-[#ffc000]" />
-                            Selected Archives
+                            {heroLabel || 'Selected Archives'}
                         </p>
                         <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white">
-                            Portfolio
+                            {heroTitle || 'Portfolio'}
                         </h1>
                     </motion.div>
                 </div>

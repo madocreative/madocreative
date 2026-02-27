@@ -49,6 +49,9 @@ export default async function ServicesPage() {
         ctaTitle: sections.ctaTitle || 'Ready to elevate your visual identity?',
         ctaSubtitle: sections.ctaSubtitle || 'Contact us today to discuss your vision and how Mado Creatives can bring it to life.',
         ctaButton: sections.ctaButton || 'Start a Project',
+        ctaLink: sections.ctaLink || '/contact',
+        ctaSecondaryButton: sections.ctaSecondaryButton || 'View Portfolio',
+        ctaSecondaryLink: sections.ctaSecondaryLink || '/portfolio',
     };
 
     return <ServicesClient data={pageData} />;

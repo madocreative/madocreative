@@ -11,6 +11,8 @@ interface PageData {
     ctaTitle: string;
     ctaSubtitle: string;
     ctaButton: string;
+    philosophyQuote?: string;
+    philosophyAttribution?: string;
 }
 
 export default function TeamClient({ data }: { data: PageData }) {
@@ -22,7 +24,7 @@ export default function TeamClient({ data }: { data: PageData }) {
             ══════════════════════════════════════════════════ */}
             <section className="relative bg-[#090805] pt-36 pb-20 border-b border-white/5 overflow-hidden">
                 <span
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[200px] md:text-[280px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.025] text-white"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[200px] md:text-[280px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.015] text-white"
                     aria-hidden
                 >
                     TEAM
@@ -128,10 +130,10 @@ export default function TeamClient({ data }: { data: PageData }) {
                         className="border-l-4 border-[#ffc000] pl-8 md:pl-12"
                     >
                         <p className="text-2xl md:text-4xl font-display font-bold text-white leading-tight max-w-3xl mb-6">
-                            "We don't just take photographs — we craft visual narratives that outlive the moment."
+                            &ldquo;{data.philosophyQuote || "We don't just take photographs — we craft visual narratives that outlive the moment."}&rdquo;
                         </p>
                         <p className="text-[#6b6250] text-sm uppercase tracking-[0.3em] font-bold">
-                            — Mado Creatives Studio Philosophy
+                            {data.philosophyAttribution || '— Mado Creatives Studio Philosophy'}
                         </p>
                     </motion.div>
                 </div>

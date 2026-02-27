@@ -14,11 +14,13 @@ export const metadata = {
 export default async function Portfolio() {
     await dbConnect();
 
-    const [galleries, mediaItems, teamContent] = await Promise.all([
+    const [galleries, mediaItems, teamContent, portfolioContent] = await Promise.all([
         Gallery.find({}).sort({ createdAt: -1 }),
         MediaItem.find({}).sort({ createdAt: -1 }),
         Content.findOne({ page: 'team' }),
+        Content.findOne({ page: 'portfolio' }),
     ]);
+    const portfolioSections = portfolioContent ? JSON.parse(JSON.stringify(portfolioContent)).sections || {} : {};
 
     // Collect team member image URLs to exclude from "all images" view
     const teamImageUrls = new Set<string>();
@@ -42,6 +44,8 @@ export default async function Portfolio() {
         <PortfolioClient
             galleries={JSON.parse(JSON.stringify(galleries))}
             allMediaUrls={allMediaUrls}
+            heroTitle={portfolioSections.heroTitle || 'Portfolio'}
+            heroLabel={portfolioSections.heroLabel || 'Selected Archives'}
         />
     );
 }

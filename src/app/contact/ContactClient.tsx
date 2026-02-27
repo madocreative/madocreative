@@ -10,6 +10,7 @@ interface PageData {
     email: string;
     phone: string;
     address: string;
+    responseTime?: string;
 }
 
 export default function ContactClient({ data }: { data: PageData }) {
@@ -107,7 +108,7 @@ export default function ContactClient({ data }: { data: PageData }) {
                     <div className="mt-14 flex items-center gap-3">
                         <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
                         <p className="text-[#6b6250] text-xs uppercase tracking-[0.28em] font-bold">
-                            We respond within 24 hours
+                            {data.responseTime || 'We respond within 24 hours'}
                         </p>
                     </div>
                 </motion.div>

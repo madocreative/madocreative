@@ -14,6 +14,9 @@ interface PageData {
     ctaTitle: string;
     ctaSubtitle: string;
     ctaButton: string;
+    ctaLink?: string;
+    ctaSecondaryButton?: string;
+    ctaSecondaryLink?: string;
 }
 
 export default function ServicesClient({ data }: { data: PageData }) {
@@ -183,17 +186,17 @@ export default function ServicesClient({ data }: { data: PageData }) {
                         <p className="text-[#7a7260] text-lg mb-12 max-w-xl leading-relaxed">{data.ctaSubtitle}</p>
                         <div className="flex flex-wrap gap-4">
                             <Link
-                                href="/contact"
+                                href={data.ctaLink || '/contact'}
                                 className="inline-flex items-center gap-2 bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors"
                             >
                                 {data.ctaButton}
                                 <span className="material-symbols-outlined text-[18px]">arrow_right_alt</span>
                             </Link>
                             <Link
-                                href="/portfolio"
+                                href={data.ctaSecondaryLink || '/portfolio'}
                                 className="inline-flex items-center gap-2 border border-white/20 text-white px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
                             >
-                                View Portfolio
+                                {data.ctaSecondaryButton || 'View Portfolio'}
                             </Link>
                         </div>
                     </motion.div>
