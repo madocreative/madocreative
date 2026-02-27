@@ -41,27 +41,45 @@ export default function ContactClient({ data }: { data: PageData }) {
             {/* ══════════════════════════════════════════════════
                 HERO — ultra-minimal typographic, no images
             ══════════════════════════════════════════════════ */}
-            <section className="bg-[#090805] pt-40 pb-16 border-b border-white/5 overflow-hidden relative">
+            <section className="bg-[#090805] pt-24 md:pt-36 pb-12 md:pb-16 border-b border-white/5 overflow-hidden relative">
                 <span
-                    className="absolute right-0 bottom-0 text-[180px] md:text-[240px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.025] text-white"
+                    className="absolute right-0 bottom-0 text-[80px] sm:text-[120px] md:text-[180px] lg:text-[240px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.02] text-white"
                     aria-hidden
                 >
                     HELLO
                 </span>
 
-                <div className="max-w-7xl mx-auto px-8 lg:px-20 relative z-10">
+                <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-20 relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: 'easeOut' }}
                     >
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-6 flex items-center gap-4">
-                            <span className="w-10 h-px bg-[#ffc000]" />
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-5 md:mb-6 flex items-center gap-4">
+                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
                             Reach Out
                         </p>
-                        <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white max-w-3xl">
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white max-w-3xl">
                             {data.title}
                         </h1>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.3 }}
+                        className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8"
+                    >
+                        <p className="text-[#7a7260] text-sm md:text-base leading-relaxed max-w-xl">
+                            {data.subtitle}
+                        </p>
+                        <a
+                            href={`mailto:${data.email}`}
+                            className="flex-shrink-0 inline-flex items-center gap-2 text-[#ffc000] text-xs font-bold uppercase tracking-[0.26em] border-b border-[#ffc000]/40 pb-0.5 hover:text-white hover:border-white/30 transition-colors self-start"
+                        >
+                            {data.email}
+                            <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                        </a>
                     </motion.div>
                 </div>
             </section>

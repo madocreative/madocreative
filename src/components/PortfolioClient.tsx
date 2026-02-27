@@ -500,13 +500,13 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
             {/* ══════════════════════════════════════════════════
                 HERO — horizontal film strip
             ══════════════════════════════════════════════════ */}
-            <section className="relative h-[58vh] overflow-hidden">
+            <section className="relative h-[52vh] sm:h-[55vh] md:h-[62vh] overflow-hidden">
                 {heroImgs.length > 0 ? (
                     <div className="absolute inset-0 flex gap-px bg-[#090805]">
                         {heroImgs.map((img: string, i: number) => (
                             <div
                                 key={i}
-                                className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'flex-[2]' : 'flex-1'}`}
+                                className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'flex-[2]' : 'flex-1'}${i >= 2 ? ' hidden md:block' : ''}`}
                             >
                                 <motion.img
                                     src={img} alt=""
@@ -522,16 +522,16 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                     <div className="absolute inset-0 bg-[#0d0c08]" />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/30 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/70 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/80 via-[#090805]/30 to-transparent" />
 
-                <div className="absolute inset-0 flex flex-col justify-end px-8 lg:px-20 pb-12">
+                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-20 pb-8 md:pb-12">
                     <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-4 flex items-center gap-4">
-                            <span className="w-10 h-px bg-[#ffc000]" />
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-3 md:mb-4 flex items-center gap-4">
+                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
                             {heroLabel || 'Selected Archives'}
                         </p>
-                        <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white">
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white">
                             {heroTitle || 'Portfolio'}
                         </h1>
                     </motion.div>

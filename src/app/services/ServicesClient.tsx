@@ -28,49 +28,54 @@ export default function ServicesClient({ data }: { data: PageData }) {
             {/* ══════════════════════════════════════════════════
                 HERO — full-bleed first service image, strong left gradient
             ══════════════════════════════════════════════════ */}
-            <section className="relative h-[70vh] overflow-hidden">
+            <section className="relative h-[56vh] md:h-[70vh] overflow-hidden">
                 {heroImg ? (
-                    <img
+                    <motion.img
                         src={heroImg}
                         alt=""
                         className="absolute inset-0 w-full h-full object-cover"
+                        initial={{ opacity: 0, scale: 1.06 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1.4, ease: 'easeOut' }}
                     />
                 ) : (
                     <div className="absolute inset-0 bg-[#0d0c08]" />
                 )}
-                {/* Directional overlay — heavy left, fades right */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/95 via-[#090805]/65 to-[#090805]/20" />
+                {/* Directional overlays */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#090805] via-[#090805]/80 to-[#090805]/20" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-transparent to-[#090805]/40" />
 
-                <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-20 max-w-[660px]">
+                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-8 lg:px-20 max-w-[680px]">
                     <motion.div
                         initial={{ opacity: 0, y: 32 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, ease: 'easeOut' }}
                     >
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-6 flex items-center gap-4">
-                            <span className="w-10 h-px bg-[#ffc000]" />
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-5 md:mb-6 flex items-center gap-4">
+                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
                             What We Do
                         </p>
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.92] tracking-tight mb-6">
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.92] tracking-tight mb-4 md:mb-6">
                             {data.title}
                         </h1>
-                        <p className="text-[#c3bcab] text-base md:text-lg leading-relaxed max-w-lg">
+                        <p className="text-[#c3bcab] text-sm md:text-lg leading-relaxed max-w-lg hidden sm:block">
                             {data.subtitle}
                         </p>
                     </motion.div>
                 </div>
 
-                {/* Stats bar at bottom of hero */}
+                {/* Stats bar — horizontally scrollable on mobile */}
                 {data.stats.length > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-[#ffc000] py-4 z-10">
-                        <div className="max-w-7xl mx-auto px-8 lg:px-20 flex items-center gap-12">
-                            {data.stats.map((s, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <span className="text-[#090805] font-display font-bold text-2xl">{s.value}</span>
-                                    <span className="text-[#090805]/60 text-xs uppercase tracking-[0.28em] font-bold">{s.label}</span>
-                                </div>
-                            ))}
+                    <div className="absolute bottom-0 left-0 right-0 bg-[#ffc000] z-10">
+                        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <div className="flex items-center gap-6 md:gap-10 px-6 md:px-8 lg:px-20 py-3 md:py-4 min-w-max">
+                                {data.stats.map((s, i) => (
+                                    <div key={i} className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                        <span className="text-[#090805] font-display font-bold text-lg md:text-2xl">{s.value}</span>
+                                        <span className="text-[#090805]/60 text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.28em] font-bold">{s.label}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}

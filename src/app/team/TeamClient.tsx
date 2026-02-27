@@ -22,25 +22,25 @@ export default function TeamClient({ data }: { data: PageData }) {
             {/* ══════════════════════════════════════════════════
                 HERO — pure typographic, no images
             ══════════════════════════════════════════════════ */}
-            <section className="relative bg-[#090805] pt-36 pb-20 border-b border-white/5 overflow-hidden">
+            <section className="relative bg-[#090805] pt-24 md:pt-36 pb-14 md:pb-20 border-b border-white/5 overflow-hidden">
                 <span
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[200px] md:text-[280px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.015] text-white"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[100px] md:text-[200px] lg:text-[280px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.015] text-white"
                     aria-hidden
                 >
                     TEAM
                 </span>
 
-                <div className="max-w-7xl mx-auto px-8 lg:px-20 relative z-10">
+                <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-20 relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: 'easeOut' }}
                     >
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-8 flex items-center gap-4">
-                            <span className="w-10 h-px bg-[#ffc000]" />
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-6 md:mb-8 flex items-center gap-4">
+                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
                             The People
                         </p>
-                        <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white max-w-4xl">
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white max-w-4xl">
                             {data.title}
                         </h1>
                     </motion.div>
@@ -49,16 +49,16 @@ export default function TeamClient({ data }: { data: PageData }) {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.35 }}
-                        className="flex items-center gap-10 mt-14 pt-10 border-t border-white/10 flex-wrap"
+                        className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10 mt-8 md:mt-14 pt-8 md:pt-10 border-t border-white/10"
                     >
-                        <div>
-                            <p className="text-4xl font-display font-bold text-[#ffc000] leading-none mb-2">
+                        <div className="flex-shrink-0">
+                            <p className="text-3xl md:text-4xl font-display font-bold text-[#ffc000] leading-none mb-2">
                                 {data.teamMembers.length}
                             </p>
                             <p className="text-[10px] uppercase tracking-[0.28em] text-[#6b6250] font-bold">Creatives</p>
                         </div>
-                        <div className="w-px h-10 bg-white/10 hidden md:block" />
-                        <p className="text-[#9a9078] text-base md:text-lg leading-relaxed max-w-2xl">
+                        <div className="w-full sm:w-px sm:h-10 h-px bg-white/10" />
+                        <p className="text-[#9a9078] text-sm md:text-base lg:text-lg leading-relaxed">
                             {data.subtitle}
                         </p>
                     </motion.div>

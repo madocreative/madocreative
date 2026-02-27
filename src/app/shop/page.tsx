@@ -46,22 +46,29 @@ export default async function ShopPage() {
 
     return (
         <div className="bg-[#0a0a08] min-h-screen text-white">
-            {/* Hero — horizontal strip collage, compact */}
-            <section className="relative h-[38vh] overflow-hidden">
-                <div className="absolute inset-0 flex gap-px">
+            {/* Hero — horizontal strip collage, mobile-first */}
+            <section className="relative h-[44vh] md:h-[52vh] overflow-hidden">
+                <div className="absolute inset-0 flex gap-px bg-[#0a0a08]">
                     {SHOP_HERO_IMGS.map((img, i) => (
-                        <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                            <img src={img} alt="" className="w-full h-full object-contain" />
+                        <div
+                            key={i}
+                            className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}${i === 2 ? ' hidden sm:block' : ''}${i >= 3 ? ' hidden md:block' : ''}`}
+                        >
+                            <img src={img} alt="" className="w-full h-full object-cover" />
                         </div>
                     ))}
                 </div>
-                <div className="absolute inset-0 bg-[#0a0a08]/40" />
-                <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0a08]" />
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-20 px-6 lg:px-8 max-w-7xl mx-auto w-full">
-                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-xs mb-2">
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a08]/90 via-[#0a0a08]/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a08] via-[#0a0a08]/20 to-transparent" />
+
+                {/* Text — bottom-left, above gradient */}
+                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-16 pb-8 md:pb-10">
+                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-[10px] md:text-xs mb-2 flex items-center gap-3">
+                        <span className="w-6 md:w-8 h-px bg-[#ffc000]" />
                         Electronics Store
                     </p>
-                    <h1 className="text-4xl md:text-6xl font-display font-extrabold uppercase text-white leading-none">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-white leading-none tracking-tight">
                         Shop
                     </h1>
                 </div>

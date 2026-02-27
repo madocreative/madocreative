@@ -97,41 +97,55 @@ export default function BookingClient({ data }: { data: PageData }) {
             {/* ══════════════════════════════════════════════════
                 HERO — split: left dark text, right image grid
             ══════════════════════════════════════════════════ */}
-            <section className="relative h-[52vh] overflow-hidden">
-                {/* Right side: stacked images */}
-                <div className="absolute inset-0 flex">
-                    <div className="w-full lg:w-1/2 bg-[#090805]" />
-                    <div className="hidden lg:flex lg:w-1/2 flex-col gap-px h-full">
+            <section className="relative h-[55vh] md:h-[62vh] overflow-hidden">
+                {/* Mobile: single full-bleed image behind text */}
+                <div className="absolute inset-0 lg:hidden">
+                    <img src={BOOKING_HERO_IMGS[0]} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#090805] via-[#090805]/85 to-[#090805]/60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/70 via-transparent to-[#090805]/30" />
+                </div>
+
+                {/* Desktop: split left dark / right image strip */}
+                <div className="hidden lg:flex absolute inset-0">
+                    <div className="w-1/2 bg-[#090805]" />
+                    <div className="w-1/2 flex flex-col gap-px h-full">
                         {BOOKING_HERO_IMGS.slice(0, 3).map((img, i) => (
                             <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <motion.img
+                                    src={img} alt=""
+                                    className="w-full h-full object-cover"
+                                    initial={{ opacity: 0, scale: 1.05 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 1.3, delay: i * 0.12, ease: 'easeOut' }}
+                                />
                             </div>
                         ))}
                     </div>
                 </div>
-                {/* Background fallback on mobile */}
-                <div className="absolute inset-0 bg-[#090805] lg:hidden" />
-                {/* Overlay on image side */}
+                {/* Desktop overlay on image side */}
                 <div className="absolute top-0 right-0 w-1/2 bottom-0 bg-gradient-to-r from-[#090805] to-transparent hidden lg:block" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/60 via-transparent to-transparent" />
 
                 {/* Text */}
-                <div className="relative z-10 h-full flex flex-col justify-center px-8 lg:px-20 max-w-[600px]">
+                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-8 lg:px-20 max-w-[600px]">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: 'easeOut' }}
                     >
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-6 flex items-center gap-4">
-                            <span className="w-10 h-px bg-[#ffc000]" />
+                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-5 md:mb-6 flex items-center gap-4">
+                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
                             Schedule a Session
                         </p>
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.92] tracking-tight mb-5">
+                        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.92] tracking-tight mb-4 md:mb-5">
                             {data.title}
                         </h1>
-                        <div className="flex items-center gap-3 mt-4">
-                            <span className={`w-2.5 h-2.5 rounded-full ${data.acceptingClients ? 'bg-green-500' : 'bg-red-500'}`} />
-                            <span className="text-white font-bold text-sm uppercase tracking-[0.2em]">
+                        <p className="text-[#b0a890] text-sm md:text-base leading-relaxed max-w-sm mb-4 hidden sm:block">
+                            {data.subtitle}
+                        </p>
+                        <div className="flex items-center gap-3">
+                            <span className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${data.acceptingClients ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
+                            <span className="text-white font-bold text-xs md:text-sm uppercase tracking-[0.2em]">
                                 {data.acceptingClients ? 'Accepting Clients' : 'Fully Booked'}
                             </span>
                         </div>
