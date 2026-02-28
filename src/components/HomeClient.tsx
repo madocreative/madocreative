@@ -304,7 +304,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                 >
                                     <img
                                         src={img} alt=""
-                                        className="w-full h-auto object-cover transition-[filter] duration-300 ease-out block group-hover:brightness-[0.85]"
+                                        className="w-full h-auto object-cover scale-[1.12] group-hover:scale-100 group-hover:brightness-[0.9] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] block"
                                         loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-400" />
