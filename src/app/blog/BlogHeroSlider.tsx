@@ -40,7 +40,7 @@ export default function BlogHeroSlider() {
 
     return (
         <section
-            className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805]"
+            className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
         >

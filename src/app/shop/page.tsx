@@ -8,15 +8,33 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = {
     title: 'Shop | Mado Creatives',
-    description: 'Premium electronics store — smartphones, laptops, cameras, and creator equipment. Available in Addis Ababa, Kigali, Nairobi & Dubai.',
+    description: 'Premium electronics store - smartphones, laptops, cameras, and creator equipment. Available in Addis Ababa, Kigali, Nairobi & Dubai.',
+};
+
+type RawProduct = {
+    _id: { toString: () => string };
+    name: string;
+    slug: string;
+    price: number;
+    description: string;
+    category?: string;
+    images?: string[];
+    inStock?: boolean;
+};
+
+type RawCategory = {
+    _id: { toString: () => string };
+    name: string;
+    slug: string;
+    icon?: string;
+    parent?: { toString: () => string } | null;
 };
 
 export default async function ShopPage() {
     await dbConnect();
-    const raw = await Product.find({}).sort({ createdAt: -1 }).lean();
+    const raw = await Product.find({}).sort({ createdAt: -1 }).lean() as RawProduct[];
 
-    // Serialize for client component
-    const products = raw.map((p: any) => ({
+    const products = raw.map((p) => ({
         _id: p._id.toString(),
         name: p.name,
         slug: p.slug,
@@ -27,9 +45,8 @@ export default async function ShopPage() {
         inStock: p.inStock ?? true,
     }));
 
-    // Fetch Categories
-    const rawCategories = await Category.find({}).sort({ order: 1, name: 1 }).lean();
-    const categories = rawCategories.map((c: any) => ({
+    const rawCategories = await Category.find({}).sort({ order: 1, name: 1 }).lean() as RawCategory[];
+    const categories = rawCategories.map((c) => ({
         _id: c._id.toString(),
         name: c.name,
         slug: c.slug,
@@ -38,10 +55,8 @@ export default async function ShopPage() {
     }));
 
     return (
-        <div className="bg-[#0a0a08] min-h-screen text-white">
-            {/* Hero — full-width sliding carousel */}
+        <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
             <ShopHeroSlider />
-
             <ShopClient products={products} categories={categories} />
         </div>
     );

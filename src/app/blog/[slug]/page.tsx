@@ -20,8 +20,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     if (!post) notFound();
 
     return (
-        <div className="bg-[#0a0a08] min-h-screen pt-32 pb-32 text-white">
-            <article className="max-w-3xl mx-auto px-6 lg:px-0">
+        <div className="bg-[var(--app-bg)] min-h-screen pt-[112px] md:pt-[124px] pb-20 text-[var(--app-text)] px-3 md:px-5">
+            <article className="max-w-4xl mx-auto px-6 lg:px-8 py-10 md:py-12 rounded-[1.55rem] border border-[var(--app-border)] bg-[#090805]">
 
                 {/* Back */}
                 <Link href="/blog" className="inline-flex items-center gap-2 text-slate-500 hover:text-[#ffc000] transition-colors mb-12 text-xs font-bold uppercase tracking-widest">

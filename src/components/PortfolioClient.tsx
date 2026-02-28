@@ -526,13 +526,13 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
     };
 
     return (
-        <div className="bg-[#090805] min-h-screen text-[#f2efe7]">
+        <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════
                 HERO — full-screen image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805]"
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >

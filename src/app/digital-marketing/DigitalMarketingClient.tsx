@@ -68,9 +68,9 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function DigitalMarketingClient() {
     return (
-        <div className="flex flex-col bg-[#0a0a08]">
+        <div className="flex flex-col bg-[var(--app-bg)]">
             {/* Hero */}
-            <section className="relative h-[72vh] overflow-hidden">
+            <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]">
                 <div className="absolute inset-0 flex gap-px">
                     {HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
@@ -174,7 +174,7 @@ export default function DigitalMarketingClient() {
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <h2 className="text-3xl md:text-6xl font-display font-extrabold text-[#0a0a08] mb-8 leading-tight uppercase">Ready to Grow Your Brand?</h2>
                     <p className="text-xl text-[#0a0a08]/70 mb-12 max-w-2xl mx-auto font-medium">
-                        Let's build your digital presence from the ground up — with strategy, creativity, and results that matter.
+                        Let&apos;s build your digital presence from the ground up — with strategy, creativity, and results that matter.
                     </p>
                     <Link href="/contact" className="inline-flex items-center gap-3 bg-[#0a0a08] text-white px-10 py-4 font-bold text-lg uppercase tracking-wider hover:bg-[#1a1812] transition-colors">
                         Start a Project
@@ -184,3 +184,4 @@ export default function DigitalMarketingClient() {
         </div>
     );
 }
+

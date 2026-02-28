@@ -302,10 +302,16 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                     viewport={{ once: true, margin: '-30px' }}
                                     transition={{ duration: 0.55, delay: Math.min(i * 0.025, 0.35) }}
                                 >
-                                    <img
+                                    <motion.img
                                         src={img} alt=""
-                                        className="w-full h-auto object-cover scale-[1.12] group-hover:scale-100 group-hover:brightness-[0.9] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] block"
+                                        className="w-full h-auto object-cover scale-[1.14] group-hover:scale-100 group-hover:brightness-[0.88] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] block will-change-transform"
                                         loading="lazy"
+                                        animate={i < 16 ? { y: [0, -6, 0, 4, 0] } : undefined}
+                                        transition={
+                                            i < 16
+                                                ? { duration: 9 + (i % 5), repeat: Infinity, ease: 'easeInOut' }
+                                                : undefined
+                                        }
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-400" />
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

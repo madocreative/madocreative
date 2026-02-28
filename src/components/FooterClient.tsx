@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useRef } from 'react';
+import { FormEvent, ReactNode, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 type SocialItem = {
   href: string;
   label: string;
-  icon: string;
+  icon: ReactNode;
 };
 
 type FooterClientProps = {
@@ -25,6 +25,46 @@ type FooterClientProps = {
   telegramUrl: string;
   whatsappUrl: string;
 };
+
+function YouTubeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
+      <path d="M23.5 6.2a2.9 2.9 0 0 0-2-2C19.7 3.7 12 3.7 12 3.7s-7.7 0-9.5.5a2.9 2.9 0 0 0-2 2A30 30 0 0 0 0 12a30 30 0 0 0 .5 5.8 2.9 2.9 0 0 0 2 2c1.8.5 9.5.5 9.5.5s7.7 0 9.5-.5a2.9 2.9 0 0 0 2-2A30 30 0 0 0 24 12a30 30 0 0 0-.5-5.8ZM9.5 15.5V8.5L15.8 12l-6.3 3.5Z" />
+    </svg>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
+      <path d="M13.5 8.2V6.5c0-.7.5-1 1.1-1h1.9V2.1h-2.8c-3 0-4.2 2-4.2 4.1v2H7v3.4h2.5V22h4v-10.4h2.7l.4-3.4h-3.1Z" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
+      <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm9.5 1.8H7.3a3.5 3.5 0 0 0-3.5 3.5v9.4a3.5 3.5 0 0 0 3.5 3.5h9.4a3.5 3.5 0 0 0 3.5-3.5V7.3a3.5 3.5 0 0 0-3.5-3.5Zm-4.7 3.6A4.6 4.6 0 1 1 7.4 12 4.6 4.6 0 0 1 12 7.4Zm0 1.8A2.8 2.8 0 1 0 14.8 12 2.8 2.8 0 0 0 12 9.2Zm5.3-2a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1Z" />
+    </svg>
+  );
+}
+
+function TelegramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
+      <path d="M20.7 3.3 2.9 10.1c-1.2.5-1.2 1.2-.2 1.5l4.6 1.4 1.8 5.8c.2.7.1 1 .9 1l2.6-2.5 5.5 4c1 .6 1.8.3 2.1-1L23 4.9c.4-1.6-.6-2.4-2.3-1.6Zm-3.4 4.6-7.2 6.5-.3 3.2-1-3.3-4-1.2 12.6-4.9Z" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
+      <path d="M20 3.9A11.4 11.4 0 0 0 2.5 18L1 23l5.2-1.4a11.4 11.4 0 1 0 13.7-17.7Zm-8.6 17.1a9.6 9.6 0 0 1-4.9-1.3l-.4-.2-3 .8.8-2.9-.2-.4a9.6 9.6 0 1 1 7.7 4Zm5.3-7.2c-.3-.1-1.8-.9-2-.9-.3-.1-.4-.1-.6.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.5-.8-.7-1.4-1.6-1.6-1.9-.2-.3 0-.4.1-.5l.4-.5.3-.5c.1-.2 0-.4 0-.5L8.6 6.9c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.7 1.2 2.9c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 2-1.3.2-.7.2-1.2.1-1.3-.1-.1-.3-.2-.6-.3Z" />
+    </svg>
+  );
+}
 
 export default function FooterClient({
   siteName,
@@ -60,11 +100,11 @@ export default function FooterClient({
 
   const socials = useMemo<SocialItem[]>(
     () => [
-      { href: youtubeUrl, label: 'YouTube', icon: 'smart_display' },
-      { href: facebookUrl, label: 'Facebook', icon: 'thumb_up' },
-      { href: instagramUrl, label: 'Instagram', icon: 'photo_camera' },
-      { href: telegramUrl, label: 'Telegram', icon: 'send' },
-      { href: whatsappUrl, label: 'WhatsApp', icon: 'chat' },
+      { href: youtubeUrl, label: 'YouTube', icon: <YouTubeIcon /> },
+      { href: facebookUrl, label: 'Facebook', icon: <FacebookIcon /> },
+      { href: instagramUrl, label: 'Instagram', icon: <InstagramIcon /> },
+      { href: telegramUrl, label: 'Telegram', icon: <TelegramIcon /> },
+      { href: whatsappUrl, label: 'WhatsApp', icon: <WhatsAppIcon /> },
     ],
     [facebookUrl, instagramUrl, telegramUrl, whatsappUrl, youtubeUrl],
   );
@@ -160,13 +200,12 @@ export default function FooterClient({
                       : 'border-white/20 text-white hover:bg-white hover:text-[#111]'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">{social.icon}</span>
+                  {social.icon}
                 </a>
               ))}
             </div>
           </div>
         </div>
-
       </div>
     </footer>
   );

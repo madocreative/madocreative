@@ -67,9 +67,9 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function VideographyClient() {
     return (
-        <div className="flex flex-col bg-[#0a0a08]">
+        <div className="flex flex-col bg-[var(--app-bg)]">
             {/* Hero */}
-            <section className="relative h-[72vh] overflow-hidden">
+            <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]">
                 <div className="absolute inset-0 flex gap-px">
                     {HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
@@ -92,7 +92,7 @@ export default function VideographyClient() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col md:flex-row gap-12 md:gap-20 items-start">
                     <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
                         className="text-xl text-slate-400 max-w-2xl font-light leading-relaxed flex-1">
-                        We don't just record moments — we craft cinematic stories. From concept to color grade, every frame is intentional, every cut purposeful, every film a lasting legacy.
+                        We don&apos;t just record moments — we craft cinematic stories. From concept to color grade, every frame is intentional, every cut purposeful, every film a lasting legacy.
                     </motion.p>
                     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}
                         className="grid grid-cols-2 gap-x-12 gap-y-6 shrink-0">
@@ -150,9 +150,9 @@ export default function VideographyClient() {
                 viewport={{ once: true }} transition={{ duration: 0.8 }}
                 className="w-full bg-[#ffc000] py-32">
                 <div className="max-w-4xl mx-auto px-6 text-center">
-                    <h2 className="text-3xl md:text-6xl font-display font-extrabold text-[#0a0a08] mb-8 leading-tight uppercase">Let's Create Your Film</h2>
+                    <h2 className="text-3xl md:text-6xl font-display font-extrabold text-[#0a0a08] mb-8 leading-tight uppercase">Let&apos;s Create Your Film</h2>
                     <p className="text-xl text-[#0a0a08]/70 mb-12 max-w-2xl mx-auto font-medium">
-                        Whether it's a wedding, a brand campaign, or a creative vision — we bring it to life with cinematic excellence.
+                        Whether it&apos;s a wedding, a brand campaign, or a creative vision — we bring it to life with cinematic excellence.
                     </p>
                     <Link href="/booking" className="inline-flex items-center gap-3 bg-[#0a0a08] text-white px-10 py-4 font-bold text-lg uppercase tracking-wider hover:bg-[#1a1812] transition-colors">
                         Start Your Project
@@ -162,3 +162,4 @@ export default function VideographyClient() {
         </div>
     );
 }
+

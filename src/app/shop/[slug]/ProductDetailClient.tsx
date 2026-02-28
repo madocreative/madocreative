@@ -50,7 +50,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
     const waMessage = encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${product.name}* — Price: $${product.price.toLocaleString()}. Please share more details.`);
 
     return (
-        <div className="bg-[#0a0a08] min-h-screen text-white">
+        <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)] pt-[104px] md:pt-[116px] px-3 md:px-5">
             {/* Breadcrumb */}
             <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-6 pb-2">
                 <nav className="flex items-center gap-2 text-xs text-slate-500">
@@ -63,7 +63,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
             </div>
 
             {/* Main Product Section */}
-            <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 rounded-[1.55rem] border border-[var(--app-border)] bg-[#0a0a08]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
 
                     {/* ── Left: Image Gallery ── */}

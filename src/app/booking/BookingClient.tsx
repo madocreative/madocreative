@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 interface Package { name: string; description: string; price: string }
 interface PageData {
@@ -99,28 +100,28 @@ export default function BookingClient({ data }: { data: PageData }) {
     };
 
     if (status === 'success') return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-[#090805] pt-24 px-6 text-center text-[#f2efe7]">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--app-bg)] pt-24 px-6 text-center text-[var(--app-text)]">
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, type: 'spring' }}>
                 <div className="w-20 h-20 bg-[#ffc000] flex items-center justify-center mx-auto mb-8">
                     <span className="material-symbols-outlined text-[#090805] text-4xl">check</span>
                 </div>
                 <h2 className="text-4xl font-display font-bold text-white mb-4">Booking Received!</h2>
-                <p className="text-[#9a9078] text-lg mb-10 max-w-md mx-auto">We've received your request and will be in touch within 24 hours.</p>
-                <a href="/" className="bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors inline-block">
+                <p className="text-[#9a9078] text-lg mb-10 max-w-md mx-auto">We&apos;ve received your request and will be in touch within 24 hours.</p>
+                <Link href="/" className="bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors inline-block">
                     Back to Home
-                </a>
+                </Link>
             </motion.div>
         </div>
     );
 
     return (
-        <div className="flex flex-col bg-[#090805] min-h-screen text-[#f2efe7]">
+        <div className="flex flex-col bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════
                 HERO — full-width image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[55vh] md:h-[62vh] overflow-hidden bg-[#090805]"
+                className="relative h-[55vh] md:h-[62vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >

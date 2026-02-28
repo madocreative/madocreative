@@ -48,13 +48,13 @@ export default function ServicesClient({ data }: { data: PageData }) {
     }, [heroIdx, heroPaused, goHeroNext, heroImgs.length]);
 
     return (
-        <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
+        <div className="flex flex-col bg-[var(--app-bg)] text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════
                 HERO — full-width image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805]"
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >

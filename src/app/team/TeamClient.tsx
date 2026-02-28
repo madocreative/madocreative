@@ -17,12 +17,12 @@ interface PageData {
 
 export default function TeamClient({ data }: { data: PageData }) {
     return (
-        <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
+        <div className="flex flex-col bg-[var(--app-bg)] text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════
                 HERO — pure typographic, no images
             ══════════════════════════════════════════════════ */}
-            <section className="relative bg-[#090805] pt-24 md:pt-36 pb-14 md:pb-20 border-b border-white/5 overflow-hidden">
+            <section className="relative bg-[#090805] pt-24 md:pt-36 pb-14 md:pb-20 border border-[var(--app-border)] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]">
                 <span
                     className="absolute right-0 top-1/2 -translate-y-1/2 text-[100px] md:text-[200px] lg:text-[280px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.015] text-white"
                     aria-hidden

@@ -36,12 +36,12 @@ export default function ContactClient({ data }: { data: PageData }) {
     };
 
     return (
-        <div className="flex flex-col bg-[#090805] min-h-screen text-[#f2efe7]">
+        <div className="flex flex-col bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════
                 HERO — ultra-minimal typographic, no images
             ══════════════════════════════════════════════════ */}
-            <section className="bg-[#090805] pt-24 md:pt-36 pb-12 md:pb-16 border-b border-white/5 overflow-hidden relative">
+            <section className="bg-[#090805] pt-24 md:pt-36 pb-12 md:pb-16 border border-[var(--app-border)] overflow-hidden relative mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]">
                 <span
                     className="absolute right-0 bottom-0 text-[80px] sm:text-[120px] md:text-[180px] lg:text-[240px] font-display font-bold leading-none select-none pointer-events-none opacity-[0.02] text-white"
                     aria-hidden

@@ -113,7 +113,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
     };
 
     return (
-        <div className="bg-[#0a0a08] text-white">
+        <div className="bg-[var(--app-bg)] text-[var(--app-text)]">
             <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-20">
 
                 {/* Search + Sort bar */}

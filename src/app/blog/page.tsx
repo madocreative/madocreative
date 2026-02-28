@@ -15,7 +15,7 @@ export default async function BlogPage() {
     const posts = await Post.find({ published: true }).sort({ createdAt: -1 });
 
     return (
-        <div className="bg-[#0a0a08] min-h-screen text-white">
+        <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
 
             {/* Hero — full-screen image slider (portfolio style) */}
             <BlogHeroSlider />
