@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Link from 'next/link';
+import BlogHeroSlider from './BlogHeroSlider';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,45 +10,14 @@ export const metadata = {
     description: 'Thoughts, tutorials, and behind-the-scenes from the creative studio.',
 };
 
-const BLOG_HERO_IMGS = [
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971897/mado-creatives/luhwozrxtp1u5oehdyej.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971885/mado-creatives/kgwmhi695gjdyey0qauv.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971887/mado-creatives/enbiztasgcryipz6x8py.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971889/mado-creatives/lgrj87iype8vbp5qiuzn.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971891/mado-creatives/kw9xzrjaw2mk62tv7z0o.jpg',
-];
-
 export default async function BlogPage() {
     await dbConnect();
     const posts = await Post.find({ published: true }).sort({ createdAt: -1 });
 
     return (
         <div className="bg-[#0a0a08] min-h-screen text-white">
-            {/* Hero — photography collage, mobile-first */}
-            <section className="relative h-[44vh] md:h-[52vh] overflow-hidden">
-                <div className="absolute inset-0 flex gap-px bg-[#0a0a08]">
-                    {BLOG_HERO_IMGS.map((img, i) => (
-                        <div
-                            key={i}
-                            className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}${i === 2 ? ' hidden sm:block' : ''}${i >= 3 ? ' hidden md:block' : ''}`}
-                        >
-                            <img src={img} alt="" className="w-full h-full object-cover" />
-                        </div>
-                    ))}
-                </div>
-                {/* Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a08]/90 via-[#0a0a08]/50 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a08] via-[#0a0a08]/20 to-transparent" />
-
-                {/* Text */}
-                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-12 pb-8 md:pb-10">
-                    <p className="text-[#ffc000] font-bold tracking-[0.4em] uppercase text-[10px] md:text-xs mb-2 flex items-center gap-3">
-                        <span className="w-6 md:w-8 h-px bg-[#ffc000]" />
-                        The Journal
-                    </p>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold text-white leading-none tracking-tight">Journal</h1>
-                </div>
-            </section>
+            {/* Hero — full-width image slider */}
+            <BlogHeroSlider />
 
             <div className="max-w-5xl mx-auto px-6 lg:px-12 pb-16">
                 {/* Subtitle */}

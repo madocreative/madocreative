@@ -502,38 +502,124 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
     const prevImg = useCallback(() => setLightbox(lb => lb ? { ...lb, idx: (lb.idx - 1 + lb.imgs.length) % lb.imgs.length } : null), []);
     const nextImg = useCallback(() => setLightbox(lb => lb ? { ...lb, idx: (lb.idx + 1) % lb.imgs.length } : null), []);
 
+    // Hero slider
+    const [heroIdx, setHeroIdx] = useState(0);
+    const [heroDir, setHeroDir] = useState(1);
+    const [heroPaused, setHeroPaused] = useState(false);
+    const goHero = useCallback((next: number) => {
+        if (heroImgs.length === 0) return;
+        setHeroDir(next > heroIdx ? 1 : -1);
+        setHeroIdx((next + heroImgs.length) % heroImgs.length);
+    }, [heroIdx, heroImgs.length]);
+    const goHeroNext = useCallback(() => goHero(heroIdx + 1), [goHero, heroIdx]);
+    const goHeroPrev = useCallback(() => goHero(heroIdx - 1), [goHero, heroIdx]);
+    useEffect(() => {
+        if (heroPaused || heroImgs.length <= 1) return;
+        const t = setTimeout(goHeroNext, 5500);
+        return () => clearTimeout(t);
+    }, [heroIdx, heroPaused, goHeroNext, heroImgs.length]);
+
+    const heroSlideVariants = {
+        enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+        center: { x: 0, opacity: 1 },
+        exit:  (dir: number) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0 }),
+    };
+
     return (
         <div className="bg-[#090805] min-h-screen text-[#f2efe7]">
 
             {/* ══════════════════════════════════════════════════
-                HERO — horizontal film strip
+                HERO — full-screen image slider
             ══════════════════════════════════════════════════ */}
-            <section className="relative h-[52vh] sm:h-[55vh] md:h-[62vh] overflow-hidden">
+            <section
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805]"
+                onMouseEnter={() => setHeroPaused(true)}
+                onMouseLeave={() => setHeroPaused(false)}
+            >
+                {/* Sliding images */}
                 {heroImgs.length > 0 ? (
-                    <div className="absolute inset-0 flex gap-px bg-[#090805]">
-                        {heroImgs.map((img: string, i: number) => (
-                            <div
-                                key={i}
-                                className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'flex-[2]' : 'flex-1'}${i === 1 ? ' hidden sm:block' : ''}${i >= 2 ? ' hidden md:block' : ''}`}
-                            >
-                                <motion.img
-                                    src={img} alt=""
-                                    className="w-full h-full object-cover"
-                                    initial={{ opacity: 0, scale: 1.06 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 1.3, delay: i * 0.1, ease: 'easeOut' }}
-                                />
-                            </div>
-                        ))}
-                    </div>
+                    <AnimatePresence initial={false} custom={heroDir} mode="popLayout">
+                        <motion.div
+                            key={heroIdx}
+                            custom={heroDir}
+                            variants={heroSlideVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{ duration: 0.6, ease: [0.32, 0, 0.67, 0] }}
+                            className="absolute inset-0"
+                        >
+                            {/* Blurred ambient background — fills empty space */}
+                            <img
+                                src={heroImgs[heroIdx]}
+                                alt=""
+                                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
+                                aria-hidden="true"
+                            />
+                            {/* Full image — object-contain so nothing is cropped */}
+                            <img
+                                src={heroImgs[heroIdx]}
+                                alt=""
+                                className="relative z-10 w-full h-full object-contain"
+                            />
+                        </motion.div>
+                    </AnimatePresence>
                 ) : (
                     <div className="absolute inset-0 bg-[#0d0c08]" />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/40 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/80 via-[#090805]/30 to-transparent" />
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/40 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/85 via-[#090805]/30 to-transparent pointer-events-none" />
 
-                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-20 pb-8 md:pb-12">
+                {/* Prev / Next */}
+                {heroImgs.length > 1 && (
+                    <>
+                        <button onClick={goHeroPrev}
+                            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200"
+                            aria-label="Previous">
+                            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+                        </button>
+                        <button onClick={goHeroNext}
+                            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200"
+                            aria-label="Next">
+                            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </button>
+                    </>
+                )}
+
+                {/* Dot indicators */}
+                {heroImgs.length > 1 && (
+                    <div className="absolute bottom-16 left-6 md:left-20 z-20 flex items-center gap-2">
+                        {heroImgs.map((_, i) => (
+                            <button key={i}
+                                onClick={() => { setHeroDir(i > heroIdx ? 1 : -1); setHeroIdx(i); }}
+                                className={`transition-all duration-300 rounded-full ${i === heroIdx ? 'bg-[#ffc000] w-7 h-2' : 'bg-white/30 hover:bg-white/60 w-2 h-2'}`}
+                                aria-label={`Slide ${i + 1}`} />
+                        ))}
+                    </div>
+                )}
+
+                {/* Slide counter */}
+                {heroImgs.length > 1 && (
+                    <div className="absolute top-5 right-5 z-20 hidden md:block bg-black/40 backdrop-blur-md border border-white/10 text-white text-[11px] font-bold px-3 py-1.5">
+                        {String(heroIdx + 1).padStart(2, '0')} / {String(heroImgs.length).padStart(2, '0')}
+                    </div>
+                )}
+
+                {/* Progress bar */}
+                {heroImgs.length > 1 && !heroPaused && (
+                    <motion.div
+                        key={`prog-${heroIdx}`}
+                        className="absolute top-0 left-0 h-[3px] bg-[#ffc000] z-20"
+                        initial={{ width: '0%' }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 5.5, ease: 'linear' }}
+                    />
+                )}
+
+                {/* Text overlay */}
+                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-20 pb-8 md:pb-12 z-10">
                     <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
                         <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-3 md:mb-4 flex items-center gap-4">
                             <span className="w-8 md:w-10 h-px bg-[#ffc000]" />

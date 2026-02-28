@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 interface ServiceItem { title: string; description: string; image: string; tags: string }
@@ -19,33 +20,82 @@ interface PageData {
     ctaSecondaryLink?: string;
 }
 
+const heroSlideVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0 }),
+};
+
 export default function ServicesClient({ data }: { data: PageData }) {
-    const heroImg = data.services[0]?.image;
+    const heroImgs = data.services.map(s => s.image).filter(Boolean);
+
+    const [heroIdx, setHeroIdx] = useState(0);
+    const [heroDir, setHeroDir] = useState(1);
+    const [heroPaused, setHeroPaused] = useState(false);
+
+    const goHero = useCallback((next: number) => {
+        if (heroImgs.length === 0) return;
+        setHeroDir(next > heroIdx ? 1 : -1);
+        setHeroIdx((next + heroImgs.length) % heroImgs.length);
+    }, [heroIdx, heroImgs.length]);
+    const goHeroNext = useCallback(() => goHero(heroIdx + 1), [goHero, heroIdx]);
+    const goHeroPrev = useCallback(() => goHero(heroIdx - 1), [goHero, heroIdx]);
+
+    useEffect(() => {
+        if (heroPaused || heroImgs.length <= 1) return;
+        const t = setTimeout(goHeroNext, 5000);
+        return () => clearTimeout(t);
+    }, [heroIdx, heroPaused, goHeroNext, heroImgs.length]);
 
     return (
         <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
 
             {/* ══════════════════════════════════════════════════
-                HERO — full-bleed first service image, strong left gradient
+                HERO — full-width image slider
             ══════════════════════════════════════════════════ */}
-            <section className="relative h-[56vh] md:h-[70vh] overflow-hidden">
-                {heroImg ? (
-                    <motion.img
-                        src={heroImg}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover"
-                        initial={{ opacity: 0, scale: 1.06 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.4, ease: 'easeOut' }}
-                    />
+            <section
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805]"
+                onMouseEnter={() => setHeroPaused(true)}
+                onMouseLeave={() => setHeroPaused(false)}
+            >
+                {/* Slides */}
+                {heroImgs.length > 0 ? (
+                    <AnimatePresence initial={false} custom={heroDir} mode="popLayout">
+                        <motion.div
+                            key={heroIdx}
+                            custom={heroDir}
+                            variants={heroSlideVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{ duration: 0.55, ease: [0.32, 0, 0.67, 0] }}
+                            className="absolute inset-0"
+                        >
+                            {/* Blurred ambient background */}
+                            <img
+                                src={heroImgs[heroIdx]}
+                                alt=""
+                                className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
+                                aria-hidden="true"
+                            />
+                            {/* Full image — object-contain so nothing is cropped */}
+                            <img
+                                src={heroImgs[heroIdx]}
+                                alt=""
+                                className="relative z-10 w-full h-full object-contain"
+                            />
+                        </motion.div>
+                    </AnimatePresence>
                 ) : (
                     <div className="absolute inset-0 bg-[#0d0c08]" />
                 )}
-                {/* Directional overlays */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#090805] via-[#090805]/80 to-[#090805]/20" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-transparent to-[#090805]/40" />
 
-                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-8 lg:px-20 max-w-[680px]">
+                {/* Directional overlays */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#090805] via-[#090805]/80 to-[#090805]/20 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-transparent to-[#090805]/40 pointer-events-none" />
+
+                {/* Text overlay */}
+                <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-8 lg:px-20 max-w-[680px] pointer-events-none">
                     <motion.div
                         initial={{ opacity: 0, y: 32 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -63,6 +113,54 @@ export default function ServicesClient({ data }: { data: PageData }) {
                         </p>
                     </motion.div>
                 </div>
+
+                {/* Prev / Next arrows */}
+                {heroImgs.length > 1 && (
+                    <>
+                        <button
+                            onClick={goHeroPrev}
+                            className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 z-10 group"
+                            aria-label="Previous"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">chevron_left</span>
+                        </button>
+                        <button
+                            onClick={goHeroNext}
+                            className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-9 h-9 md:w-10 md:h-10 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 z-10 group"
+                            aria-label="Next"
+                        >
+                            <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">chevron_right</span>
+                        </button>
+                    </>
+                )}
+
+                {/* Dot indicators */}
+                {heroImgs.length > 1 && (
+                    <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+                        {heroImgs.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => { setHeroDir(i > heroIdx ? 1 : -1); setHeroIdx(i); }}
+                                className={`transition-all duration-300 rounded-full ${i === heroIdx
+                                    ? 'bg-[#ffc000] w-6 h-1.5'
+                                    : 'bg-white/30 hover:bg-white/60 w-1.5 h-1.5'
+                                }`}
+                                aria-label={`Slide ${i + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* Auto-play progress bar */}
+                {heroImgs.length > 1 && !heroPaused && (
+                    <motion.div
+                        key={`progress-${heroIdx}`}
+                        className="absolute bottom-0 left-0 h-[3px] bg-[#ffc000] z-10"
+                        initial={{ width: '0%' }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 5, ease: 'linear' }}
+                    />
+                )}
 
                 {/* Stats bar — horizontally scrollable on mobile */}
                 {data.stats.length > 0 && (
