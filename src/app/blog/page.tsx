@@ -1,7 +1,6 @@
 import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
 import Link from 'next/link';
-import BlogHeroSlider from './BlogHeroSlider';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,8 +15,6 @@ export default async function BlogPage() {
 
     return (
         <div className="bg-[#0a0a08] min-h-screen text-white">
-            {/* Hero — full-width image slider */}
-            <BlogHeroSlider />
 
             <div className="max-w-5xl mx-auto px-6 lg:px-12 pb-16">
                 {/* Subtitle */}
