@@ -167,14 +167,6 @@ export default function FooterClient({
           </div>
         </div>
 
-        <div className={`hidden lg:flex absolute right-5 top-1/2 -translate-y-1/2 flex-col items-center gap-4 rounded-full px-2 py-4 ${isLight ? 'bg-white/80 border border-black/8' : 'bg-white/8 border border-white/18'}`}>
-          <span className={`h-2 w-2 rounded-full ${isLight ? 'bg-black/35' : 'bg-white/45'}`} />
-          <span className="h-5 w-5 rounded-full border-2 border-[#111111] grid place-items-center">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#111111]" />
-          </span>
-          <span className={`h-2 w-2 rounded-full ${isLight ? 'bg-black/35' : 'bg-white/45'}`} />
-          <span className={`h-2 w-2 rounded-full ${isLight ? 'bg-black/35' : 'bg-white/45'}`} />
-        </div>
       </div>
     </footer>
   );

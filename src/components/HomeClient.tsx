@@ -291,8 +291,8 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
 
                     {/* Dense masonry grid — full-bleed, tight gaps */}
                     <div className="px-1 md:px-2">
-                        <div className="columns-2 sm:columns-3 lg:columns-4 gap-px">
-                            {workImages.slice(0, 24).map((img, i) => (
+                        <div className="columns-3 md:columns-4 xl:columns-5 gap-px">
+                            {workImages.slice(0, 40).map((img, i) => (
                                 <motion.a
                                     key={i}
                                     href="/portfolio"
@@ -304,7 +304,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                 >
                                     <img
                                         src={img} alt=""
-                                        className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out block"
+                                        className="w-full h-auto object-cover transition-[filter] duration-300 ease-out block group-hover:brightness-[0.85]"
                                         loading="lazy"
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-400" />

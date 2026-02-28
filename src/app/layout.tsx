@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HideOnAdmin from '@/components/HideOnAdmin';
 import LenisProvider from '@/components/LenisProvider';
+import ScrollProgress from '@/components/ScrollProgress';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
 const beVietnamPro = Be_Vietnam_Pro({
@@ -67,6 +68,9 @@ export default function RootLayout({
             </HideOnAdmin>
             <HideOnAdmin>
               <Header />
+            </HideOnAdmin>
+            <HideOnAdmin>
+              <ScrollProgress />
             </HideOnAdmin>
             <main className="flex-1">{children}</main>
             <HideOnAdmin>
