@@ -631,7 +631,7 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
                                 src={img}
                                 alt=""
                                 loading="lazy"
-                                className="h-full w-full object-cover scale-[1.09] group-hover:scale-100 group-hover:brightness-[0.9] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
+                                className="h-full w-full object-contain scale-100 group-hover:scale-[0.96] group-hover:brightness-[0.94] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
                                 animate={index < 14 ? { x: driftX, y: [0, -4, 0, 2, 0] } : undefined}
                                 transition={
                                     index < 14
