@@ -1,8 +1,8 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 /* ─────────────────────────────────────────────────────────────────
    TYPES
@@ -633,49 +633,132 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   HERO — extracted for cleanliness
+   HERO — full-screen image slider
 ───────────────────────────────────────────────────────────────── */
+const AUTOPLAY_DELAY = 6000;
+
+const slideVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit:  (dir: number) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0 }),
+};
+
 function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     heroImgs: string[]; ctaText: string; ctaLink: string; secondaryCtaLink: string;
 }) {
     const containerRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] });
+    const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
 
-    // Per-cell parallax movements
-    const movements = [20, 40, 60, 30, 50];
-    const cell0Y = useTransform(scrollYProgress, [0, 1], [0, -movements[0] * 2]);
-    const cell1Y = useTransform(scrollYProgress, [0, 1], [0, -movements[1] * 2]);
-    const cell2Y = useTransform(scrollYProgress, [0, 1], [0, -movements[2] * 2]);
-    const cell3Y = useTransform(scrollYProgress, [0, 1], [0, -movements[3] * 2]);
-    const cell4Y = useTransform(scrollYProgress, [0, 1], [0, -movements[4] * 2]);
-    const cellYs = [cell0Y, cell1Y, cell2Y, cell3Y, cell4Y];
+    const [index, setIndex]     = useState(0);
+    const [direction, setDir]   = useState(1);
+    const [paused, setPaused]   = useState(false);
+
+    const images = heroImgs.length > 0 ? heroImgs : [];
+
+    const go = useCallback((next: number) => {
+        if (images.length === 0) return;
+        const bounded = (next + images.length) % images.length;
+        setDir(next > index ? 1 : -1);
+        setIndex(bounded);
+    }, [index, images.length]);
+
+    const goNext = useCallback(() => go(index + 1), [go, index]);
+    const goPrev = useCallback(() => go(index - 1), [go, index]);
+
+    useEffect(() => {
+        if (paused || images.length <= 1) return;
+        const t = setTimeout(goNext, AUTOPLAY_DELAY);
+        return () => clearTimeout(t);
+    }, [index, paused, goNext, images.length]);
 
     return (
-        <section ref={containerRef} className="relative h-screen flex flex-col overflow-hidden">
-
-            {/* Background: 3-col 2-row parallax grid */}
-            {heroImgs.length > 0 ? (
-                <div className="absolute inset-0 grid grid-cols-[1.35fr_1fr_1fr] grid-rows-2 gap-[2px] bg-[#090805]">
-                    {heroImgs.map((img, i) => (
-                        <div key={`hero-${i}`} className={`overflow-hidden bg-[#0d0b07] ${i === 0 ? 'row-span-2' : ''}`}>
-                            <motion.img
-                                src={img} alt=""
-                                className="w-full h-[110%] object-cover"
-                                style={{ y: cellYs[i] }}
-                                initial={{ opacity: 0, scale: 1.08 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 1.5, delay: i * 0.1, ease: 'easeOut' }}
-                            />
-                        </div>
-                    ))}
-                </div>
+        <section
+            ref={containerRef}
+            className="relative h-screen flex flex-col overflow-hidden"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+        >
+            {/* Sliding background images */}
+            {images.length > 0 ? (
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                    <motion.div
+                        key={index}
+                        custom={direction}
+                        variants={slideVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.7, ease: [0.32, 0, 0.67, 0] }}
+                        className="absolute inset-0 overflow-hidden"
+                    >
+                        <motion.img
+                            src={images[index]}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            style={{ y: imgY, scale: 1.08 }}
+                        />
+                    </motion.div>
+                </AnimatePresence>
             ) : (
                 <div className="absolute inset-0 bg-[#090805]" />
             )}
 
             {/* Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/95 via-[#090805]/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/80 via-transparent to-[#090805]/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/95 via-[#090805]/55 to-[#090805]/10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/80 via-transparent to-[#090805]/30 pointer-events-none" />
+
+            {/* Prev / Next arrows */}
+            {images.length > 1 && (
+                <>
+                    <button
+                        onClick={goPrev}
+                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 group"
+                        aria-label="Previous"
+                    >
+                        <span className="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">chevron_left</span>
+                    </button>
+                    <button
+                        onClick={goNext}
+                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 group"
+                        aria-label="Next"
+                    >
+                        <span className="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">chevron_right</span>
+                    </button>
+                </>
+            )}
+
+            {/* Dot indicators */}
+            {images.length > 1 && (
+                <div className="absolute bottom-20 left-8 lg:left-20 z-20 flex items-center gap-2">
+                    {images.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { setDir(i > index ? 1 : -1); setIndex(i); }}
+                            className={`transition-all duration-300 rounded-full ${i === index ? 'bg-[#ffc000] w-7 h-2' : 'bg-white/30 hover:bg-white/60 w-2 h-2'}`}
+                            aria-label={`Slide ${i + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Slide counter */}
+            {images.length > 1 && (
+                <div className="absolute top-6 right-6 z-20 hidden md:block bg-black/40 backdrop-blur-md border border-white/10 text-white text-[11px] font-bold px-3 py-1.5">
+                    {String(index + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+                </div>
+            )}
+
+            {/* Auto-play progress bar */}
+            {images.length > 1 && !paused && (
+                <motion.div
+                    key={`prog-${index}`}
+                    className="absolute top-0 left-0 h-[3px] bg-[#ffc000] z-20"
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: AUTOPLAY_DELAY / 1000, ease: 'linear' }}
+                />
+            )}
 
             {/* Hero text */}
             <div className="relative z-10 flex-1 flex items-center px-8 lg:px-20">
