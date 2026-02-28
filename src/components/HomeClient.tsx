@@ -206,7 +206,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             {/* ══════════════════════════════════════════════════════════
                 3. ABOUT — parallax split: text left, tall image right
             ══════════════════════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 bg-[#0d0c08] overflow-hidden">
+            <section className="py-28 md:py-40 bg-[#f9f8f5] overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <SectionLabel text="About the Studio" />
 
@@ -218,20 +218,20 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                             viewport={{ once: true }}
                             transition={{ duration: 0.85 }}
                         >
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.0] text-white mb-8">
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.0] text-[#111009] mb-8">
                                 Creative Agency.<br />Premium Production<br />
                                 <span className="text-[#ffc000]">Partner.</span>
                             </h2>
-                            <p className="text-[#b0a890] leading-relaxed text-base md:text-lg mb-10 max-w-lg">
+                            <p className="text-[#4a4535] leading-relaxed text-base md:text-lg mb-10 max-w-lg">
                                 {introDescription}
                             </p>
                             <Link href="/services"
-                                className="inline-flex items-center gap-2 text-[#ffc000] uppercase tracking-[0.26em] text-xs font-bold border-b border-[#ffc000]/40 pb-1 hover:text-white hover:border-white/30 transition-colors">
+                                className="inline-flex items-center gap-2 text-[#ffc000] uppercase tracking-[0.26em] text-xs font-bold border-b border-[#ffc000]/60 pb-1 hover:text-[#111009] hover:border-[#111009]/40 transition-colors">
                                 Explore Services
                                 <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
                             </Link>
 
-                            <div className="grid grid-cols-2 gap-8 mt-16 pt-10 border-t border-white/10">
+                            <div className="grid grid-cols-2 gap-8 mt-16 pt-10 border-t border-black/10">
                                 {stats.slice(0, 2).map((s, i) => (
                                     <motion.div key={i}
                                         initial={{ opacity: 0, y: 16 }}
@@ -239,7 +239,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                         viewport={{ once: true }}
                                         transition={{ duration: 0.6, delay: i * 0.12 }}>
                                         <p className="text-5xl md:text-6xl font-display font-bold text-[#ffc000] leading-none mb-3">{s.value}</p>
-                                        <p className="text-[11px] uppercase tracking-[0.24em] text-[#5c5544] font-bold">{s.label}</p>
+                                        <p className="text-[11px] uppercase tracking-[0.24em] text-[#6b6250] font-bold">{s.label}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -249,16 +249,16 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                         {(galleries[0]?.featuredImage) && (
                             <div className="relative hidden lg:block">
                                 {/* Gold vertical accent */}
-                                <div className="absolute -left-14 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#ffc000]/30 to-transparent" />
+                                <div className="absolute -left-14 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#ffc000]/40 to-transparent" />
                                 <ParallaxImage
                                     src={galleries[0].featuredImage!}
                                     alt="Featured work"
-                                    containerClassName="relative aspect-[3/4] overflow-hidden bg-[#0d0c08]"
+                                    containerClassName="relative aspect-[3/4] overflow-hidden bg-[#e8e4dc]"
                                     imageClassName="w-full h-[120%] object-cover"
                                     movement={60}
                                 />
                                 {/* Overlay caption */}
-                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0d0c08]/90 to-transparent">
+                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#111009]/80 to-transparent">
                                     <p className="text-[10px] uppercase tracking-[0.3em] text-[#ffc000] mb-1">{galleries[0]?.category || 'Featured'}</p>
                                     <p className="text-white font-display font-bold text-base">{galleries[0]?.title}</p>
                                 </div>
@@ -398,14 +398,14 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             {/* ══════════════════════════════════════════════════════════
                 5. SERVICES — numbered list + tall parallax image column
             ══════════════════════════════════════════════════════════ */}
-            <section className="py-28 md:py-40 bg-[#0a0906] overflow-hidden">
+            <section className="py-28 md:py-40 bg-[#f9f8f5] overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <div className="flex items-center justify-between mb-16">
                         <div>
                             <SectionLabel text="Signature Services" />
                         </div>
                         <Link href="/services"
-                            className="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/35 hover:text-[#ffc000] transition-colors">
+                            className="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#6b6250] hover:text-[#ffc000] transition-colors">
                             All Services
                             <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                         </Link>
@@ -413,7 +413,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
 
                     <div className="grid lg:grid-cols-[1fr_360px] gap-16 items-start">
                         {/* Numbered list */}
-                        <div className="border-t border-white/10">
+                        <div className="border-t border-black/10">
                             {servicePillars.map((pillar, idx) => (
                                 <motion.div
                                     key={idx}
@@ -421,20 +421,20 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.65, delay: idx * 0.1 }}
-                                    className="group grid grid-cols-[60px_1fr] md:grid-cols-[80px_1fr_auto] items-center gap-6 md:gap-12 py-10 md:py-14 border-b border-white/10 hover:bg-white/[0.02] transition-colors"
+                                    className="group grid grid-cols-[60px_1fr] md:grid-cols-[80px_1fr_auto] items-center gap-6 md:gap-12 py-10 md:py-14 border-b border-black/10 hover:bg-black/[0.025] transition-colors"
                                 >
-                                    <span className="text-5xl md:text-7xl font-display font-bold text-[#ffc000]/12 group-hover:text-[#ffc000]/50 transition-colors leading-none tabular-nums select-none">
+                                    <span className="text-5xl md:text-7xl font-display font-bold text-[#ffc000]/20 group-hover:text-[#ffc000]/60 transition-colors leading-none tabular-nums select-none">
                                         {String(idx + 1).padStart(2, '0')}
                                     </span>
                                     <div className="min-w-0">
-                                        <h3 className="text-xl md:text-3xl font-display font-bold text-white group-hover:text-[#ffc000] transition-colors leading-tight mb-3">
+                                        <h3 className="text-xl md:text-3xl font-display font-bold text-[#111009] group-hover:text-[#ffc000] transition-colors leading-tight mb-3">
                                             {pillar.title}
                                         </h3>
-                                        <p className="text-[#7a7260] text-sm md:text-base leading-relaxed">{pillar.description}</p>
+                                        <p className="text-[#6b6250] text-sm md:text-base leading-relaxed">{pillar.description}</p>
                                     </div>
                                     <div className="hidden lg:flex flex-col items-end gap-3 flex-shrink-0">
-                                        <p className="text-[10px] uppercase tracking-[0.32em] text-[#5c5544] font-bold">{pillar.note}</p>
-                                        <span className="material-symbols-outlined text-[#ffc000]/25 group-hover:text-[#ffc000] transition-colors">arrow_outward</span>
+                                        <p className="text-[10px] uppercase tracking-[0.32em] text-[#6b6250] font-bold">{pillar.note}</p>
+                                        <span className="material-symbols-outlined text-[#ffc000]/40 group-hover:text-[#ffc000] transition-colors">arrow_outward</span>
                                     </div>
                                 </motion.div>
                             ))}
@@ -446,12 +446,12 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                 <ParallaxImage
                                     src={servicesImg}
                                     alt="Studio work"
-                                    containerClassName="relative overflow-hidden bg-[#0d0c08]"
+                                    containerClassName="relative overflow-hidden bg-[#e8e4dc]"
                                     imageClassName="w-full h-[520px] object-cover"
                                     movement={55}
                                     delay={0.1}
                                 />
-                                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0906] to-transparent pointer-events-none" />
+                                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f9f8f5] to-transparent pointer-events-none" />
                             </div>
                         )}
                     </div>
@@ -461,7 +461,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             {/* ══════════════════════════════════════════════════════════
                 6. PROCESS — 4-step numbered flow
             ══════════════════════════════════════════════════════════ */}
-            <section className="py-28 md:py-36 bg-[#0e0d09]">
+            <section className="py-28 md:py-36 bg-[#f4f2ee]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <div className="grid md:grid-cols-2 gap-6 items-end mb-20">
                         <div>
@@ -471,7 +471,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7 }}
-                                className="text-4xl md:text-5xl font-display font-bold text-white leading-tight"
+                                className="text-4xl md:text-5xl font-display font-bold text-[#111009] leading-tight"
                             >
                                 A Clear<br />Production Flow.
                             </motion.h2>
@@ -481,14 +481,14 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.7, delay: 0.12 }}
-                            className="text-[#9a9078] leading-relaxed text-base md:text-lg"
+                            className="text-[#4a4535] leading-relaxed text-base md:text-lg"
                         >
                             Our process keeps every project strategic, efficient, and creatively strong from first brief to final delivery.
                         </motion.p>
                     </div>
 
                     <div className="relative">
-                        <div className="hidden md:block absolute h-px bg-white/6 left-9 right-9" style={{ top: '2.2rem' }} />
+                        <div className="hidden md:block absolute h-px bg-black/8 left-9 right-9" style={{ top: '2.2rem' }} />
                         <div className="grid md:grid-cols-4 gap-10">
                             {processSteps.map((step, idx) => (
                                 <motion.div
@@ -499,13 +499,13 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                                     transition={{ duration: 0.6, delay: idx * 0.14 }}
                                     className="relative group"
                                 >
-                                    <div className="w-[4.4rem] h-[4.4rem] flex items-center justify-center border border-[#ffc000]/25 bg-[#0e0d09] mb-7 relative z-10 group-hover:border-[#ffc000]/70 group-hover:bg-[#ffc000]/5 transition-colors">
+                                    <div className="w-[4.4rem] h-[4.4rem] flex items-center justify-center border border-[#ffc000]/40 bg-[#f4f2ee] mb-7 relative z-10 group-hover:border-[#ffc000] group-hover:bg-[#ffc000]/8 transition-colors">
                                         <span className="text-[#ffc000] font-bold font-display text-xl">
                                             {String(idx + 1).padStart(2, '0')}
                                         </span>
                                     </div>
-                                    <h3 className="text-lg md:text-xl font-display font-bold text-white mb-3">{step.title}</h3>
-                                    <p className="text-sm text-[#7a7260] leading-relaxed">{step.description}</p>
+                                    <h3 className="text-lg md:text-xl font-display font-bold text-[#111009] mb-3">{step.title}</h3>
+                                    <p className="text-sm text-[#6b6250] leading-relaxed">{step.description}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -558,15 +558,15 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             {/* ══════════════════════════════════════════════════════════
                 8. CLIENTS — infinite marquee with edge fades
             ══════════════════════════════════════════════════════════ */}
-            <section className="py-24 md:py-28 bg-[#0c0b07]">
+            <section className="py-24 md:py-28 bg-[#f9f8f5]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-14">
                     <SectionLabel text="Trusted by Past Clients" />
-                    <h2 className="text-3xl md:text-5xl font-display font-bold text-white">Brands We've Worked With.</h2>
+                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#111009]">Brands We've Worked With.</h2>
                 </div>
-                <div className="relative overflow-hidden border-y border-white/5 py-8">
+                <div className="relative overflow-hidden border-y border-black/8 py-8">
                     {/* Edge fades */}
-                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0c0b07] to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0c0b07] to-transparent z-10 pointer-events-none" />
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#f9f8f5] to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#f9f8f5] to-transparent z-10 pointer-events-none" />
                     <motion.div
                         className="flex items-center gap-5 whitespace-nowrap"
                         animate={{ x: ['0%', '-50%'] }}

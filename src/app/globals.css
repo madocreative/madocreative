@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+/* ─── Tailwind v4 theme ─────────────────────────────────────────────── */
+@theme {
+  /* Fonts */
+  --font-sans:    var(--font-sans, 'Be Vietnam Pro', system-ui, sans-serif);
+  --font-display: var(--font-display, 'Cormorant Garamond', Georgia, serif);
+
+  /* Light section palette */
+  --color-light-bg:   #f9f8f5;
+  --color-light-bg2:  #f4f2ee;
+  --color-light-text: #111009;
+  --color-light-sub:  #4a4535;
+  --color-light-muted:#7a7260;
+  --color-light-rule: rgba(0,0,0,0.08);
+}
+
 /* ─── Brand tokens ─────────────────────────────────────────────────── */
 :root {
   --gold:        #ffc000;
@@ -12,19 +27,33 @@
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; } /* Lenis handles smooth scroll */
 
 body {
   background-color: var(--bg-void);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 400;
 }
 
 /* ─── Font utilities ────────────────────────────────────────────────── */
 .font-display {
-  font-family: var(--font-display, var(--font-noto-serif, Georgia, serif));
-  letter-spacing: -0.01em;
+  font-family: var(--font-display, 'Cormorant Garamond', Georgia, serif);
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+/* ─── Light section utility ─────────────────────────────────────────── */
+.section-light {
+  background-color: var(--color-light-bg);
+  color: var(--color-light-text);
+}
+.section-light-2 {
+  background-color: var(--color-light-bg2);
+  color: var(--color-light-text);
 }
 
 /* ─── Selection colour ──────────────────────────────────────────────── */
