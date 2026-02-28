@@ -16,7 +16,6 @@ interface GalleryItem {
     featuredImage?: string;
     images?: string[];
 }
-interface HighlightCard  { stat: string; title: string; description: string; }
 interface ServicePillar  { title: string; description: string; note: string; }
 interface ProcessStep    { title: string; description: string; }
 interface ClientLogo     { name: string; image: string; }
@@ -26,10 +25,6 @@ interface HomeContent    { title?: string; subtitle?: string; heroImage?: string
 /* ─────────────────────────────────────────────────────────────────
    DEFAULTS
 ───────────────────────────────────────────────────────────────── */
-const defaultHighlightCards: HighlightCard[] = [
-    { stat: 'Creative + Tech', title: 'Dual Expertise Under One Studio', description: 'Mado Creatives combines premium visual storytelling with trusted electronics solutions for modern brands and creators.' },
-    { stat: 'International Reach', title: 'Multi-Country Presence', description: 'Productions and client support run across Addis Ababa, Kigali, Nairobi, and Dubai with a consistent premium standard.' },
-];
 const defaultServicePillars: ServicePillar[] = [
     { title: 'Luxury Weddings and Events', description: 'Timeless coverage for engagements, private celebrations, and destination events with cinematic delivery.', note: 'Photography + Film' },
     { title: 'Fashion and Editorial', description: 'Bold campaign visuals for models, designers, and publications with direction tailored to brand identity.', note: 'Editorial Production' },
@@ -105,7 +100,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
     const ctaLink          = getString(sections.ctaLink,           '/portfolio');
     const secondaryCtaLink = getString(sections.secondaryCtaLink,  '/contact');
     const introDescription = getString(sections.introDescription,  'From luxury weddings to commercial campaigns, Mado Creatives builds high-impact visuals that blend emotion, strategy, and international creative standards.');
-    const highlightCards   = getList<HighlightCard>(sections.highlightCards,  defaultHighlightCards);
+    // highlightCards removed — section replaced by dense gallery grid
     const servicePillars   = getList<ServicePillar>(sections.servicePillars,  defaultServicePillars);
     const processSteps     = getList<ProcessStep>(sections.processSteps,      defaultProcessSteps);
     const clientLogos      = getList<ClientLogo>(sections.clientLogos,        defaultClientLogos);
@@ -125,15 +120,14 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
     const reelRow1 = reelImgs.filter((_, i) => i % 2 === 0).slice(0, 14);
     const reelRow2 = reelImgs.filter((_, i) => i % 2 === 1).slice(0, 14);
 
-    // Sections
-    const featuredGalleries = galleries.slice(0, 4);
+    // All gallery images for the dense "Our Work" grid
+    const workImages        = galleries.flatMap(g => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[];
+    // Unique categories for pill tags
+    const galleryCategories = Array.from(new Set(galleries.map(g => g.category).filter(Boolean))) as string[];
+
     const statsParallaxImg  = galleries[2]?.featuredImage || galleries[0]?.featuredImage;
     const ctaBgImg          = galleries[0]?.featuredImage;
     const servicesImg       = galleries[1]?.featuredImage || galleries[0]?.featuredImage;
-
-    // Z-pattern for portfolio grid
-    const gridColSpan = ['md:col-span-7', 'md:col-span-5', 'md:col-span-5', 'md:col-span-7', 'md:col-span-6', 'md:col-span-6'];
-    const gridAspect  = ['aspect-[16/10]', 'aspect-[16/10]', 'aspect-[4/3]', 'aspect-[4/3]', 'aspect-[4/3]', 'aspect-[4/3]'];
 
     return (
         <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
@@ -269,128 +263,83 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             </section>
 
             {/* ══════════════════════════════════════════════════════════
-                4. SELECTED GALLERIES — immersive gallery cards
+                4. OUR WORK — dense masonry image grid (Legacy Studio style)
             ══════════════════════════════════════════════════════════ */}
-            {featuredGalleries.length > 0 && (
-                <section className="py-28 md:py-40 bg-[#060504]">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-16">
-                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.7 }}
-                            >
-                                <SectionLabel text="Portfolio Showcase" />
-                                <h2 className="text-4xl md:text-6xl font-display font-bold text-white">
-                                    Selected <span className="text-[#ffc000]">Work.</span>
-                                </h2>
-                            </motion.div>
-                            <Link href="/portfolio"
-                                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50 border border-white/15 px-5 py-3 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors self-start lg:self-auto flex-shrink-0">
-                                View Full Portfolio
-                                <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                            </Link>
-                        </div>
-
-                        {/* Gallery cards grid */}
-                        <div className="grid md:grid-cols-2 gap-0.5">
-                            {featuredGalleries.map((gallery, gIdx) => {
-                                const imgs = [gallery.featuredImage, ...(gallery.images || [])].filter(Boolean) as string[];
-                                const img1 = imgs[0];
-                                const img2 = imgs[1];
-                                const img3 = imgs[2];
-                                return (
-                                    <motion.a
-                                        key={gallery._id}
-                                        href="/portfolio"
-                                        initial={{ opacity: 0, y: 40 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true, margin: '-60px' }}
-                                        transition={{ duration: 0.8, delay: gIdx * 0.1 }}
-                                        className="group relative bg-[#0a0908] block overflow-hidden"
-                                    >
-                                        {/* Image mini-grid */}
-                                        <div className="flex gap-0.5 h-[260px] md:h-[320px]">
-                                            {/* Large left image */}
-                                            {img1 && (
-                                                <div className="flex-[2] overflow-hidden">
-                                                    <img src={img1} alt={gallery.title}
-                                                        className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
-                                                </div>
-                                            )}
-                                            {/* 2 stacked right */}
-                                            {(img2 || img3) && (
-                                                <div className="flex-1 flex flex-col gap-0.5">
-                                                    {img2 && (
-                                                        <div className="flex-1 overflow-hidden">
-                                                            <img src={img2} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 delay-75" />
-                                                        </div>
-                                                    )}
-                                                    {img3 && (
-                                                        <div className="flex-1 overflow-hidden">
-                                                            <img src={img3} alt="" className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 delay-150" />
-                                                        </div>
-                                                    )}
-                                                    {!img2 && !img3 && img1 && (
-                                                        <div className="flex-1 bg-[#0d0c08]" />
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Hover gradient overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#060504]/95 via-[#060504]/20 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                        {/* Info bar */}
-                                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
-                                            {gallery.category && (
-                                                <p className="text-[#ffc000] uppercase tracking-[0.3em] text-[10px] font-bold mb-2">
-                                                    {gallery.category}
-                                                </p>
-                                            )}
-                                            <div className="flex items-end justify-between gap-3">
-                                                <h3 className="text-xl md:text-2xl font-display font-bold text-white leading-tight">
-                                                    {gallery.title}
-                                                </h3>
-                                                <div className="flex items-center gap-3 flex-shrink-0">
-                                                    <span className="text-[10px] text-[#5c5544] font-bold uppercase tracking-[0.2em] hidden group-hover:block">
-                                                        {imgs.length} frames
-                                                    </span>
-                                                    <span className="material-symbols-outlined text-[#ffc000] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                        arrow_outward
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Layout badge top-right */}
-                                        {gallery.layout && gallery.layout !== 'masonry' && (
-                                            <div className="absolute top-3 right-3 bg-[#090805]/80 px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                <span className="text-[9px] text-[#ffc000]/70 uppercase tracking-[0.28em] font-bold">
-                                                    {gallery.layout}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </motion.a>
-                                );
-                            })}
-                        </div>
-
-                        {/* Bottom CTA */}
+            {workImages.length > 0 && (
+                <section className="bg-[#090805] pb-20">
+                    {/* Section header */}
+                    <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
-                            className="flex justify-center mt-12"
+                            transition={{ duration: 0.7 }}
                         >
-                            <Link href="/portfolio"
-                                className="inline-flex items-center gap-3 bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors">
-                                View All {galleries.length} Galleries
-                                <span className="material-symbols-outlined text-[18px]">collections</span>
-                            </Link>
+                            <SectionLabel text="Our Work" />
+                            <h2 className="text-4xl md:text-6xl font-display font-bold text-white leading-none">
+                                Selected <span className="text-[#ffc000]">Work.</span>
+                            </h2>
                         </motion.div>
+                        <Link href="/portfolio"
+                            className="self-start inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50 border border-white/15 px-5 py-3 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors flex-shrink-0">
+                            Full Portfolio
+                            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </Link>
+                    </div>
+
+                    {/* Dense masonry grid — full-bleed, tight gaps */}
+                    <div className="px-1 md:px-2">
+                        <div className="columns-2 sm:columns-3 lg:columns-4 gap-px">
+                            {workImages.slice(0, 24).map((img, i) => (
+                                <motion.a
+                                    key={i}
+                                    href="/portfolio"
+                                    className="break-inside-avoid mb-px block overflow-hidden group relative bg-[#0d0c08] cursor-pointer"
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true, margin: '-30px' }}
+                                    transition={{ duration: 0.55, delay: Math.min(i * 0.025, 0.35) }}
+                                >
+                                    <img
+                                        src={img} alt=""
+                                        className="w-full h-auto object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out block"
+                                        loading="lazy"
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-400" />
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span className="material-symbols-outlined text-white text-[28px]">open_in_full</span>
+                                    </div>
+                                </motion.a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Category pill tags + CTA */}
+                    <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 flex flex-col items-center gap-8">
+                        {galleryCategories.length > 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 12 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6 }}
+                                className="flex flex-wrap gap-2.5 justify-center"
+                            >
+                                {['All Work', ...galleryCategories].map(cat => (
+                                    <Link
+                                        key={cat}
+                                        href="/portfolio"
+                                        className="rounded-full border border-white/15 px-5 py-2 text-[11px] font-medium text-white/50 uppercase tracking-[0.22em] hover:border-[#ffc000] hover:text-[#ffc000] transition-all duration-200"
+                                    >
+                                        {cat}
+                                    </Link>
+                                ))}
+                            </motion.div>
+                        )}
+                        <Link href="/portfolio"
+                            className="inline-flex items-center gap-3 bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors">
+                            View All {galleries.length} Galleries
+                            <span className="material-symbols-outlined text-[18px]">collections</span>
+                        </Link>
                     </div>
                 </section>
             )}
@@ -648,7 +597,6 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
 }) {
     const containerRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] });
-    const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
 
     const [index, setIndex]     = useState(0);
     const [direction, setDir]   = useState(1);

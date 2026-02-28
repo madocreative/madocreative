@@ -41,6 +41,10 @@ export default function RootLayout({
         className={`${beVietnamPro.variable} ${cormorantGaramond.variable} antialiased bg-[#0a0a08] text-[#f0ede6] min-h-screen flex flex-col font-sans`}
       >
         <LenisProvider>
+          {/* White page border frame — Legacy Studio style */}
+          <HideOnAdmin>
+            <div className="fixed inset-0 border-[12px] md:border-[18px] border-white z-[9999] pointer-events-none" aria-hidden="true" />
+          </HideOnAdmin>
           <HideOnAdmin>
             <Header />
           </HideOnAdmin>
