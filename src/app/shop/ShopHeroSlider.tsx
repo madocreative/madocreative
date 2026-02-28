@@ -68,7 +68,7 @@ export default function ShopHeroSlider() {
 
     return (
         <section
-            className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#0a0a08]"
+            className="relative h-[70vh] md:h-[85vh] overflow-hidden bg-[#0a0a08]"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
         >
@@ -84,10 +84,18 @@ export default function ShopHeroSlider() {
                     transition={{ duration: 0.55, ease: [0.32, 0, 0.67, 0] }}
                     className="absolute inset-0"
                 >
+                    {/* Blurred ambient background — fills empty space */}
+                    <img
+                        src={slide.img}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
+                        aria-hidden="true"
+                    />
+                    {/* Full image — object-contain so nothing is cropped */}
                     <img
                         src={slide.img}
                         alt={slide.title}
-                        className="w-full h-full object-cover"
+                        className="relative z-10 w-full h-full object-contain"
                     />
                 </motion.div>
             </AnimatePresence>

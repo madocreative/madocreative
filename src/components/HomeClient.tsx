@@ -690,13 +690,20 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
                         animate="center"
                         exit="exit"
                         transition={{ duration: 0.7, ease: [0.32, 0, 0.67, 0] }}
-                        className="absolute inset-0 overflow-hidden"
+                        className="absolute inset-0 bg-[#090805]"
                     >
-                        <motion.img
+                        {/* Blurred ambient background — fills empty space on sides */}
+                        <img
                             src={images[index]}
                             alt=""
-                            className="w-full h-full object-cover"
-                            style={{ y: imgY, scale: 1.08 }}
+                            className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
+                            aria-hidden="true"
+                        />
+                        {/* Full image — object-contain so nothing is cropped */}
+                        <img
+                            src={images[index]}
+                            alt=""
+                            className="relative z-10 w-full h-full object-contain"
                         />
                     </motion.div>
                 </AnimatePresence>
