@@ -1,8 +1,11 @@
 'use client';
 
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTheme } from '@/components/ThemeProvider';
 
 /* ─────────────────────────────────────────────────────────────────
    TYPES
@@ -50,7 +53,6 @@ const defaultStats: StatItem[] = [
     { value: '4', label: 'Operating Locations' },
     { value: '24/7', label: 'Client Support' },
 ];
-const TICKER_LABELS = ['Photography', 'Editorial', 'Commercial', 'Weddings', 'Fashion', 'Events', 'Portraits', 'Campaigns'];
 
 /* ─────────────────────────────────────────────────────────────────
    HELPERS
@@ -130,7 +132,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
     const servicesImg       = galleries[1]?.featuredImage || galleries[0]?.featuredImage;
 
     return (
-        <div className="flex flex-col bg-[#090805] text-[#f2efe7]">
+        <div className="flex flex-col bg-[var(--app-bg)] text-[var(--app-text)]">
 
             {/* ══════════════════════════════════════════════════════════
                 1. HERO — cinematic 3-col parallax grid + text + ticker
@@ -510,7 +512,7 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
             <section className="py-24 md:py-28 bg-[#f9f8f5]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-14">
                     <SectionLabel text="Trusted by Past Clients" />
-                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#111009]">Brands We've Worked With.</h2>
+                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#111009]">Brands We&apos;ve Worked With.</h2>
                 </div>
                 <div className="relative overflow-hidden border-y border-black/8 py-8">
                     {/* Edge fades */}
@@ -584,205 +586,135 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
 /* ─────────────────────────────────────────────────────────────────
    HERO — full-screen image slider
 ───────────────────────────────────────────────────────────────── */
-const AUTOPLAY_DELAY = 6000;
+gsap.registerPlugin(ScrollTrigger);
 
-const slideVariants = {
-    enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
-    center: { x: 0, opacity: 1 },
-    exit:  (dir: number) => ({ x: dir < 0 ? '100%' : '-100%', opacity: 0 }),
-};
+const AUTOPLAY_DELAY = 6200;
 
 function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     heroImgs: string[]; ctaText: string; ctaLink: string; secondaryCtaLink: string;
 }) {
-    const containerRef = useRef<HTMLElement>(null);
-    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end start'] });
+    const { theme } = useTheme();
+    const sectionRef = useRef<HTMLElement>(null);
+    const figureRef = useRef<HTMLImageElement>(null);
 
-    const [index, setIndex]     = useState(0);
-    const [direction, setDir]   = useState(1);
-    const [paused, setPaused]   = useState(false);
+    const [index, setIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
 
-    const images = heroImgs.length > 0 ? heroImgs : [];
-
-    const go = useCallback((next: number) => {
-        if (images.length === 0) return;
-        const bounded = (next + images.length) % images.length;
-        setDir(next > index ? 1 : -1);
-        setIndex(bounded);
-    }, [index, images.length]);
-
-    const goNext = useCallback(() => go(index + 1), [go, index]);
-    const goPrev = useCallback(() => go(index - 1), [go, index]);
+    const images = heroImgs.length > 0 ? heroImgs : ['/logo.png'];
+    const activeImage = images[index % images.length];
 
     useEffect(() => {
-        if (paused || images.length <= 1) return;
-        const t = setTimeout(goNext, AUTOPLAY_DELAY);
-        return () => clearTimeout(t);
-    }, [index, paused, goNext, images.length]);
+        if (images.length <= 1 || isPaused) return;
+        const t = window.setTimeout(() => {
+            setIndex((prev) => (prev + 1) % images.length);
+        }, AUTOPLAY_DELAY);
+        return () => window.clearTimeout(t);
+    }, [images.length, index, isPaused]);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            timeline
+                .from('.legacy-hero-kicker', { y: 24, autoAlpha: 0, duration: 0.55 })
+                .from('.legacy-hero-title-line', { y: 56, autoAlpha: 0, duration: 0.7, stagger: 0.1 }, '-=0.2')
+                .from('.legacy-hero-copy', { y: 22, autoAlpha: 0, duration: 0.55 }, '-=0.24')
+                .from('.legacy-hero-actions', { y: 18, autoAlpha: 0, duration: 0.48 }, '-=0.2');
+
+            if (figureRef.current && sectionRef.current) {
+                gsap.fromTo(
+                    figureRef.current,
+                    { scale: 1.08, autoAlpha: 0.45 },
+                    { scale: 1, autoAlpha: 1, duration: 1.05, ease: 'power2.out' },
+                );
+
+                gsap.to(figureRef.current, {
+                    yPercent: -8,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: true,
+                    },
+                });
+            }
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, [index]);
+
+    const isLight = theme === 'light';
 
     return (
         <section
-            ref={containerRef}
-            className="relative h-screen flex flex-col overflow-hidden"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
+            ref={sectionRef}
+            className="relative px-3 md:px-5 pt-[104px] md:pt-[116px] pb-6 md:pb-10"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
         >
-            {/* Sliding background images */}
-            {images.length > 0 ? (
-                <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                    <motion.div
-                        key={index}
-                        custom={direction}
-                        variants={slideVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 0.7, ease: [0.32, 0, 0.67, 0] }}
-                        className="absolute inset-0 bg-[#090805]"
-                    >
-                        {/* Blurred ambient background — fills empty space on sides */}
-                        <img
-                            src={images[index]}
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
-                            aria-hidden="true"
-                        />
-                        {/* Full image — object-contain so nothing is cropped */}
-                        <img
-                            src={images[index]}
-                            alt=""
-                            className="relative z-10 w-full h-full object-contain"
-                        />
-                    </motion.div>
-                </AnimatePresence>
-            ) : (
-                <div className="absolute inset-0 bg-[#090805]" />
-            )}
+            <div className="relative mx-auto max-w-[1320px] min-h-[calc(100vh-130px)] rounded-[1.55rem] overflow-hidden border border-[var(--app-border)]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(255,192,0,0.18),transparent_40%),linear-gradient(102deg,var(--hero-accent)_0%,#130607_52%,#050404_100%)]" />
 
-            {/* Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/95 via-[#090805]/55 to-[#090805]/10 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#090805]/80 via-transparent to-[#090805]/30 pointer-events-none" />
-
-            {/* Prev / Next arrows */}
-            {images.length > 1 && (
-                <>
-                    <button
-                        onClick={goPrev}
-                        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 group"
-                        aria-label="Previous"
-                    >
-                        <span className="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">chevron_left</span>
-                    </button>
-                    <button
-                        onClick={goNext}
-                        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-black/40 hover:bg-[#ffc000] text-white hover:text-[#090805] border border-white/10 hover:border-[#ffc000] backdrop-blur-sm flex items-center justify-center transition-all duration-200 group"
-                        aria-label="Next"
-                    >
-                        <span className="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform">chevron_right</span>
-                    </button>
-                </>
-            )}
-
-            {/* Dot indicators */}
-            {images.length > 1 && (
-                <div className="absolute bottom-20 left-8 lg:left-20 z-20 flex items-center gap-2">
-                    {images.map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => { setDir(i > index ? 1 : -1); setIndex(i); }}
-                            className={`transition-all duration-300 rounded-full ${i === index ? 'bg-[#ffc000] w-7 h-2' : 'bg-white/30 hover:bg-white/60 w-2 h-2'}`}
-                            aria-label={`Slide ${i + 1}`}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {/* Slide counter */}
-            {images.length > 1 && (
-                <div className="absolute top-6 right-6 z-20 hidden md:block bg-black/40 backdrop-blur-md border border-white/10 text-white text-[11px] font-bold px-3 py-1.5">
-                    {String(index + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
-                </div>
-            )}
-
-            {/* Auto-play progress bar */}
-            {images.length > 1 && !paused && (
-                <motion.div
-                    key={`prog-${index}`}
-                    className="absolute top-0 left-0 h-[3px] bg-[#ffc000] z-20"
-                    initial={{ width: '0%' }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: AUTOPLAY_DELAY / 1000, ease: 'linear' }}
+                <img
+                    ref={figureRef}
+                    key={activeImage}
+                    src={activeImage}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover object-center md:object-[center_20%] mix-blend-normal opacity-95"
                 />
-            )}
 
-            {/* Hero text */}
-            <div className="relative z-10 flex-1 flex items-center px-8 lg:px-20">
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.1, ease: 'easeOut' }}
-                    className="max-w-2xl"
-                >
-                    <motion.p
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        className="text-[#ffc000] font-bold tracking-[0.44em] uppercase text-[10px] mb-8 flex items-center gap-4"
-                    >
-                        <span className="block w-10 h-px bg-[#ffc000]" />
-                        Mado Creatives Studio
-                    </motion.p>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-[0.9] tracking-tight mb-8">
-                        Where Vision<br />Becomes<br />
-                        <span className="text-[#ffc000]">Visual Legacy.</span>
-                    </h1>
-                    <p className="text-base md:text-lg text-[#c3bcab] max-w-lg leading-relaxed mb-10">
-                        Premium visual storytelling for brands, entrepreneurs, and modern creatives across Africa and beyond.
-                    </p>
-                    <div className="flex flex-wrap gap-4">
-                        <Link href={ctaLink}
-                            className="inline-flex items-center gap-2 bg-[#ffc000] text-[#090805] px-8 py-4 text-sm font-bold uppercase tracking-[0.2em] hover:bg-white transition-colors">
-                            {ctaText}
-                            <span className="material-symbols-outlined text-[18px]">arrow_outward</span>
-                        </Link>
-                        <Link href={secondaryCtaLink}
-                            className="inline-flex items-center gap-2 border border-white/30 text-white px-8 py-4 text-sm font-bold uppercase tracking-[0.2em] hover:border-[#ffc000] hover:text-[#ffc000] transition-colors">
-                            Start a Project
-                        </Link>
+                <div className={`absolute inset-0 ${isLight ? 'bg-[linear-gradient(90deg,rgba(9,8,7,0.88)_0%,rgba(9,8,7,0.58)_43%,rgba(9,8,7,0.12)_80%)]' : 'bg-[linear-gradient(90deg,rgba(9,8,7,0.96)_0%,rgba(9,8,7,0.62)_45%,rgba(9,8,7,0.18)_80%)]'}`} />
+                <div className="absolute inset-0 border border-white/8 rounded-[1.55rem]" />
+
+                <div className="relative z-10 px-6 md:px-10 lg:px-16 py-14 md:py-16 lg:py-18 flex min-h-[calc(100vh-130px)] items-center">
+                    <div className="max-w-3xl">
+                        <p className="legacy-hero-kicker flex items-center gap-3 text-[11px] font-semibold tracking-[0.38em] text-white/80 uppercase mb-6 md:mb-7">
+                            <span className="block h-px w-10 bg-[#ffc000]" />
+                            Legacy Style Hero
+                        </p>
+
+                        <h1 className="font-black text-white uppercase leading-[0.9] tracking-tight text-[clamp(2.8rem,8vw,7rem)]">
+                            <span className="legacy-hero-title-line block">Welcome</span>
+                            <span className="legacy-hero-title-line block">To The Home</span>
+                        </h1>
+
+                        <p className="legacy-hero-copy mt-7 md:mt-8 max-w-[42rem] text-white/78 text-sm md:text-[1.04rem] uppercase leading-[1.62] tracking-[0.02em]">
+                            Welcome to Mado Creatives, where we transform your unique story into timeless art and cinematic visuals that
+                            preserve every grand moment and subtle glance.
+                        </p>
+
+                        <div className="legacy-hero-actions mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-4">
+                            <Link
+                                href={ctaLink}
+                                className="inline-flex items-center gap-2 rounded-full bg-white text-[#111] px-6 md:px-7 h-11 md:h-12 text-sm font-semibold tracking-tight hover:bg-[#ffe4a4] transition-colors"
+                            >
+                                {ctaText}
+                                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </Link>
+                            <Link
+                                href={secondaryCtaLink}
+                                className="inline-flex items-center gap-2 rounded-full border border-white/30 text-white px-6 md:px-7 h-11 md:h-12 text-sm font-semibold tracking-tight hover:bg-white/12 transition-colors"
+                            >
+                                Start Project
+                            </Link>
+                        </div>
                     </div>
-                </motion.div>
-            </div>
+                </div>
 
-            {/* Scroll indicator */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2, duration: 0.8 }}
-                className="relative z-10 px-8 lg:px-20 pb-20 flex items-center gap-3 text-[#6b6250]"
-            >
-                <motion.span
-                    animate={{ y: [0, 6, 0] }}
-                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="block w-px h-10 bg-[#ffc000]/40"
-                />
-                <span className="text-[10px] uppercase tracking-[0.38em]">Scroll to Explore</span>
-            </motion.div>
-
-            {/* Gold ticker strip */}
-            <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#ffc000] z-20 flex items-center overflow-hidden">
-                <motion.div
-                    className="flex items-center whitespace-nowrap"
-                    animate={{ x: ['0%', '-50%'] }}
-                    transition={{ duration: 28, repeat: Infinity, ease: 'linear', repeatType: 'loop' }}
-                    style={{ width: 'max-content' }}
-                >
-                    {[...TICKER_LABELS, ...TICKER_LABELS].map((label, i) => (
-                        <span key={i} className="inline-flex items-center gap-7 px-7 text-[#090805] font-bold text-[11px] uppercase tracking-[0.38em]">
-                            {label}
-                            <span className="text-[#090805]/25 text-[7px]">◆</span>
-                        </span>
-                    ))}
-                </motion.div>
+                {images.length > 1 && (
+                    <div className="absolute right-4 md:right-8 bottom-5 md:bottom-8 z-20 flex items-center gap-2">
+                        {images.map((_, itemIndex) => (
+                            <button
+                                key={itemIndex}
+                                type="button"
+                                onClick={() => setIndex(itemIndex)}
+                                className={`h-2.5 rounded-full transition-all ${itemIndex === index ? 'w-7 bg-[#ffc000]' : 'w-2.5 bg-white/36 hover:bg-white/65'}`}
+                                aria-label={`Go to hero slide ${itemIndex + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

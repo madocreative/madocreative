@@ -5,8 +5,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HideOnAdmin from '@/components/HideOnAdmin';
 import LenisProvider from '@/components/LenisProvider';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
-/* Be Vietnam Pro — clean modern sans, same as Legacy Studio */
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -14,7 +14,6 @@ const beVietnamPro = Be_Vietnam_Pro({
   display: 'swap',
 });
 
-/* Cormorant Garamond — elegant serif for headings/display */
 const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
@@ -24,7 +23,8 @@ const cormorantGaramond = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: 'Mado Creatives | Luxury Visual Storytelling',
-  description: 'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.',
+  description:
+    'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.',
 };
 
 export default function RootLayout({
@@ -33,28 +33,47 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning data-theme="dark">
       <head>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (() => {
+                const key = 'mado-theme';
+                const saved = localStorage.getItem(key);
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                const theme = saved === 'light' || saved === 'dark' ? saved : (prefersLight ? 'light' : 'dark');
+                document.documentElement.dataset.theme = theme;
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+              })();
+            `,
+          }}
+        />
       </head>
       <body
-        className={`${beVietnamPro.variable} ${cormorantGaramond.variable} antialiased bg-[#0a0a08] text-[#f0ede6] min-h-screen flex flex-col font-sans`}
+        className={`${beVietnamPro.variable} ${cormorantGaramond.variable} antialiased min-h-screen flex flex-col font-sans bg-[var(--app-bg)] text-[var(--app-text)]`}
       >
-        <LenisProvider>
-          {/* White page border frame — Legacy Studio style */}
-          <HideOnAdmin>
-            <div className="fixed inset-0 border-[12px] md:border-[18px] border-white z-[9999] pointer-events-none" aria-hidden="true" />
-          </HideOnAdmin>
-          <HideOnAdmin>
-            <Header />
-          </HideOnAdmin>
-          <main className="flex-1">
-            {children}
-          </main>
-          <HideOnAdmin>
-            <Footer />
-          </HideOnAdmin>
-        </LenisProvider>
+        <ThemeProvider>
+          <LenisProvider>
+            <HideOnAdmin>
+              <div
+                className="fixed inset-0 border-[12px] md:border-[18px] border-[var(--frame-border)] z-[9999] pointer-events-none"
+                aria-hidden="true"
+              />
+            </HideOnAdmin>
+            <HideOnAdmin>
+              <Header />
+            </HideOnAdmin>
+            <main className="flex-1">{children}</main>
+            <HideOnAdmin>
+              <Footer />
+            </HideOnAdmin>
+          </LenisProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

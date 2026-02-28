@@ -2,165 +2,180 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTheme } from '@/components/ThemeProvider';
 
-const servicesDropdown = [
-    { name: 'All Services', path: '/services', icon: 'layers' },
-    { name: 'Videography', path: '/videography', icon: 'videocam' },
-    { name: 'Digital Marketing', path: '/digital-marketing', icon: 'trending_up' },
+type NavItem = {
+  name: string;
+  path: string;
+};
+
+const navItems: NavItem[] = [
+  { name: 'Home', path: '/' },
+  { name: 'Gallery', path: '/portfolio' },
+  { name: 'Info', path: '/team' },
+  { name: 'Pricing', path: '/services' },
+  { name: 'Shop', path: '/shop' },
+  { name: 'Blog', path: '/blog' },
 ];
 
 export default function Header() {
-    const pathname = usePathname();
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [servicesOpen, setServicesOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
 
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 50);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const handleClick = (e: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-                setServicesOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, []);
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-    const isServicesActive = ['/services', '/videography', '/digital-marketing'].includes(pathname);
+  const themeClasses = useMemo(() => {
+    if (theme === 'light') {
+      return {
+        shell: 'bg-white/82 border-black/10',
+        menuBtn: 'bg-[#111111] text-white',
+        roundBtn: 'bg-[#f3f3f0] text-[#101010] border border-black/10 hover:bg-[#ecebe5]',
+        primaryBtn: 'bg-[#111111] text-white hover:bg-[#2b2b2b]',
+        mobilePanel: 'bg-white border-black/10 text-[#151515]',
+      };
+    }
 
-    const navLinks = [
-        { name: 'Portfolio', path: '/portfolio' },
-        { name: 'Team', path: '/team' },
-        { name: 'Shop', path: '/shop' },
-        { name: 'Blog', path: '/blog' },
-        { name: 'Contact', path: '/contact' },
-    ];
+    return {
+      shell: 'bg-[#090705]/78 border-white/12',
+      menuBtn: 'bg-white text-[#090705]',
+      roundBtn: 'bg-white/12 text-white border border-white/25 hover:bg-white/24',
+      primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
+      mobilePanel: 'bg-[#0f0d0a] border-white/10 text-white',
+    };
+  }, [theme]);
 
-    return (
-        <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                ? 'bg-[#0a0a08]/90 backdrop-blur-md border-b border-white/10 py-4 shadow-lg'
-                : 'bg-gradient-to-b from-[#090805]/80 via-[#090805]/30 to-transparent py-6 border-b border-transparent'
-                }`}
-        >
-            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center">
-                    <img src="/logo.png" alt="Mado Creatives" className="h-16 md:h-24 w-auto object-contain scale-[1.3] origin-left" />
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 px-3 md:px-5 pt-3 md:pt-4">
+      <div
+        className={`mx-auto max-w-[1320px] rounded-[1.5rem] border backdrop-blur-xl transition-all duration-300 ${themeClasses.shell} ${
+          isScrolled ? 'shadow-[0_18px_45px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3 px-3 py-3 md:px-5">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className={`h-11 w-11 rounded-full grid place-items-center transition-colors ${themeClasses.menuBtn}`}
+              aria-label="Toggle menu"
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                {mobileMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+            <Link href="/" className="block">
+              <img src="/logo.png" alt="Mado Creatives" className="h-12 md:h-16 w-auto object-contain" />
+            </Link>
+          </div>
+
+          <nav className="hidden xl:flex items-center gap-7">
+            {navItems.map((item) => {
+              const active = pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`text-[1rem] font-semibold tracking-tight transition-colors ${
+                    active
+                      ? theme === 'dark'
+                        ? 'text-white'
+                        : 'text-[#1b1b1b]'
+                      : theme === 'dark'
+                        ? 'text-white/84'
+                        : 'text-[#383838]'
+                  } ${theme === 'dark' ? 'hover:text-white' : 'hover:text-[#1b1b1b]'}`}
+                >
+                  {item.name}
                 </Link>
+              );
+            })}
+          </nav>
 
-                {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-10">
-                    <Link href="/"
-                        className={`text-sm font-medium uppercase tracking-widest transition-colors hover:text-[#ffc000] ${pathname === '/' ? 'text-[#ffc000] border-b border-[#ffc000]' : 'text-slate-300'}`}>
-                        Home
-                    </Link>
+          <div className="flex items-center gap-2 md:gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`h-11 w-11 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
+              aria-label="Toggle theme"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
 
-                    {/* Services dropdown */}
-                    <div ref={dropdownRef} className="relative">
-                        <button
-                            onClick={() => setServicesOpen(o => !o)}
-                            className={`flex items-center gap-1 text-sm font-medium uppercase tracking-widest transition-colors hover:text-[#ffc000] ${isServicesActive ? 'text-[#ffc000] border-b border-[#ffc000]' : 'text-slate-300'}`}
-                        >
-                            Services
-                            <span className={`material-symbols-outlined text-[16px] transition-transform duration-200 ${servicesOpen ? 'rotate-180' : ''}`}>expand_more</span>
-                        </button>
+            <button
+              type="button"
+              className={`hidden sm:flex items-center gap-1.5 h-11 px-4 rounded-full transition-colors ${themeClasses.roundBtn}`}
+            >
+              <span className="text-sm font-semibold">En</span>
+              <span className="material-symbols-outlined text-[18px]">expand_more</span>
+            </button>
 
-                        {servicesOpen && (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-[#1a1812] border border-white/10 shadow-2xl overflow-hidden">
-                                {servicesDropdown.map(item => (
-                                    <Link
-                                        key={item.path}
-                                        href={item.path}
-                                        onClick={() => setServicesOpen(false)}
-                                        className={`flex items-center gap-3 px-5 py-3.5 text-sm font-bold uppercase tracking-wider transition-colors border-b border-white/5 last:border-0
-                                            ${pathname === item.path
-                                                ? 'bg-[#ffc000]/10 text-[#ffc000]'
-                                                : 'text-slate-300 hover:bg-white/5 hover:text-[#ffc000]'
-                                            }`}
-                                    >
-                                        <span className="material-symbols-outlined text-[16px] text-[#ffc000]">{item.icon}</span>
-                                        {item.name}
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+            <Link
+              href="/contact"
+              className={`hidden md:flex items-center gap-2 h-11 px-6 rounded-full text-sm font-semibold transition-colors ${themeClasses.primaryBtn}`}
+            >
+              Contact Us
+              <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
+            </Link>
+          </div>
+        </div>
 
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.path}
-                            className={`text-sm font-medium uppercase tracking-widest transition-colors hover:text-[#ffc000] ${pathname === link.path ? 'text-[#ffc000] border-b border-[#ffc000]' : 'text-slate-300'}`}
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
-                </nav>
-
-                {/* CTA & Mobile Toggle */}
-                <div className="flex items-center gap-6">
-                    <Link
-                        href="/booking"
-                        className="hidden sm:flex bg-[#ffc000] text-[#0a0a08] px-6 py-2.5 font-bold text-sm uppercase tracking-wider hover:bg-white transition-colors"
-                    >
-                        Book a Session
-                    </Link>
-                    <button
-                        className="md:hidden text-white"
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    >
-                        <span className="material-symbols-outlined">
-                            {mobileMenuOpen ? 'close' : 'menu'}
-                        </span>
-                    </button>
-                </div>
+        {mobileMenuOpen && (
+          <div className={`xl:hidden border-t px-4 pb-5 pt-4 rounded-b-[1.5rem] ${themeClasses.mobilePanel}`}>
+            <div className="grid gap-1">
+              {navItems.map((item) => {
+                const active = pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                      active
+                        ? theme === 'dark'
+                          ? 'bg-white/10 text-white'
+                          : 'bg-black/[0.06] text-black'
+                        : theme === 'dark'
+                          ? 'hover:bg-white/[0.07] text-white/[0.86]'
+                          : 'hover:bg-black/[0.06] text-[#1f1f1f]'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
             </div>
 
-            {/* Mobile Nav */}
-            {mobileMenuOpen && (
-                <div className="md:hidden absolute top-full left-0 w-full bg-[#1a1812] border-b border-white/10 shadow-2xl py-6 px-6 flex flex-col gap-0">
-                    <Link href="/" onClick={() => setMobileMenuOpen(false)}
-                        className={`py-4 border-b border-white/5 text-lg font-bold uppercase tracking-widest ${pathname === '/' ? 'text-[#ffc000]' : 'text-white'}`}>
-                        Home
-                    </Link>
-
-                    {/* Services group */}
-                    <div className="border-b border-white/5 pb-2">
-                        <p className="pt-4 pb-2 text-xs font-bold uppercase tracking-[0.3em] text-slate-500">Services</p>
-                        {servicesDropdown.map(item => (
-                            <Link key={item.path} href={item.path} onClick={() => setMobileMenuOpen(false)}
-                                className={`flex items-center gap-3 pl-3 py-3 text-base font-bold uppercase tracking-widest border-t border-white/5 ${pathname === item.path ? 'text-[#ffc000]' : 'text-white'}`}>
-                                <span className="material-symbols-outlined text-[16px] text-[#ffc000]">{item.icon}</span>
-                                {item.name}
-                            </Link>
-                        ))}
-                    </div>
-
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.path}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={`py-4 border-b border-white/5 text-lg font-bold uppercase tracking-widest ${pathname === link.path ? 'text-[#ffc000]' : 'text-white'}`}
-                        >
-                            {link.name}
-                        </Link>
-                    ))}
-
-                    <Link href="/booking" onClick={() => setMobileMenuOpen(false)}
-                        className="bg-[#ffc000] text-[#0a0a08] text-center px-6 py-3 font-bold uppercase tracking-wider hover:bg-white transition-colors mt-4">
-                        Book a Session
-                    </Link>
-                </div>
-            )}
-        </header>
-    );
+            <div className="flex items-center gap-2.5 mt-4">
+              <Link
+                href="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex-1 h-10 rounded-full grid place-items-center text-sm font-semibold ${themeClasses.primaryBtn}`}
+              >
+                Contact Us
+              </Link>
+              <Link
+                href="/booking"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex-1 h-10 rounded-full grid place-items-center text-sm font-semibold ${themeClasses.roundBtn}`}
+              >
+                Book
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
 }

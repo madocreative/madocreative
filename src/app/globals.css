@@ -1,37 +1,69 @@
 @import "tailwindcss";
 
-/* ─── Tailwind v4 theme ─────────────────────────────────────────────── */
 @theme {
-  /* Fonts */
-  --font-sans:    var(--font-sans, 'Be Vietnam Pro', system-ui, sans-serif);
+  --font-sans: var(--font-sans, 'Be Vietnam Pro', system-ui, sans-serif);
   --font-display: var(--font-display, 'Cormorant Garamond', Georgia, serif);
 
-  /* Light section palette */
-  --color-light-bg:   #f9f8f5;
-  --color-light-bg2:  #f4f2ee;
+  --color-light-bg: #f9f8f5;
+  --color-light-bg2: #f4f2ee;
   --color-light-text: #111009;
-  --color-light-sub:  #4a4535;
-  --color-light-muted:#7a7260;
-  --color-light-rule: rgba(0,0,0,0.08);
+  --color-light-sub: #4a4535;
+  --color-light-muted: #7a7260;
+  --color-light-rule: rgba(0, 0, 0, 0.08);
 }
 
-/* ─── Brand tokens ─────────────────────────────────────────────────── */
 :root {
-  --gold:        #ffc000;
-  --gold-dim:    rgba(255,192,0,0.15);
-  --bg-void:     #0a0a08;      /* deepest background */
-  --bg-dark:     #111109;      /* main dark sections */
-  --bg-card:     #1a1812;      /* card / sidebar surfaces */
-  --bg-input:    #221e10;      /* inputs / subtle panels */
-  --foreground:  #f0ede6;      /* warm white text */
+  --gold: #ffc000;
+  --gold-dim: rgba(255, 192, 0, 0.15);
+
+  --app-bg: #0a0a08;
+  --app-text: #f0ede6;
+  --app-subtle: #bdb7aa;
+  --app-muted: #7e7663;
+  --app-card: #14120d;
+  --app-elevated: #1f1a12;
+  --app-border: rgba(255, 255, 255, 0.12);
+  --app-overlay: rgba(9, 8, 5, 0.58);
+  --frame-border: #ffffff;
+  --hero-accent: #2b0203;
+  --grid-bg: #f7f7f6;
 }
 
-/* ─── Base ──────────────────────────────────────────────────────────── */
-html { scroll-behavior: auto; } /* Lenis handles smooth scroll */
+[data-theme='dark'] {
+  --app-bg: #0a0a08;
+  --app-text: #f0ede6;
+  --app-subtle: #bdb7aa;
+  --app-muted: #7e7663;
+  --app-card: #14120d;
+  --app-elevated: #1f1a12;
+  --app-border: rgba(255, 255, 255, 0.12);
+  --app-overlay: rgba(9, 8, 5, 0.58);
+  --frame-border: #ffffff;
+  --hero-accent: #2b0203;
+  --grid-bg: #13110d;
+}
+
+[data-theme='light'] {
+  --app-bg: #f5f4f0;
+  --app-text: #101010;
+  --app-subtle: #42403a;
+  --app-muted: #6f6b63;
+  --app-card: #ffffff;
+  --app-elevated: #f3f2ed;
+  --app-border: rgba(14, 14, 14, 0.14);
+  --app-overlay: rgba(245, 242, 236, 0.64);
+  --frame-border: rgba(15, 15, 15, 0.16);
+  --hero-accent: #4f1112;
+  --grid-bg: #f7f7f6;
+}
+
+html {
+  scroll-behavior: auto;
+}
 
 body {
-  background-color: var(--bg-void);
-  color: var(--foreground);
+  background-color: var(--app-bg);
+  color: var(--app-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 15px;
@@ -39,44 +71,51 @@ body {
   font-weight: 400;
 }
 
-/* ─── Font utilities ────────────────────────────────────────────────── */
 .font-display {
   font-family: var(--font-display, 'Cormorant Garamond', Georgia, serif);
   letter-spacing: -0.02em;
   font-weight: 500;
 }
 
-/* ─── Light section utility ─────────────────────────────────────────── */
 .section-light {
   background-color: var(--color-light-bg);
   color: var(--color-light-text);
 }
+
 .section-light-2 {
   background-color: var(--color-light-bg2);
   color: var(--color-light-text);
 }
 
-/* ─── Selection colour ──────────────────────────────────────────────── */
 ::selection {
   background: var(--gold);
-  color: var(--bg-void);
+  color: var(--app-bg);
 }
 
-/* ─── Scrollbar (webkit) ─────────────────────────────────────────────── */
-::-webkit-scrollbar              { width: 6px; height: 6px; }
-::-webkit-scrollbar-track        { background: var(--bg-void); }
-::-webkit-scrollbar-thumb        { background: #333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover  { background: var(--gold); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
-/* ─── Solid editorial helpers ────────────────────────────────────────── */
-/* Hard colour block on top of a photo — no gradients */
+::-webkit-scrollbar-track {
+  background: var(--app-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
 .editorial-bar {
-  background: var(--bg-void);
+  background: var(--app-bg);
   padding: 0.25rem 0.75rem;
   display: inline-block;
 }
 
-/* Full-bleed hero grid (used across multiple pages) */
 .hero-collage {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -85,20 +124,31 @@ body {
   position: absolute;
   inset: 0;
 }
+
 .hero-collage > *:first-child {
   grid-column: span 2;
-  grid-row:    span 2;
+  grid-row: span 2;
 }
 
-/* Gold underline accent */
 .gold-rule {
   border-bottom: 2px solid var(--gold);
 }
 
-/* ─── TinyMCE prose reset ────────────────────────────────────────────── */
-.prose-dark h1, .prose-dark h2, .prose-dark h3 { color: var(--foreground); }
-.prose-dark p  { color: #94a3b8; line-height: 1.8; }
-.prose-dark a  { color: var(--gold); }
+.prose-dark h1,
+.prose-dark h2,
+.prose-dark h3 {
+  color: var(--app-text);
+}
+
+.prose-dark p {
+  color: #94a3b8;
+  line-height: 1.8;
+}
+
+.prose-dark a {
+  color: var(--gold);
+}
+
 .prose-dark blockquote {
   border-left: 3px solid var(--gold);
   padding-left: 1rem;
@@ -106,8 +156,24 @@ body {
   font-style: italic;
 }
 
-/* ─── Masonry (CSS columns) ──────────────────────────────────────────── */
-.masonry-grid          { column-count: 1; column-gap: 2px; }
-@media (min-width: 640px)  { .masonry-grid { column-count: 2; } }
-@media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
-.masonry-item { break-inside: avoid; margin-bottom: 2px; }
+.masonry-grid {
+  column-count: 1;
+  column-gap: 2px;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-grid {
+    column-count: 3;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 2px;
+}
