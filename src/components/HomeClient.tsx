@@ -96,7 +96,15 @@ function SectionLabel({ text }: { text: string }) {
 /* ─────────────────────────────────────────────────────────────────
    MAIN EXPORT
 ───────────────────────────────────────────────────────────────── */
-export default function HomeClient({ content, galleries }: { content: HomeContent | null; galleries: GalleryItem[] }) {
+export default function HomeClient({
+    content,
+    galleries,
+    excludedImages = [],
+}: {
+    content: HomeContent | null;
+    galleries: GalleryItem[];
+    excludedImages?: string[];
+}) {
     const sections         = content?.sections || {};
     const ctaText          = getString(sections.ctaText,           'View Portfolio');
     const ctaLink          = getString(sections.ctaLink,           '/portfolio');
@@ -122,10 +130,18 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
     const reelRow1 = reelImgs.filter((_, i) => i % 2 === 0).slice(0, 14);
     const reelRow2 = reelImgs.filter((_, i) => i % 2 === 1).slice(0, 14);
 
-    // All gallery images for the dense "Our Work" grid
-    const workImages        = galleries.flatMap(g => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[];
-    // Unique categories for pill tags
-    const galleryCategories = Array.from(new Set(galleries.map(g => g.category).filter(Boolean))) as string[];
+    const excludedSet = new Set(
+        excludedImages
+            .map((img) => (typeof img === 'string' ? img.trim() : ''))
+            .filter(Boolean),
+    );
+    const workImages = Array.from(
+        new Set(
+            (galleries.flatMap((g) => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[])
+                .map((img) => img.trim())
+                .filter((img) => img.length > 0 && !excludedSet.has(img)),
+        ),
+    );
 
     const statsParallaxImg  = galleries[2]?.featuredImage || galleries[0]?.featuredImage;
     const ctaBgImg          = galleries[0]?.featuredImage;
@@ -268,86 +284,44 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
                 4. OUR WORK — dense masonry image grid (Legacy Studio style)
             ══════════════════════════════════════════════════════════ */}
             {workImages.length > 0 && (
-                <section className="bg-[#090805] pb-20">
-                    {/* Section header */}
-                    <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.7 }}
-                        >
-                            <SectionLabel text="Our Work" />
-                            <h2 className="text-4xl md:text-6xl font-display font-bold text-white leading-none">
-                                Selected <span className="text-[#ffc000]">Work.</span>
-                            </h2>
-                        </motion.div>
-                        <Link href="/portfolio"
-                            className="self-start inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50 border border-white/15 px-5 py-3 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors flex-shrink-0">
-                            Full Portfolio
-                            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                        </Link>
-                    </div>
-
-                    {/* Dense masonry grid — full-bleed, tight gaps */}
-                    <div className="px-1 md:px-2">
-                        <div className="columns-3 md:columns-4 xl:columns-5 gap-px">
-                            {workImages.slice(0, 40).map((img, i) => (
-                                <motion.a
-                                    key={i}
-                                    href="/portfolio"
-                                    className="break-inside-avoid mb-px block overflow-hidden group relative bg-[#0d0c08] cursor-pointer"
-                                    initial={{ opacity: 0 }}
-                                    whileInView={{ opacity: 1 }}
-                                    viewport={{ once: true, margin: '-30px' }}
-                                    transition={{ duration: 0.55, delay: Math.min(i * 0.025, 0.35) }}
-                                >
-                                    <motion.img
-                                        src={img} alt=""
-                                        className="w-full h-auto object-cover scale-[1.14] group-hover:scale-100 group-hover:brightness-[0.88] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] block will-change-transform"
-                                        loading="lazy"
-                                        animate={i < 16 ? { y: [0, -6, 0, 4, 0] } : undefined}
-                                        transition={
-                                            i < 16
-                                                ? { duration: 9 + (i % 5), repeat: Infinity, ease: 'easeInOut' }
-                                                : undefined
-                                        }
-                                    />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-400" />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <span className="material-symbols-outlined text-white text-[28px]">open_in_full</span>
-                                    </div>
-                                </motion.a>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Category pill tags + CTA */}
-                    <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 flex flex-col items-center gap-8">
-                        {galleryCategories.length > 0 && (
+                <section className="bg-[#03292b] py-16 md:py-24 border-y border-white/10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+                        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 mb-9 md:mb-12">
                             <motion.div
-                                initial={{ opacity: 0, y: 12 }}
+                                initial={{ opacity: 0, y: 22 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.6 }}
-                                className="flex flex-wrap gap-2.5 justify-center"
+                                transition={{ duration: 0.7 }}
                             >
-                                {['All Work', ...galleryCategories].map(cat => (
-                                    <Link
-                                        key={cat}
-                                        href="/portfolio"
-                                        className="rounded-full border border-white/15 px-5 py-2 text-[11px] font-medium text-white/50 uppercase tracking-[0.22em] hover:border-[#ffc000] hover:text-[#ffc000] transition-all duration-200"
-                                    >
-                                        {cat}
-                                    </Link>
-                                ))}
+                                <SectionLabel text="Our Work" />
+                                <h2 className="text-[2.2rem] sm:text-5xl md:text-6xl font-display font-bold text-white leading-[0.95]">
+                                    Selected <span className="text-[#ffc000]">Work</span>
+                                </h2>
+                                <p className="mt-4 text-sm md:text-base max-w-xl text-white/72 leading-relaxed">
+                                    A curated visual selection from recent projects. Tap any frame to open the full portfolio.
+                                </p>
                             </motion.div>
-                        )}
-                        <Link href="/portfolio"
-                            className="inline-flex items-center gap-3 bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors">
-                            View All {galleries.length} Galleries
-                            <span className="material-symbols-outlined text-[18px]">collections</span>
-                        </Link>
+
+                            <Link
+                                href="/portfolio"
+                                className="self-start inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-5 h-11 text-[11px] font-semibold tracking-[0.18em] uppercase text-white/85 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
+                            >
+                                Full Portfolio
+                                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                            </Link>
+                        </div>
+
+                        <SelectedWorkGallery images={workImages.slice(0, 24)} />
+
+                        <div className="mt-10 md:mt-12 flex justify-center">
+                            <Link
+                                href="/portfolio"
+                                className="inline-flex items-center gap-2 rounded-full bg-[#ffc000] text-[#091314] px-8 md:px-10 h-11 md:h-12 text-sm font-semibold tracking-[0.1em] uppercase hover:bg-white transition-colors"
+                            >
+                                See More on Portfolio
+                                <span className="material-symbols-outlined text-[18px]">north_east</span>
+                            </Link>
+                        </div>
                     </div>
                 </section>
             )}
@@ -592,6 +566,95 @@ export default function HomeClient({ content, galleries }: { content: HomeConten
 /* ─────────────────────────────────────────────────────────────────
    HERO — full-screen image slider
 ───────────────────────────────────────────────────────────────── */
+const selectedWorkTileSpans = [
+    'row-span-2',
+    'row-span-3',
+    'row-span-2',
+    'row-span-3',
+    'row-span-2',
+    'row-span-2',
+    'row-span-3',
+    'row-span-2',
+    'row-span-3',
+    'row-span-2',
+    'row-span-2',
+    'row-span-3',
+];
+
+function SelectedWorkGallery({ images }: { images: string[] }) {
+    const galleryRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!galleryRef.current || images.length === 0) return;
+
+        const ctx = gsap.context(() => {
+            gsap.fromTo(
+                '.selected-work-card',
+                { autoAlpha: 0, y: 24 },
+                {
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.72,
+                    stagger: 0.05,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: galleryRef.current,
+                        start: 'top 82%',
+                        once: true,
+                    },
+                },
+            );
+        }, galleryRef);
+
+        return () => ctx.revert();
+    }, [images.length]);
+
+    return (
+        <div
+            ref={galleryRef}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 auto-rows-[120px] sm:auto-rows-[150px] lg:auto-rows-[180px]"
+        >
+            {images.map((img, index) => {
+                const spanClass = selectedWorkTileSpans[index % selectedWorkTileSpans.length];
+                const idleDuration = 8 + (index % 5);
+                const driftX = index % 2 === 0 ? [0, -1.5, 0, 1.2, 0] : [0, 1.5, 0, -1.2, 0];
+
+                return (
+                    <motion.div
+                        key={`${img}-${index}`}
+                        className={`selected-work-card relative overflow-hidden rounded-[0.95rem] border border-white/12 bg-[#041a1f] ${spanClass}`}
+                        whileHover={{ y: -3 }}
+                        transition={{ duration: 0.35, ease: 'easeOut' }}
+                    >
+                        <Link href="/portfolio" className="group relative block h-full w-full">
+                            <motion.img
+                                src={img}
+                                alt=""
+                                loading="lazy"
+                                className="h-full w-full object-cover scale-[1.09] group-hover:scale-100 group-hover:brightness-[0.9] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
+                                animate={index < 14 ? { x: driftX, y: [0, -4, 0, 2, 0] } : undefined}
+                                transition={
+                                    index < 14
+                                        ? { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' }
+                                        : undefined
+                                }
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-75 group-hover:opacity-95 transition-opacity duration-400" />
+                            <div className="absolute left-3 top-3 rounded-full border border-white/30 bg-black/35 px-2.5 h-6 flex items-center text-[10px] tracking-[0.16em] uppercase text-white/90">
+                                {String(index + 1).padStart(2, '0')}
+                            </div>
+                            <div className="absolute left-3 right-3 bottom-3 flex items-center justify-between text-[11px] uppercase tracking-[0.14em] text-white/85">
+                                <span>Portfolio</span>
+                                <span className="material-symbols-outlined text-[15px]">open_in_new</span>
+                            </div>
+                        </Link>
+                    </motion.div>
+                );
+            })}
+        </div>
+    );
+}
+
 gsap.registerPlugin(ScrollTrigger);
 
 const AUTOPLAY_DELAY = 6200;

@@ -85,28 +85,28 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 px-3 md:px-5 pt-3 md:pt-4">
+      <header className="fixed top-0 left-0 right-0 z-50 px-2.5 sm:px-3 md:px-5 pt-2.5 sm:pt-3 md:pt-4">
         <div
-          className={`mx-auto max-w-[1320px] rounded-[1.5rem] border backdrop-blur-xl transition-all duration-300 ${themeClasses.shell} ${
+          className={`mx-auto max-w-[1320px] rounded-[1.1rem] sm:rounded-[1.25rem] md:rounded-[1.5rem] border backdrop-blur-xl transition-all duration-300 ${themeClasses.shell} ${
             isScrolled ? 'shadow-[0_18px_45px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
           }`}
         >
-          <div className="flex items-center justify-between gap-3 px-3 py-3 md:px-5">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-2.5 px-2.5 py-2.5 sm:px-3 sm:py-3 md:px-5">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className={`h-11 w-11 rounded-full grid place-items-center transition-colors ${themeClasses.menuBtn}`}
+                className={`h-10 w-10 md:h-11 md:w-11 rounded-full grid place-items-center transition-colors ${themeClasses.menuBtn}`}
                 aria-label="Open menu"
               >
-                <span className="material-symbols-outlined text-[20px]">menu</span>
+                <span className="material-symbols-outlined text-[19px] md:text-[20px]">menu</span>
               </button>
               <Link href="/" className="block">
-                <img src="/logo.png" alt="Mado Creatives" className="h-12 md:h-16 w-auto object-contain" />
+                <img src="/logo.png" alt="Mado Creatives" className="h-10 sm:h-11 md:h-16 w-auto object-contain" />
               </Link>
             </div>
 
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-7">
+            <nav className="hidden xl:flex items-center gap-6">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
@@ -130,18 +130,26 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className={`h-11 w-11 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
+                className={`h-10 w-10 md:h-11 md:w-11 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
                 aria-label="Toggle theme"
                 title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                <span className="material-symbols-outlined text-[20px]">
+                <span className="material-symbols-outlined text-[18px] md:text-[20px]">
                   {theme === 'dark' ? 'light_mode' : 'dark_mode'}
                 </span>
               </button>
 
+              <Link
+                href="/contact"
+                className={`md:hidden h-10 w-10 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
+                aria-label="Contact us"
+              >
+                <span className="material-symbols-outlined text-[18px]">chat</span>
+              </Link>
+
               <button
                 type="button"
-                className={`hidden sm:flex items-center gap-1.5 h-11 px-4 rounded-full transition-colors ${themeClasses.roundBtn}`}
+                className={`hidden md:flex items-center gap-1.5 h-11 px-4 rounded-full transition-colors ${themeClasses.roundBtn}`}
               >
                 <span className="text-sm font-semibold">En</span>
                 <span className="material-symbols-outlined text-[18px]">expand_more</span>
@@ -149,7 +157,7 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
 
               <Link
                 href="/contact"
-                className={`hidden md:flex items-center gap-2 h-11 px-6 rounded-full text-sm font-semibold transition-colors ${themeClasses.primaryBtn}`}
+                className={`hidden lg:flex items-center gap-2 h-11 px-6 rounded-full text-sm font-semibold transition-colors ${themeClasses.primaryBtn}`}
               >
                 Contact Us
                 <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
@@ -168,9 +176,7 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
             aria-label="Close menu"
           />
 
-          <aside
-            className={`relative h-full w-[min(88vw,420px)] border-r px-5 md:px-7 py-6 md:py-7 ${themeClasses.sidebar}`}
-          >
+          <aside className={`relative h-full w-full sm:w-[min(88vw,420px)] border-r px-5 md:px-7 py-6 md:py-7 overflow-y-auto ${themeClasses.sidebar}`}>
             <div className="flex items-center justify-between pb-6 border-b border-current/10">
               <p className="text-[11px] uppercase tracking-[0.3em] opacity-70">Navigation</p>
               <button
@@ -183,13 +189,13 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
               </button>
             </div>
 
-            <nav className="pt-6 space-y-1">
+            <nav className="pt-6 space-y-1.5">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   href={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-3 text-[0.97rem] font-semibold transition-colors ${
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-3.5 text-[1rem] font-semibold transition-colors ${
                     isActive(item.path)
                       ? theme === 'dark'
                         ? 'bg-white/12 text-white'
