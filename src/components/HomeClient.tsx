@@ -53,6 +53,18 @@ const defaultStats: StatItem[] = [
     { value: '4', label: 'Operating Locations' },
     { value: '24/7', label: 'Client Support' },
 ];
+const defaultHeroImages = [
+    '/hero/hero-01.jpg',
+    '/hero/hero-02.jpg',
+    '/hero/hero-03.jpg',
+    '/hero/hero-04.jpg',
+    '/hero/hero-05.jpg',
+    '/hero/hero-06.jpg',
+    '/hero/hero-07.jpg',
+    '/hero/hero-08.jpg',
+    '/hero/hero-09.jpg',
+    '/hero/hero-10.jpg',
+];
 
 /* ─────────────────────────────────────────────────────────────────
    HELPERS
@@ -119,11 +131,16 @@ export default function HomeClient({
     const ctaSubtitle      = getString(sections.ctaSubtitle,    'Book a photography session, request a campaign shoot, or discuss a custom production plan with our team.');
     const ctaButtonLink    = getString(sections.ctaButtonLink,  '/booking');
 
-    // Hero images: CMS heroImage first, then gallery images
-    const heroImgs = [content?.heroImage, ...galleries.flatMap(g => [g.featuredImage, ...(g.images || [])])]
+    // Hero images: Cloudinary gallery images first (higher resolution), local files as fallback.
+    const heroImgs = [
+        ...galleries.flatMap(g => [g.featuredImage, ...(g.images || [])]),
+        content?.heroImage,
+        ...defaultHeroImages,
+    ]
         .filter((img): img is string => typeof img === 'string' && img.length > 0)
         .filter((v, i, a) => a.indexOf(v) === i)
-        .slice(0, 5);
+        .filter((img) => !excludedImages.includes(img))
+        .slice(0, 30);
 
     // Gallery reel: all unique images from all galleries
     const reelImgs = galleries.flatMap(g => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[];
@@ -657,132 +674,143 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
 
 gsap.registerPlugin(ScrollTrigger);
 
-const AUTOPLAY_DELAY = 6200;
+const HERO_ROTATE_MS = 7000;
+const HERO_PANELS = 5;
+
+/** Add Cloudinary auto-quality + format + resize for hero display */
+function optimizeHeroUrl(url: string): string {
+    if (!url.includes('res.cloudinary.com')) return url;
+    return url.replace('/upload/', '/upload/q_auto,f_auto,w_1800/');
+}
+
+function HeroPanel({ src, className = '', eager = false }: { src: string; className?: string; eager?: boolean }) {
+    return (
+        <div className={`relative overflow-hidden bg-[#0a0908] ${className}`}>
+            <img
+                key={src}
+                src={optimizeHeroUrl(src)}
+                alt=""
+                loading={eager ? 'eager' : 'lazy'}
+                className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+        </div>
+    );
+}
 
 function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     heroImgs: string[]; ctaText: string; ctaLink: string; secondaryCtaLink: string;
 }) {
-    const { theme } = useTheme();
     const sectionRef = useRef<HTMLElement>(null);
-    const figureRef = useRef<HTMLImageElement>(null);
+    const [slide, setSlide] = useState(0);
 
-    const [index, setIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
+    const imgs = heroImgs.length > 0 ? heroImgs : ['/hero/hero-01.jpg'];
+    // Ensure we always have at least HERO_PANELS images
+    const padded = imgs.length < HERO_PANELS
+        ? Array.from({ length: HERO_PANELS }, (_, i) => imgs[i % imgs.length])
+        : imgs;
+    const slideCount = Math.max(1, Math.ceil(padded.length / HERO_PANELS));
+    const panel = (n: number) => padded[(slide * HERO_PANELS + n) % padded.length];
 
-    const images = heroImgs.length > 0 ? heroImgs : ['/logo.png'];
-    const activeImage = images[index % images.length];
-
+    // Auto-advance slides
     useEffect(() => {
-        if (images.length <= 1 || isPaused) return;
-        const t = window.setTimeout(() => {
-            setIndex((prev) => (prev + 1) % images.length);
-        }, AUTOPLAY_DELAY);
-        return () => window.clearTimeout(t);
-    }, [images.length, index, isPaused]);
+        if (slideCount <= 1) return;
+        const t = setInterval(() => setSlide(p => (p + 1) % slideCount), HERO_ROTATE_MS);
+        return () => clearInterval(t);
+    }, [slideCount]);
 
+    // GSAP entry animation — mount only
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-            timeline
-                .from('.legacy-hero-kicker', { y: 24, autoAlpha: 0, duration: 0.55 })
-                .from('.legacy-hero-title-line', { y: 56, autoAlpha: 0, duration: 0.7, stagger: 0.1 }, '-=0.2')
-                .from('.legacy-hero-copy', { y: 22, autoAlpha: 0, duration: 0.55 }, '-=0.24')
-                .from('.legacy-hero-actions', { y: 18, autoAlpha: 0, duration: 0.48 }, '-=0.2');
-
-            if (figureRef.current && sectionRef.current) {
-                gsap.fromTo(
-                    figureRef.current,
-                    { scale: 1.08, autoAlpha: 0.45 },
-                    { scale: 1, autoAlpha: 1, duration: 1.05, ease: 'power2.out' },
-                );
-
-                gsap.to(figureRef.current, {
-                    yPercent: -8,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: 'top top',
-                        end: 'bottom top',
-                        scrub: true,
-                    },
-                });
-            }
+            gsap.timeline({ defaults: { ease: 'power3.out' } })
+                .from('.hero-kicker',     { y: 22, autoAlpha: 0, duration: 0.6 })
+                .from('.hero-title-line', { y: 64, autoAlpha: 0, duration: 0.85, stagger: 0.13 }, '-=0.35')
+                .from('.hero-sub',        { y: 20, autoAlpha: 0, duration: 0.55 }, '-=0.25')
+                .from('.hero-ctas',       { y: 18, autoAlpha: 0, duration: 0.5 }, '-=0.2');
         }, sectionRef);
-
         return () => ctx.revert();
-    }, [index]);
-
-    const isLight = theme === 'light';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
-        <section
-            ref={sectionRef}
-            className="relative px-3 md:px-5 pt-[104px] md:pt-[116px] pb-6 md:pb-10"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
-            <div className="relative mx-auto max-w-[1320px] min-h-[calc(100vh-130px)] rounded-[1.55rem] overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(255,192,0,0.18),transparent_40%),linear-gradient(102deg,var(--hero-accent)_0%,#130607_52%,#050404_100%)]" />
+        <section ref={sectionRef} className="relative h-screen min-h-[600px] max-h-[1100px] overflow-hidden">
 
-                <img
-                    ref={figureRef}
-                    key={activeImage}
-                    src={activeImage}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover object-center md:object-[center_20%] mix-blend-normal opacity-95"
-                />
+            {/* ── DESKTOP: 5-panel editorial grid ─────────────────────── */}
+            {/* col layout: large left (2fr) + 2 pairs on right (1fr each) */}
+            <div className="absolute inset-0 hidden md:grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-[2px] bg-[#050403]">
+                <HeroPanel src={panel(0)} className="row-span-2" eager />
+                <HeroPanel src={panel(1)} eager />
+                <HeroPanel src={panel(2)} eager />
+                <HeroPanel src={panel(3)} />
+                <HeroPanel src={panel(4)} />
+            </div>
 
-                <div className={`absolute inset-0 ${isLight ? 'bg-[linear-gradient(90deg,rgba(9,8,7,0.88)_0%,rgba(9,8,7,0.58)_43%,rgba(9,8,7,0.12)_80%)]' : 'bg-[linear-gradient(90deg,rgba(9,8,7,0.96)_0%,rgba(9,8,7,0.62)_45%,rgba(9,8,7,0.18)_80%)]'}`} />
-                <div className="relative z-10 px-6 md:px-10 lg:px-16 py-14 md:py-16 lg:py-18 flex min-h-[calc(100vh-130px)] items-center">
-                    <div className="max-w-3xl">
-                        <p className="legacy-hero-kicker flex items-center gap-3 text-[11px] font-semibold tracking-[0.38em] text-white/80 uppercase mb-6 md:mb-7">
-                            <span className="block h-px w-10 bg-[#ffc000]" />
-                            Legacy Style Hero
-                        </p>
+            {/* ── MOBILE: single full-screen image ─────────────────────── */}
+            <div className="absolute inset-0 md:hidden">
+                <HeroPanel src={panel(0)} className="h-full" eager />
+            </div>
 
-                        <h1 className="font-black text-white uppercase leading-[0.9] tracking-tight text-[clamp(2.8rem,8vw,7rem)]">
-                            <span className="legacy-hero-title-line block">Welcome</span>
-                            <span className="legacy-hero-title-line block">To The Home</span>
-                        </h1>
+            {/* Gradient — bottom-up for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/95 via-[#050403]/15 to-[#050403]/35 pointer-events-none" />
+            {/* Gradient — left fade so text is always readable on desktop */}
+            <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#050403]/88 via-[#050403]/30 to-transparent pointer-events-none" />
 
-                        <p className="legacy-hero-copy mt-7 md:mt-8 max-w-[42rem] text-white/78 text-sm md:text-[1.04rem] uppercase leading-[1.62] tracking-[0.02em]">
-                            Welcome to Mado Creatives, where we transform your unique story into timeless art and cinematic visuals that
-                            preserve every grand moment and subtle glance.
-                        </p>
+            {/* ── TEXT OVERLAY ─────────────────────────────────────────── */}
+            <div className="relative z-10 h-full flex flex-col justify-end pb-14 md:pb-18 lg:pb-22 px-6 md:px-12 lg:px-20">
+                <div className="max-w-2xl">
+                    <p className="hero-kicker flex items-center gap-3 text-[10px] font-semibold tracking-[0.44em] text-[#ffc000] uppercase mb-5">
+                        <span className="block h-px w-8 bg-[#ffc000] shrink-0" />
+                        Premium Visual Studio · Kigali
+                    </p>
 
-                        <div className="legacy-hero-actions mt-8 md:mt-10 flex flex-wrap gap-3 md:gap-4">
-                            <Link
-                                href={ctaLink}
-                                className="inline-flex items-center gap-2 rounded-full bg-white text-[#111] px-6 md:px-7 h-11 md:h-12 text-sm font-semibold tracking-tight hover:bg-[#ffe4a4] transition-colors"
-                            >
-                                {ctaText}
-                                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                            </Link>
-                            <Link
-                                href={secondaryCtaLink}
-                                className="inline-flex items-center gap-2 rounded-full border border-white/30 text-white px-6 md:px-7 h-11 md:h-12 text-sm font-semibold tracking-tight hover:bg-white/12 transition-colors"
-                            >
-                                Start Project
-                            </Link>
-                        </div>
+                    <h1
+                        className="font-display font-bold text-white leading-[0.87] tracking-[-0.02em] overflow-hidden"
+                        style={{ fontSize: 'clamp(3.8rem, 10vw, 9.5rem)' }}
+                    >
+                        <span className="hero-title-line block">Mado</span>
+                        <span className="hero-title-line block">Creatives</span>
+                    </h1>
+
+                    <p className="hero-sub mt-5 md:mt-7 text-white/55 text-[0.87rem] md:text-[0.98rem] max-w-[20rem] md:max-w-[28rem] leading-[1.75]">
+                        Luxury photography &amp; cinematic storytelling for brands and moments that deserve to be remembered.
+                    </p>
+
+                    <div className="hero-ctas mt-8 md:mt-10 flex flex-wrap gap-3">
+                        <Link
+                            href={ctaLink}
+                            className="inline-flex items-center gap-2 bg-[#ffc000] text-[#0a0a08] px-7 md:px-9 h-11 md:h-12 text-[0.74rem] font-bold tracking-[0.14em] uppercase hover:bg-white transition-colors"
+                        >
+                            {ctaText}
+                            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </Link>
+                        <Link
+                            href={secondaryCtaLink}
+                            className="inline-flex items-center gap-2 border border-white/30 text-white px-7 md:px-9 h-11 md:h-12 text-[0.74rem] font-semibold tracking-[0.14em] uppercase hover:border-white/65 hover:bg-white/8 transition-colors"
+                        >
+                            Book a Session
+                        </Link>
                     </div>
                 </div>
-
-                {images.length > 1 && (
-                    <div className="absolute right-4 md:right-8 bottom-5 md:bottom-8 z-20 flex items-center gap-2">
-                        {images.map((_, itemIndex) => (
-                            <button
-                                key={itemIndex}
-                                type="button"
-                                onClick={() => setIndex(itemIndex)}
-                                className={`h-2.5 rounded-full transition-all ${itemIndex === index ? 'w-7 bg-[#ffc000]' : 'w-2.5 bg-white/36 hover:bg-white/65'}`}
-                                aria-label={`Go to hero slide ${itemIndex + 1}`}
-                            />
-                        ))}
-                    </div>
-                )}
             </div>
+
+            {/* ── SLIDE COUNTER ─────────────────────────────────────────── */}
+            <div className="absolute left-6 md:left-12 lg:left-20 bottom-5 md:bottom-7 z-20 text-[10px] tracking-[0.3em] text-white/32 font-mono select-none">
+                {String(slide + 1).padStart(2, '0')} / {String(slideCount).padStart(2, '0')}
+            </div>
+
+            {/* ── SLIDE DOTS ────────────────────────────────────────────── */}
+            {slideCount > 1 && (
+                <div className="absolute right-5 md:right-10 bottom-5 md:bottom-7 z-20 flex items-center gap-2">
+                    {Array.from({ length: Math.min(slideCount, 8) }).map((_, i) => (
+                        <button
+                            key={i}
+                            type="button"
+                            onClick={() => setSlide(i)}
+                            className={`h-[3px] rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-[#ffc000]' : 'w-[5px] bg-white/32 hover:bg-white/60'}`}
+                            aria-label={`Go to slide ${i + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }
