@@ -1,31 +1,9 @@
 'use client';
 
-import { FormEvent, ReactNode, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useTheme } from '@/components/ThemeProvider';
+import { useMemo } from 'react';
 
-gsap.registerPlugin(ScrollTrigger);
-
-type SocialItem = {
-  href: string;
-  label: string;
-  icon: ReactNode;
-};
-
-type FooterClientProps = {
-  siteName: string;
-  email: string;
-  phone: string;
-  address: string;
-  youtubeUrl: string;
-  instagramUrl: string;
-  facebookUrl: string;
-  telegramUrl: string;
-  whatsappUrl: string;
-};
-
+/* ─── Social icon SVGs ─────────────────────────────────────────────── */
 function YouTubeIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px]" aria-hidden="true">
@@ -66,8 +44,41 @@ function WhatsAppIcon() {
   );
 }
 
+/* ─── Types ─────────────────────────────────────────────────────────── */
+type FooterClientProps = {
+  siteName: string;
+  tagline: string;
+  email: string;
+  phone: string;
+  address: string;
+  youtubeUrl: string;
+  instagramUrl: string;
+  facebookUrl: string;
+  telegramUrl: string;
+  whatsappUrl: string;
+  acceptingClients: boolean;
+};
+
+/* ─── Nav columns ────────────────────────────────────────────────────── */
+const workLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Services', href: '/services' },
+  { label: 'Shop', href: '/shop' },
+  { label: 'Journal', href: '/blog' },
+];
+
+const studioLinks = [
+  { label: 'Team', href: '/team' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Booking', href: '/booking' },
+  { label: 'Contact', href: '/contact' },
+];
+
+/* ─── Component ──────────────────────────────────────────────────────── */
 export default function FooterClient({
   siteName,
+  tagline,
   email,
   phone,
   address,
@@ -76,136 +87,155 @@ export default function FooterClient({
   facebookUrl,
   telegramUrl,
   whatsappUrl,
+  acceptingClients,
 }: FooterClientProps) {
-  const { theme } = useTheme();
-  const footerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.footer-reveal', {
-        y: 34,
-        autoAlpha: 0,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: 'top 82%',
-        },
-      });
-    }, footerRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const socials = useMemo<SocialItem[]>(
+  const socials = useMemo(
     () => [
+      { href: instagramUrl, label: 'Instagram', icon: <InstagramIcon /> },
       { href: youtubeUrl, label: 'YouTube', icon: <YouTubeIcon /> },
       { href: facebookUrl, label: 'Facebook', icon: <FacebookIcon /> },
-      { href: instagramUrl, label: 'Instagram', icon: <InstagramIcon /> },
       { href: telegramUrl, label: 'Telegram', icon: <TelegramIcon /> },
       { href: whatsappUrl, label: 'WhatsApp', icon: <WhatsAppIcon /> },
+      {
+        href: `mailto:${email}`,
+        label: 'Email',
+        icon: <span className="material-symbols-outlined text-[18px]" aria-hidden="true">mail</span>,
+      },
     ],
-    [facebookUrl, instagramUrl, telegramUrl, whatsappUrl, youtubeUrl],
+    [instagramUrl, youtubeUrl, facebookUrl, telegramUrl, whatsappUrl, email],
   );
 
-  const isLight = theme === 'light';
-
-  const lineColor = isLight ? 'rgba(20,20,20,0.06)' : 'rgba(255,255,255,0.06)';
-
-  const backgroundGrid = {
-    backgroundImage: `linear-gradient(to right, ${lineColor} 1px, transparent 1px), linear-gradient(to bottom, ${lineColor} 1px, transparent 1px)`,
-    backgroundSize: '26px 26px',
-  };
-
-  const onSubscribe = (event: FormEvent) => {
-    event.preventDefault();
-  };
-
   return (
-    <footer
-      ref={footerRef}
-      className={`mt-auto border-t ${isLight ? 'border-black/10 bg-[#f7f7f5] text-[#111111]' : 'border-white/10 bg-[#100f0c] text-white'}`}
-      style={backgroundGrid}
-    >
-      <div className="relative mx-auto max-w-[1320px] px-6 md:px-10 lg:px-14 py-16 md:py-18 lg:py-20">
-        <div className="grid gap-12 md:gap-14 lg:grid-cols-[1.3fr_0.8fr]">
-          <div>
-            <h2 className="footer-reveal text-[clamp(2.2rem,4.4vw,4.5rem)] font-semibold leading-[1] tracking-tight">Keep in touch.</h2>
+    <footer className="bg-[#0a0906] text-white border-t border-white/[0.07]">
+      {/* Gold top line */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#ffc000]/55 to-transparent" />
 
-            <form className="footer-reveal mt-10 md:mt-14 max-w-2xl" onSubmit={onSubscribe}>
-              <div className={`flex items-center justify-between gap-4 border-b pb-4 ${isLight ? 'border-black/20' : 'border-white/20'}`}>
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email address"
-                  className="w-full bg-transparent outline-none text-lg placeholder:text-current/60"
-                />
-                <button type="submit" className="text-lg font-medium hover:opacity-70 transition-opacity">
-                  Subscribe
-                </button>
-              </div>
-              <p className={`mt-4 text-base ${isLight ? 'text-[#4d4a43]' : 'text-white/65'}`}>
-                No worries, we don&apos;t spam your inbox.
-              </p>
-            </form>
-          </div>
+      <div className="max-w-[1320px] mx-auto px-6 md:px-10 lg:px-14 pt-14 pb-8 md:pt-18 md:pb-10">
 
-          <div className="footer-reveal lg:pl-16">
-            <p className="text-[clamp(1.5rem,2.1vw,2.35rem)] font-semibold leading-[1.2]">{address}</p>
-
-            <div className="mt-9 space-y-6">
-              <div>
-                <p className={`text-xs uppercase tracking-[0.24em] mb-2 ${isLight ? 'text-[#65625a]' : 'text-white/60'}`}>
-                  Email us directly
-                </p>
-                <a href={`mailto:${email}`} className="text-2xl font-semibold hover:text-[#ffc000] transition-colors">
-                  {email}
-                </a>
-              </div>
-              <div>
-                <p className={`text-xs uppercase tracking-[0.24em] mb-2 ${isLight ? 'text-[#65625a]' : 'text-white/60'}`}>
-                  Call us directly
-                </p>
-                <a href={`tel:${phone}`} className="text-2xl font-semibold hover:text-[#ffc000] transition-colors">
-                  {phone}
-                </a>
-              </div>
-            </div>
-          </div>
+        {/* ── Wordmark row ─────────────────────────────────────────────── */}
+        <div className="mb-12 md:mb-16">
+          <p className="text-[10px] uppercase tracking-[0.42em] text-[#ffc000] font-bold mb-3">
+            Visual Studio
+          </p>
+          <h2 className="font-display font-bold text-[clamp(2.4rem,5vw,4rem)] text-white/90 leading-none tracking-[-0.02em] mb-3">
+            {siteName.toUpperCase()}
+          </h2>
+          <p className="text-[#5c5544] text-sm max-w-md leading-relaxed">{tagline}</p>
         </div>
 
-        <div className={`footer-reveal mt-18 md:mt-24 pt-10 border-t ${isLight ? 'border-black/10' : 'border-white/10'}`}>
-          <div className="flex flex-col gap-8 md:gap-10 md:flex-row md:items-end md:justify-between">
-            <div className="flex items-end gap-5 md:gap-7">
-              <Link href="/" className="shrink-0">
-                <img src="/logo.png" alt={siteName} className="h-[88px] md:h-[104px] w-auto object-contain" />
-              </Link>
-              <p className={`max-w-md text-[1.1rem] leading-[1.45] ${isLight ? 'text-[#3d3a35]' : 'text-white/70'}`}>
-                {new Date().getFullYear()} Mado Autolabs by Sassuo Hub. All images are {siteName} property.
-              </p>
-            </div>
+        {/* ── 4-column grid ────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-8 pb-12 border-b border-white/[0.07]">
 
-            <div className="flex items-center gap-3 md:gap-4">
-              {socials.map((social) => (
+          {/* Brand + social — col-span-5 */}
+          <div className="col-span-2 md:col-span-5">
+            <Link href="/" className="inline-block mb-6">
+              <img src="/logo.png" alt={siteName} className="h-12 w-auto object-contain" />
+            </Link>
+            <p className="text-[#5c5544] text-[13px] leading-relaxed mb-7 max-w-xs">
+              Independent studio crafting premium imagery, cinematic films, and brand campaigns for visionaries worldwide.
+            </p>
+            {/* Social icons */}
+            <div className="flex flex-wrap gap-2">
+              {socials.map((s) => (
                 <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
+                  key={s.label}
+                  href={s.href}
+                  target={s.href.startsWith('mailto:') ? undefined : '_blank'}
                   rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className={`h-11 w-11 rounded-full grid place-items-center border transition-colors ${
-                    isLight
-                      ? 'border-black/12 text-black hover:bg-black hover:text-white'
-                      : 'border-white/20 text-white hover:bg-white hover:text-[#111]'
-                  }`}
+                  aria-label={s.label}
+                  className="w-11 h-11 flex items-center justify-center bg-white/[0.04] text-white/60 hover:bg-[#ffc000] hover:text-[#0a0906] transition-colors"
                 >
-                  {social.icon}
+                  {s.icon}
                 </a>
               ))}
             </div>
           </div>
+
+          {/* Work — col-span-2 */}
+          <div className="col-span-1 md:col-span-2">
+            <p className="text-[10px] uppercase tracking-[0.36em] text-[#5c5544] font-bold mb-5">Work</p>
+            <ul className="space-y-3">
+              {workLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-sm text-white/60 hover:text-white transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Studio — col-span-2 */}
+          <div className="col-span-1 md:col-span-2">
+            <p className="text-[10px] uppercase tracking-[0.36em] text-[#5c5544] font-bold mb-5">Studio</p>
+            <ul className="space-y-3">
+              {studioLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-sm text-white/60 hover:text-white transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect — col-span-3 */}
+          <div className="col-span-2 md:col-span-3">
+            <p className="text-[10px] uppercase tracking-[0.36em] text-[#5c5544] font-bold mb-5">Connect</p>
+            <address className="not-italic space-y-4">
+              <p className="text-sm text-white/55 leading-relaxed">{address}</p>
+              <a
+                href={`mailto:${email}`}
+                className="block text-sm text-white/70 hover:text-[#ffc000] transition-colors break-all"
+              >
+                {email}
+              </a>
+              <a
+                href={`tel:${phone}`}
+                className="block text-sm text-white/70 hover:text-[#ffc000] transition-colors"
+              >
+                {phone}
+              </a>
+            </address>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 bg-[#ffc000] text-[#0a0906] px-5 h-10 text-[11px] font-bold uppercase tracking-[0.18em] hover:bg-white transition-colors"
+            >
+              <WhatsAppIcon />
+              WhatsApp Us
+            </a>
+          </div>
         </div>
+
+        {/* ── Bottom bar ───────────────────────────────────────────────── */}
+        <div className="pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p className="text-[11px] text-white/28 tracking-wide">
+            © {new Date().getFullYear()} {siteName} Studio · All Rights Reserved
+          </p>
+          <div className="flex items-center gap-4">
+            {acceptingClients && (
+              <span className="flex items-center gap-1.5 text-[11px] text-emerald-400/80 font-semibold tracking-[0.14em] uppercase">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Accepting Clients
+              </span>
+            )}
+            <Link
+              href="/admin"
+              className="text-[11px] text-white/18 hover:text-white/40 transition-colors tracking-wide"
+            >
+              Admin
+            </Link>
+          </div>
+        </div>
+
       </div>
     </footer>
   );

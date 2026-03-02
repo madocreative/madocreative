@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 
 export type PublicSiteSettings = {
   siteName: string;
+  tagline: string;
   email: string;
   phone: string;
   address: string;
@@ -11,10 +12,12 @@ export type PublicSiteSettings = {
   facebookUrl: string;
   telegramUrl: string;
   whatsappUrl: string;
+  acceptingClients: boolean;
 };
 
 export const defaultPublicSiteSettings: PublicSiteSettings = {
   siteName: 'Mado Creatives',
+  tagline: 'Premium photography & cinematic storytelling for brands and moments that deserve to be remembered.',
   email: 'hello@madocreatives.com',
   phone: '+251 911 000 000',
   address: 'KG 3 AVE Kacyiru, Kigali',
@@ -23,6 +26,7 @@ export const defaultPublicSiteSettings: PublicSiteSettings = {
   facebookUrl: 'https://www.facebook.com/madocreatives',
   telegramUrl: 'https://t.me/mado_creatives',
   whatsappUrl: 'https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C',
+  acceptingClients: true,
 };
 
 export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
@@ -35,6 +39,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
 
     return {
       siteName: parsed.siteName || defaultPublicSiteSettings.siteName,
+      tagline: parsed.tagline || defaultPublicSiteSettings.tagline,
       email: parsed.email || defaultPublicSiteSettings.email,
       phone: parsed.phone || defaultPublicSiteSettings.phone,
       address: parsed.address || defaultPublicSiteSettings.address,
@@ -43,6 +48,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
       facebookUrl: parsed.facebookUrl || defaultPublicSiteSettings.facebookUrl,
       telegramUrl: parsed.telegramUrl || defaultPublicSiteSettings.telegramUrl,
       whatsappUrl: parsed.whatsappUrl || defaultPublicSiteSettings.whatsappUrl,
+      acceptingClients: typeof parsed.acceptingClients === 'boolean' ? parsed.acceptingClients : true,
     };
   } catch {
     return defaultPublicSiteSettings;

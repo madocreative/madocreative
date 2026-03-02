@@ -7,6 +7,7 @@ export default async function Footer() {
   return (
     <FooterClient
       siteName={settings.siteName}
+      tagline={settings.tagline}
       email={settings.email}
       phone={settings.phone}
       address={settings.address}
@@ -15,6 +16,7 @@ export default async function Footer() {
       facebookUrl={settings.facebookUrl}
       telegramUrl={settings.telegramUrl}
       whatsappUrl={settings.whatsappUrl}
+      acceptingClients={settings.acceptingClients}
     />
   );
 }
