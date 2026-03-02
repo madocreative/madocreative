@@ -10,6 +10,14 @@ interface Props {
     heroLabel?: string;
 }
 
+function slugify(value: string): string {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 /* ─────────────────────────────────────────────────────────────────
    LIGHTBOX
 ───────────────────────────────────────────────────────────────── */
@@ -532,7 +540,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                 HERO — full-screen image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >

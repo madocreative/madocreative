@@ -722,7 +722,7 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            <div className="relative mx-auto max-w-[1320px] min-h-[calc(100vh-130px)] rounded-[1.55rem] overflow-hidden border border-[var(--app-border)]">
+            <div className="relative mx-auto max-w-[1320px] min-h-[calc(100vh-130px)] rounded-[1.55rem] overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(255,192,0,0.18),transparent_40%),linear-gradient(102deg,var(--hero-accent)_0%,#130607_52%,#050404_100%)]" />
 
                 <img
@@ -734,8 +734,6 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
                 />
 
                 <div className={`absolute inset-0 ${isLight ? 'bg-[linear-gradient(90deg,rgba(9,8,7,0.88)_0%,rgba(9,8,7,0.58)_43%,rgba(9,8,7,0.12)_80%)]' : 'bg-[linear-gradient(90deg,rgba(9,8,7,0.96)_0%,rgba(9,8,7,0.62)_45%,rgba(9,8,7,0.18)_80%)]'}`} />
-                <div className="absolute inset-0 border border-white/8 rounded-[1.55rem]" />
-
                 <div className="relative z-10 px-6 md:px-10 lg:px-16 py-14 md:py-16 lg:py-18 flex min-h-[calc(100vh-130px)] items-center">
                     <div className="max-w-3xl">
                         <p className="legacy-hero-kicker flex items-center gap-3 text-[11px] font-semibold tracking-[0.38em] text-white/80 uppercase mb-6 md:mb-7">

@@ -20,6 +20,16 @@ interface PageData {
     ctaSecondaryLink?: string;
 }
 
+const serviceAnchorOrder = ['weddings', 'portraits', 'commercial', 'events'];
+
+function slugify(value: string): string {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 const heroSlideVariants = {
     enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
     center: { x: 0, opacity: 1 },
@@ -54,7 +64,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                 HERO — full-width image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
+                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >
@@ -186,9 +196,10 @@ export default function ServicesClient({ data }: { data: PageData }) {
                 const tags = service.tags ? service.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
                 const reverse = index % 2 !== 0;
                 const bgColor = index % 2 === 0 ? 'bg-[#090805]' : 'bg-[#0d0c08]';
+                const sectionId = serviceAnchorOrder[index] || slugify(service.title || `service-${index + 1}`);
 
                 return (
-                    <section key={index} className={`w-full ${bgColor} border-b border-white/5`}>
+                    <section id={sectionId} key={index} className={`w-full ${bgColor} border-b border-white/5 scroll-mt-40`}>
                         <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-stretch min-h-[540px]`}>
 
                             {/* Image — fills its half edge-to-edge */}

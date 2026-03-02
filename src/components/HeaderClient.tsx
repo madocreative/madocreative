@@ -8,6 +8,13 @@ import { useTheme } from '@/components/ThemeProvider';
 type NavItem = {
   name: string;
   path: string;
+  children?: NavChildItem[];
+};
+
+type NavChildItem = {
+  name: string;
+  path: string;
+  description?: string;
 };
 
 type HeaderClientProps = {
@@ -16,19 +23,11 @@ type HeaderClientProps = {
     email: string;
     address: string;
   };
+  portfolioLinks: NavChildItem[];
+  serviceLinks: NavChildItem[];
 };
 
-const navItems: NavItem[] = [
-  { name: 'Home', path: '/' },
-  { name: 'Portfolio', path: '/portfolio' },
-  { name: 'Services', path: '/services' },
-  { name: 'Team', path: '/team' },
-  { name: 'Shop', path: '/shop' },
-  { name: 'Blog', path: '/blog' },
-  { name: 'Contact', path: '/contact' },
-];
-
-export default function HeaderClient({ contactInfo }: HeaderClientProps) {
+export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
@@ -78,9 +77,25 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
     };
   }, [theme]);
 
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { name: 'Home', path: '/' },
+      { name: 'Portfolio', path: '/portfolio', children: portfolioLinks },
+      { name: 'Services', path: '/services', children: serviceLinks },
+      { name: 'Team', path: '/team' },
+      { name: 'Shop', path: '/shop' },
+      { name: 'Blog', path: '/blog' },
+      { name: 'Contact', path: '/contact' },
+    ],
+    [portfolioLinks, serviceLinks],
+  );
+
+  const getBasePath = (path: string) => path.split('#')[0];
+
   const isActive = (path: string) => {
-    if (path === '/') return pathname === '/';
-    return pathname === path || pathname.startsWith(`${path}/`);
+    const basePath = getBasePath(path);
+    if (basePath === '/') return pathname === '/';
+    return pathname === basePath || pathname.startsWith(`${basePath}/`);
   };
 
   return (
@@ -107,23 +122,89 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
             </div>
 
             <nav className="hidden xl:flex items-center gap-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`text-[0.96rem] font-semibold tracking-tight transition-colors ${
-                    isActive(item.path)
-                      ? theme === 'dark'
-                        ? 'text-white'
-                        : 'text-[#1b1b1b]'
-                      : theme === 'dark'
-                        ? 'text-white/84 hover:text-white'
-                        : 'text-[#383838] hover:text-[#1b1b1b]'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const activeClass = isActive(item.path)
+                  ? theme === 'dark'
+                    ? 'text-white'
+                    : 'text-[#1b1b1b]'
+                  : theme === 'dark'
+                    ? 'text-white/84 hover:text-white'
+                    : 'text-[#383838] hover:text-[#1b1b1b]';
+
+                if (!item.children || item.children.length === 0) {
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      className={`text-[0.96rem] font-semibold tracking-tight transition-colors ${activeClass}`}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <div key={item.path} className="relative group">
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={item.path}
+                        className={`text-[0.96rem] font-semibold tracking-tight transition-colors ${activeClass}`}
+                      >
+                        {item.name}
+                      </Link>
+                      <span
+                        className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${activeClass} group-hover:rotate-180`}
+                      >
+                        expand_more
+                      </span>
+                    </div>
+
+                    <div className="absolute left-0 top-full pt-3 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-220 z-50">
+                      <div
+                        className={`w-[340px] rounded-2xl border p-2 shadow-[0_20px_40px_rgba(0,0,0,0.28)] ${
+                          theme === 'dark' ? 'bg-[#100d09] border-white/12' : 'bg-[#f8f6f1] border-black/10'
+                        }`}
+                      >
+                        <div className="max-h-[56vh] overflow-y-auto pr-0.5 space-y-1">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.path}
+                              href={child.path}
+                                className={`block rounded-xl px-3 py-2.5 transition-colors ${
+                                  theme === 'dark' ? 'hover:bg-white/8' : 'hover:bg-black/[0.06]'
+                                }`}
+                            >
+                              <p
+                                className={`text-[0.86rem] font-semibold tracking-tight ${
+                                  theme === 'dark' ? 'text-white/92' : 'text-[#1e1e1e]'
+                                }`}
+                              >
+                                {child.name}
+                              </p>
+                              {child.description && (
+                                <p className={`mt-0.5 text-[11px] leading-relaxed ${theme === 'dark' ? 'text-white/55' : 'text-[#5a5a5a]'}`}>
+                                  {child.description}
+                                </p>
+                              )}
+                            </Link>
+                          ))}
+                        </div>
+
+                        <Link
+                          href={item.path}
+                          className={`mt-2 h-9 rounded-xl grid place-items-center text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors ${
+                            theme === 'dark'
+                              ? 'bg-white/10 text-white hover:bg-[#ffc000] hover:text-[#111]'
+                              : 'bg-black/[0.06] text-[#1a1a1a] hover:bg-[#111] hover:text-white'
+                          }`}
+                        >
+                          View All {item.name}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-2 md:gap-3">
@@ -190,25 +271,56 @@ export default function HeaderClient({ contactInfo }: HeaderClientProps) {
             </div>
 
             <nav className="pt-6 space-y-1.5">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-3.5 text-[1rem] font-semibold transition-colors ${
-                    isActive(item.path)
-                      ? theme === 'dark'
-                        ? 'bg-white/12 text-white'
-                        : 'bg-black/[0.07] text-black'
-                      : theme === 'dark'
-                        ? 'text-white/82 hover:bg-white/[0.07] hover:text-white'
-                        : 'text-[#1e1e1e] hover:bg-black/[0.06]'
-                  }`}
-                >
-                  <span>{item.name}</span>
-                  <span className="material-symbols-outlined text-[18px] opacity-70">arrow_outward</span>
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const parentBaseClasses = `flex items-center justify-between rounded-xl px-3.5 py-3.5 text-[1rem] font-semibold transition-colors ${
+                  isActive(item.path)
+                    ? theme === 'dark'
+                      ? 'bg-white/12 text-white'
+                      : 'bg-black/[0.07] text-black'
+                    : theme === 'dark'
+                      ? 'text-white/82 hover:bg-white/[0.07] hover:text-white'
+                      : 'text-[#1e1e1e] hover:bg-black/[0.06]'
+                }`;
+
+                if (!item.children || item.children.length === 0) {
+                  return (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      onClick={() => setSidebarOpen(false)}
+                      className={parentBaseClasses}
+                    >
+                      <span>{item.name}</span>
+                      <span className="material-symbols-outlined text-[18px] opacity-70">arrow_outward</span>
+                    </Link>
+                  );
+                }
+
+                return (
+                  <div key={item.path} className={`rounded-xl border ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
+                    <Link href={item.path} onClick={() => setSidebarOpen(false)} className={parentBaseClasses}>
+                      <span>{item.name}</span>
+                      <span className="material-symbols-outlined text-[18px] opacity-70">north_east</span>
+                    </Link>
+                    <div className="px-2 pb-2.5 space-y-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          href={child.path}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`block rounded-lg px-2.5 py-2 text-sm transition-colors ${
+                            theme === 'dark'
+                              ? 'text-white/68 hover:text-white hover:bg-white/8'
+                              : 'text-[#3b3b3b] hover:text-black hover:bg-black/[0.05]'
+                          }`}
+                        >
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </nav>
 
             <div className="mt-7 rounded-2xl border border-current/10 p-4 md:p-5">

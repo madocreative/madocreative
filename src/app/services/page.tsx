@@ -11,22 +11,28 @@ export const metadata = {
 
 const defaultServices = [
     {
-        title: 'Creative Production',
-        description: 'High-end visual storytelling. We offer wedding, fashion, product, and lifestyle photography alongside cinematic videography, motion graphics, and social media content creation.',
+        title: 'Weddings',
+        description: 'Your strongest emotional work. This should be your main attraction.',
         image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971895/mado-creatives/has4odv4qpun3uxh2wza.jpg',
-        tags: 'Photography, Cinematography, Content',
+        tags: 'Ceremony, Love Story, Editorial',
     },
     {
-        title: 'Brand Strategy & Design',
-        description: 'Building strong brand identities for modern visionaries. We develop comprehensive visual identity systems, logos, and campaign direction to position your brand for global excellence.',
+        title: 'Portraits',
+        description: 'Studio portraits, creative lighting, and personal branding.',
         image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971897/mado-creatives/i8xewrxxjabg40c1nhd8.jpg',
-        tags: 'Identity, Direction, Campaigns',
+        tags: 'Studio, Lighting, Personal Brand',
     },
     {
-        title: 'Premium Electronics',
-        description: 'Trusted quality for creators and professionals. Our Electronics Store supplies the latest smartphones, professional cameras, business laptops, and smart gadgets across multiple countries.',
+        title: 'Commercial',
+        description: 'Product photography, brand campaigns, and advertising.',
         image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971897/mado-creatives/luhwozrxtp1u5oehdyej.jpg',
-        tags: 'Laptops, Cameras, Smartphones',
+        tags: 'Products, Campaigns, Advertising',
+    },
+    {
+        title: 'Events',
+        description: 'Corporate events, conferences, and private celebrations.',
+        image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971895/mado-creatives/has4odv4qpun3uxh2wza.jpg',
+        tags: 'Corporate, Conferences, Private Events',
     },
 ];
 
