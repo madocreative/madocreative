@@ -60,13 +60,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <LenisProvider>
-            <HideOnAdmin>
-              <div
-                className="fixed inset-0 border-[12px] md:border-[18px] border-[var(--frame-border)] z-[9999] pointer-events-none"
-                aria-hidden="true"
-              />
-            </HideOnAdmin>
-            <HideOnAdmin>
+<HideOnAdmin>
               <Header />
             </HideOnAdmin>
             <HideOnAdmin>
