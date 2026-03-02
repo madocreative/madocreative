@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude worktrees (nested git repos, confuse Vercel submodule detection)
+.claude/worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
