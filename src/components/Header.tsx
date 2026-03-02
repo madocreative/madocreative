@@ -1,7 +1,6 @@
 import HeaderClient from '@/components/HeaderClient';
 import { getPublicSiteSettings } from '@/lib/siteSettings';
 import dbConnect from '@/lib/mongodb';
-import Gallery from '@/models/Gallery';
 import Content from '@/models/Content';
 
 type NavChildLink = {
@@ -10,67 +9,62 @@ type NavChildLink = {
   description?: string;
 };
 
-const fallbackServiceLinks: NavChildLink[] = [
+const fallbackPortfolioLinks: NavChildLink[] = [
   {
-    name: '01 - Weddings',
-    path: '/services#weddings',
-    description: 'Your strongest emotional work.',
+    name: '01 — Weddings',
+    path: '/portfolio?category=Weddings',
+    description: 'Timeless coverage of weddings and love stories.',
   },
   {
-    name: '02 - Portraits',
-    path: '/services#portraits',
-    description: 'Studio portraits and personal branding.',
+    name: '02 — Portraits',
+    path: '/portfolio?category=Portraits',
+    description: 'Studio portraits, personal branding & fashion.',
   },
   {
-    name: '03 - Commercial',
-    path: '/services#commercial',
-    description: 'Product photography and campaigns.',
+    name: '03 — Commercial',
+    path: '/portfolio?category=Commercial',
+    description: 'Product, campaign and brand photography.',
   },
   {
-    name: '04 - Events',
-    path: '/services#events',
-    description: 'Corporate and private celebrations.',
+    name: '04 — Events',
+    path: '/portfolio?category=Events',
+    description: 'Corporate events, galas & private celebrations.',
   },
 ];
 
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+const fixedServiceLinks: NavChildLink[] = [
+  {
+    name: 'All Services',
+    path: '/services',
+    description: 'See all creative services and packages.',
+  },
+  {
+    name: 'Videography',
+    path: '/videography',
+    description: 'Cinematic films, event coverage, and editing.',
+  },
+  {
+    name: 'Digital Marketing',
+    path: '/digital-marketing',
+    description: 'Social growth, campaigns, ads, and strategy.',
+  },
+];
+
+function toGalleryLabel(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return 'Service Gallery';
+  return /gallery$/i.test(trimmed) ? trimmed : `${trimmed} Gallery`;
 }
 
 export default async function Header() {
   const settings = await getPublicSiteSettings();
-  let portfolioLinks: NavChildLink[] = [];
-  let serviceLinks: NavChildLink[] = fallbackServiceLinks;
+  let portfolioLinks: NavChildLink[] = fallbackPortfolioLinks;
+  let serviceLinks: NavChildLink[] = fixedServiceLinks;
 
   try {
     await dbConnect();
 
-    const [galleries, servicesContent] = await Promise.all([
-      Gallery.find({})
-        .sort({ createdAt: -1 })
-        .select('title slug')
-        .limit(8)
-        .lean(),
-      Content.findOne({ page: 'services' }).select('sections').lean(),
-    ]);
-
-    portfolioLinks = Array.from(
-      new Map(
-        (galleries || [])
-          .filter((gallery: any) => gallery?.title && gallery?.slug)
-          .map((gallery: any) => [
-            String(gallery.slug),
-            {
-              name: String(gallery.title),
-              path: `/portfolio#gallery-${slugify(String(gallery.slug))}`,
-            },
-          ]),
-      ).values(),
-    );
+    const servicesContent = await Content.findOne({ page: 'services' }).select('sections').lean();
 
     const sectionServices = Array.isArray((servicesContent as any)?.sections?.services)
       ? (servicesContent as any).sections.services
@@ -80,17 +74,8 @@ export default async function Header() {
       const mapped = sectionServices
         .slice(0, 4)
         .map((service: any, index: number) => ({
-          name: `${String(index + 1).padStart(2, '0')} - ${String(service?.title || 'Service')}`,
-          path:
-            index === 0
-              ? '/services#weddings'
-              : index === 1
-                ? '/services#portraits'
-                : index === 2
-                  ? '/services#commercial'
-                  : index === 3
-                    ? '/services#events'
-                    : `/services#${slugify(String(service?.title || 'service'))}`,
+          name: `${String(index + 1).padStart(2, '0')} - ${toGalleryLabel(String(service?.title || 'Service'))}`,
+          path: `/portfolio?category=${encodeURIComponent(String(service?.title || ''))}`,
           description:
             typeof service?.description === 'string' && service.description.trim().length > 0
               ? service.description.trim().slice(0, 72)
@@ -99,12 +84,12 @@ export default async function Header() {
         .filter((service: NavChildLink) => service.name.trim().length > 0);
 
       if (mapped.length > 0) {
-        serviceLinks = mapped;
+        portfolioLinks = mapped;
       }
     }
   } catch {
-    portfolioLinks = [];
-    serviceLinks = fallbackServiceLinks;
+    portfolioLinks = fallbackPortfolioLinks;
+    serviceLinks = fixedServiceLinks;
   }
 
   return (

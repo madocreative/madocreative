@@ -131,16 +131,14 @@ export default function HomeClient({
     const ctaSubtitle      = getString(sections.ctaSubtitle,    'Book a photography session, request a campaign shoot, or discuss a custom production plan with our team.');
     const ctaButtonLink    = getString(sections.ctaButtonLink,  '/booking');
 
-    // Hero images: Cloudinary gallery images first (higher resolution), local files as fallback.
+    // Hero images: use curated hero set first; keep CMS hero as optional fallback.
     const heroImgs = [
-        ...galleries.flatMap(g => [g.featuredImage, ...(g.images || [])]),
-        content?.heroImage,
         ...defaultHeroImages,
+        content?.heroImage,
     ]
         .filter((img): img is string => typeof img === 'string' && img.length > 0)
         .filter((v, i, a) => a.indexOf(v) === i)
-        .filter((img) => !excludedImages.includes(img))
-        .slice(0, 30);
+        .slice(0, 10);
 
     // Gallery reel: all unique images from all galleries
     const reelImgs = galleries.flatMap(g => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[];
@@ -675,7 +673,6 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
 gsap.registerPlugin(ScrollTrigger);
 
 const HERO_ROTATE_MS = 7000;
-const HERO_PANELS = 5;
 
 /** Add Cloudinary auto-quality + format + resize for hero display */
 function optimizeHeroUrl(url: string): string {
@@ -685,13 +682,14 @@ function optimizeHeroUrl(url: string): string {
 
 function HeroPanel({ src, className = '', eager = false }: { src: string; className?: string; eager?: boolean }) {
     return (
-        <div className={`relative overflow-hidden bg-[#0a0908] ${className}`}>
+        <div className={`relative overflow-hidden bg-[#060504] ${className}`}>
+            {/* object-contain — full photo always visible, no crop */}
             <img
                 key={src}
                 src={optimizeHeroUrl(src)}
                 alt=""
                 loading={eager ? 'eager' : 'lazy'}
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-contain"
             />
         </div>
     );
@@ -704,12 +702,8 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     const [slide, setSlide] = useState(0);
 
     const imgs = heroImgs.length > 0 ? heroImgs : ['/hero/hero-01.jpg'];
-    // Ensure we always have at least HERO_PANELS images
-    const padded = imgs.length < HERO_PANELS
-        ? Array.from({ length: HERO_PANELS }, (_, i) => imgs[i % imgs.length])
-        : imgs;
-    const slideCount = Math.max(1, Math.ceil(padded.length / HERO_PANELS));
-    const panel = (n: number) => padded[(slide * HERO_PANELS + n) % padded.length];
+    const slideCount = Math.max(1, imgs.length);
+    const activeImage = imgs[slide % imgs.length];
 
     // Auto-advance slides
     useEffect(() => {
@@ -734,20 +728,11 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     return (
         <section ref={sectionRef} className="relative h-screen min-h-[600px] max-h-[1100px] overflow-hidden">
 
-            {/* ── DESKTOP: 5-panel editorial grid ─────────────────────── */}
-            {/* col layout: large left (2fr) + 2 pairs on right (1fr each) */}
-            <div className="absolute inset-0 hidden md:grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-[2px] bg-[#050403]">
-                <HeroPanel src={panel(0)} className="row-span-2" eager />
-                <HeroPanel src={panel(1)} eager />
-                <HeroPanel src={panel(2)} eager />
-                <HeroPanel src={panel(3)} />
-                <HeroPanel src={panel(4)} />
+            {/* Single-image hero slider on desktop and mobile */}
+            <div className="absolute inset-0 bg-[#050403]">
+                <HeroPanel src={activeImage} className="h-full" eager />
             </div>
 
-            {/* ── MOBILE: single full-screen image ─────────────────────── */}
-            <div className="absolute inset-0 md:hidden">
-                <HeroPanel src={panel(0)} className="h-full" eager />
-            </div>
 
             {/* Gradient — bottom-up for text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/95 via-[#050403]/15 to-[#050403]/35 pointer-events-none" />
@@ -800,7 +785,7 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
             {/* ── SLIDE DOTS ────────────────────────────────────────────── */}
             {slideCount > 1 && (
                 <div className="absolute right-5 md:right-10 bottom-5 md:bottom-7 z-20 flex items-center gap-2">
-                    {Array.from({ length: Math.min(slideCount, 8) }).map((_, i) => (
+                    {Array.from({ length: slideCount }).map((_, i) => (
                         <button
                             key={i}
                             type="button"

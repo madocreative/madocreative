@@ -33,6 +33,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isHomeTop = pathname === '/' && !isScrolled;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
@@ -57,10 +58,21 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
     };
   }, [sidebarOpen]);
 
+  // When on home at top, hero is always dark — use white controls regardless of theme
   const themeClasses = useMemo(() => {
+    if (isHomeTop) {
+      return {
+        shell: 'bg-transparent border-transparent',
+        menuBtn: 'bg-white/15 text-white hover:bg-white/25',
+        roundBtn: 'bg-white/15 text-white border border-white/30 hover:bg-white/25',
+        primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
+        sidebar: theme === 'light' ? 'bg-[#f8f7f3] border-black/12 text-[#111111]' : 'bg-[#0f0d0a] border-white/14 text-white',
+      };
+    }
+
     if (theme === 'light') {
       return {
-        shell: 'bg-white/82 border-black/10',
+        shell: 'bg-white/90 border-black/12',
         menuBtn: 'bg-[#111111] text-white',
         roundBtn: 'bg-[#f3f3f0] text-[#101010] border border-black/10 hover:bg-[#ecebe5]',
         primaryBtn: 'bg-[#111111] text-white hover:bg-[#2b2b2b]',
@@ -69,13 +81,13 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
     }
 
     return {
-      shell: 'bg-[#090705]/78 border-white/12',
+      shell: 'bg-[#090705]/84 border-white/16',
       menuBtn: 'bg-white text-[#090705]',
       roundBtn: 'bg-white/12 text-white border border-white/25 hover:bg-white/24',
       primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
       sidebar: 'bg-[#0f0d0a] border-white/14 text-white',
     };
-  }, [theme]);
+  }, [theme, isHomeTop]);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -102,8 +114,8 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
     <>
       <header className="fixed top-0 left-0 right-0 z-50 px-2.5 sm:px-3 md:px-5 pt-2.5 sm:pt-3 md:pt-4">
         <div
-          className={`mx-auto max-w-[1320px] rounded-[1.1rem] sm:rounded-[1.25rem] md:rounded-[1.5rem] border backdrop-blur-xl transition-all duration-300 ${themeClasses.shell} ${
-            isScrolled ? 'shadow-[0_18px_45px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
+          className={`mx-auto max-w-[1320px] rounded-[1.1rem] sm:rounded-[1.25rem] md:rounded-[1.5rem] border transition-all duration-500 ${isHomeTop ? '' : 'backdrop-blur-2xl'} ${themeClasses.shell} ${
+            isHomeTop ? '' : isScrolled ? 'shadow-[0_18px_45px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
           }`}
         >
           <div className="flex items-center justify-between gap-2.5 px-2.5 py-2.5 sm:px-3 sm:py-3 md:px-5">
@@ -123,11 +135,13 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
             <nav className="hidden xl:flex items-center gap-6">
               {navItems.map((item) => {
-                const activeClass = isActive(item.path)
-                  ? theme === 'dark'
-                    ? 'text-white'
-                    : 'text-[#1b1b1b]'
-                  : theme === 'dark'
+                const itemIsActive =
+                  isActive(item.path) || (item.children?.some((child) => isActive(child.path)) ?? false);
+
+                // When isHomeTop, hero is always dark — always use white text
+                const activeClass = itemIsActive
+                  ? (isHomeTop || theme === 'dark') ? 'text-white' : 'text-[#1b1b1b]'
+                  : (isHomeTop || theme === 'dark')
                     ? 'text-white/84 hover:text-white'
                     : 'text-[#383838] hover:text-[#1b1b1b]';
 
