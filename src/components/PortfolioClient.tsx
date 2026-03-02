@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 
 interface Props {
     galleries: any[];
@@ -498,12 +499,22 @@ function GalleryLayout({ gallery, onOpen }: { gallery: any; onOpen: (i: number) 
 export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, heroLabel }: Props) {
     const [lightbox, setLightbox] = useState<{ imgs: string[]; idx: number } | null>(null);
     const [activeCategory, setActiveCategory] = useState('All');
+    const searchParams = useSearchParams();
 
     const allGalleryImages = galleries.flatMap((g: any) => [g.featuredImage, ...(g.images || [])].filter(Boolean));
     const heroImgs = (allGalleryImages.length > 0 ? allGalleryImages : allMediaUrls).slice(0, 5);
 
     const categories = ['All', ...Array.from(new Set(galleries.map((g: any) => g.category).filter(Boolean)))];
     const filteredGalleries = activeCategory === 'All' ? galleries : galleries.filter((g: any) => g.category === activeCategory);
+    const categoryFromQuery = searchParams.get('category');
+
+    useEffect(() => {
+        if (!categoryFromQuery) return;
+        const normalized = categoryFromQuery.trim().toLowerCase();
+        if (!normalized) return;
+        const match = categories.find((cat) => String(cat).trim().toLowerCase() === normalized);
+        if (match) setActiveCategory(match);
+    }, [categoryFromQuery, categories]);
 
     const openLightbox = (imgs: string[], idx: number) => setLightbox({ imgs, idx });
     const closeLightbox = useCallback(() => setLightbox(null), []);
