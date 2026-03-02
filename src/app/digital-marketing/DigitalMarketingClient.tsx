@@ -70,7 +70,7 @@ export default function DigitalMarketingClient() {
     return (
         <div className="flex flex-col bg-[var(--app-bg)]">
             {/* Hero */}
-            <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]">
+            <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]">
                 <div className="absolute inset-0 flex gap-px">
                     {HERO_IMGS.map((img, i) => (
                         <div key={i} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>

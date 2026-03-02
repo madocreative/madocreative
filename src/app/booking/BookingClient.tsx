@@ -121,7 +121,7 @@ export default function BookingClient({ data }: { data: PageData }) {
                 HERO — full-width image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[55vh] md:h-[62vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem] border border-[var(--app-border)]"
+                className="relative h-[55vh] md:h-[62vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >
