@@ -37,6 +37,10 @@ function isHtml(str: string): boolean {
     return /<[a-z][\s\S]*>/i.test(str);
 }
 
+function formatRwf(amount: number): string {
+    return `RWF ${amount.toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
 export default function ProductDetailClient({ product, related }: { product: Product; related: Product[] }) {
     const [activeImg, setActiveImg] = useState(0);
     const [lightbox, setLightbox] = useState(false);
@@ -47,7 +51,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
 
     const description = isHtml(product.description) ? stripHtml(product.description) : product.description;
 
-    const waMessage = encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${product.name}* — Price: $${product.price.toLocaleString()}. Please share more details.`);
+    const waMessage = encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${product.name}* — Price: ${formatRwf(product.price)}. Please share more details.`);
 
     return (
         <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)] pt-[104px] md:pt-[116px] px-3 md:px-5">
@@ -158,7 +162,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                         {/* Price */}
                         <div className="flex items-baseline gap-3">
                             <span className="text-4xl font-bold text-[#ffc000]">
-                                ${product.price.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                                {formatRwf(product.price)}
                             </span>
                         </div>
 
@@ -242,7 +246,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                                     </div>
                                     <div className="px-3 py-3 border-t border-white/5">
                                         <p className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors mb-1">{p.name}</p>
-                                        <p className="text-[#ffc000] font-bold text-sm">${p.price.toLocaleString()}</p>
+                                        <p className="text-[#ffc000] font-bold text-sm">{formatRwf(p.price)}</p>
                                     </div>
                                 </Link>
                             ))}

@@ -39,25 +39,8 @@ interface Category {
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
-/** Strip all HTML tags and decode entities to plain readable text */
-function stripHtml(html: string): string {
-    if (!html) return '';
-    // Remove script/style blocks entirely
-    let text = html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
-    // Replace block tags with newlines
-    text = text.replace(/<\/?(p|div|br|li|h[1-6]|article|section)[^>]*>/gi, '\n');
-    // Strip all remaining tags
-    text = text.replace(/<[^>]+>/g, '');
-    // Decode common HTML entities
-    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, '');
-    // Collapse excess whitespace
-    text = text.replace(/\n{3,}/g, '\n\n').trim();
-    return text;
-}
-
-/** Returns true if string contains HTML tags */
-function isHtml(str: string): boolean {
-    return /<[a-z][\s\S]*>/i.test(str);
+function formatRwf(amount: number): string {
+    return `RWF ${amount.toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
@@ -72,7 +55,6 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
     const [activeCategory, setActiveCategory] = useState('All');
     const [sort, setSort] = useState<SortOption>('newest');
     const [search, setSearch] = useState('');
-    const [quickView, setQuickView] = useState<Product | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const parsedCategories = useMemo(() => {
@@ -273,48 +255,49 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                                         <motion.div key={product._id} layout
                                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                             transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.3) }}
-                                            className="group bg-[#0a0a08] cursor-pointer flex flex-col"
-                                            onClick={() => setQuickView(product)}
+                                            className="bg-[#0a0a08]"
                                         >
-                                            {/* Image */}
-                                            <div className="aspect-square relative overflow-hidden bg-[#111109]">
-                                                <img
-                                                    src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
-                                                    alt={product.name}
-                                                    className={`w-full h-full object-contain p-2 transition-all duration-500 ease-out ${product.images.length > 1 ? 'group-hover:opacity-0 group-hover:scale-105' : 'group-hover:scale-105'}`}
-                                                />
-                                                {product.images.length > 1 && (
+                                            <Link href={`/shop/${product.slug}`} className="group flex h-full flex-col">
+                                                {/* Image */}
+                                                <div className="aspect-square relative overflow-hidden bg-[#111109]">
                                                     <img
-                                                        src={product.images[1]}
-                                                        alt={`${product.name} alternate view`}
-                                                        className="absolute inset-0 w-full h-full object-contain p-2 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
+                                                        src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
+                                                        alt={product.name}
+                                                        className={`w-full h-full object-contain p-2 transition-all duration-500 ease-out ${product.images.length > 1 ? 'group-hover:opacity-0 group-hover:scale-105' : 'group-hover:scale-105'}`}
                                                     />
-                                                )}
-                                                {!product.inStock && (
-                                                    <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
-                                                        <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
-                                                            Out of Stock
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {product.inStock && (
-                                                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500" title="In Stock" />
-                                                )}
-                                            </div>
-
-                                            {/* Info */}
-                                            <div className="px-3 py-2.5 flex flex-col gap-1.5 flex-1 bg-[#0d0d0b] border-t border-white/5">
-                                                <p className="text-[#ffc000] text-[9px] font-bold uppercase tracking-widest">{product.category}</p>
-                                                <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors">
-                                                    {product.name}
-                                                </h3>
-                                                <div className="flex items-center justify-between mt-auto pt-1">
-                                                    <span className="text-[#ffc000] font-bold text-sm">
-                                                        ${product.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                                                    </span>
-                                                    <span className="material-symbols-outlined text-slate-600 text-[14px] group-hover:text-[#ffc000] transition-colors">chevron_right</span>
+                                                    {product.images.length > 1 && (
+                                                        <img
+                                                            src={product.images[1]}
+                                                            alt={`${product.name} alternate view`}
+                                                            className="absolute inset-0 w-full h-full object-contain p-2 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
+                                                        />
+                                                    )}
+                                                    {!product.inStock && (
+                                                        <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
+                                                            <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
+                                                                Out of Stock
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {product.inStock && (
+                                                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500" title="In Stock" />
+                                                    )}
                                                 </div>
-                                            </div>
+
+                                                {/* Info */}
+                                                <div className="px-3 py-2.5 flex flex-col gap-1.5 flex-1 bg-[#0d0d0b] border-t border-white/5">
+                                                    <p className="text-[#ffc000] text-[9px] font-bold uppercase tracking-widest">{product.category}</p>
+                                                    <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors">
+                                                        {product.name}
+                                                    </h3>
+                                                    <div className="flex items-center justify-between mt-auto pt-1">
+                                                        <span className="text-[#ffc000] font-bold text-sm">
+                                                            {formatRwf(product.price)}
+                                                        </span>
+                                                        <span className="material-symbols-outlined text-slate-600 text-[14px] group-hover:text-[#ffc000] transition-colors">chevron_right</span>
+                                                    </div>
+                                                </div>
+                                            </Link>
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>
@@ -375,101 +358,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                 </div>
             </div>
 
-            {/* Quick-View Lightbox */}
-            <AnimatePresence>
-                {quickView && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 md:p-8"
-                        onClick={() => setQuickView(null)}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{ duration: 0.25 }}
-                            className="bg-[#111109] max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
-                            onClick={e => e.stopPropagation()}>
-
-                            {/* Image */}
-                            <div className="aspect-[4/3] bg-[#0a0a08] relative overflow-hidden">
-                                <img
-                                    src={quickView.images[0] || 'https://placehold.co/600x450/111109/ffc000?text=No+Image'}
-                                    alt={quickView.name}
-                                    className="w-full h-full object-contain"
-                                />
-                                {quickView.category && (
-                                    <div className="absolute top-4 left-4 bg-[#0a0a08]/80 text-[#ffc000] text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 border border-[#ffc000]/20">
-                                        {quickView.category}
-                                    </div>
-                                )}
-                                {!quickView.inStock && (
-                                    <div className="absolute inset-0 bg-[#0a0a08]/60 flex items-center justify-center">
-                                        <span className="text-white font-bold uppercase tracking-widest border border-white/30 px-6 py-2">Out of Stock</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Info */}
-                            <div className="p-6 md:p-8">
-                                <div className="flex items-start justify-between gap-4 mb-4">
-                                    <h2 className="text-xl font-bold font-display uppercase leading-tight flex-1">{quickView.name}</h2>
-                                    <span className="text-2xl font-bold text-[#ffc000] shrink-0">
-                                        ${quickView.price.toLocaleString('en-US', { minimumFractionDigits: 0 })}
-                                    </span>
-                                </div>
-
-                                {quickView.description && (
-                                    <p className="text-slate-400 text-sm leading-relaxed mb-6 whitespace-pre-line">
-                                        {isHtml(quickView.description) ? stripHtml(quickView.description) : quickView.description}
-                                    </p>
-                                )}
-
-                                <div className="flex items-center gap-2 mb-6">
-                                    <div className={`w-2 h-2 rounded-full ${quickView.inStock ? 'bg-green-500' : 'bg-red-500/70'}`} />
-                                    <span className={`text-xs font-bold uppercase tracking-widest ${quickView.inStock ? 'text-green-400' : 'text-slate-500'}`}>
-                                        {quickView.inStock ? 'In Stock' : 'Out of Stock'}
-                                    </span>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    {quickView.inStock ? (
-                                        <>
-                                            <a href={`https://wa.me/?text=${encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${quickView.name}* — Price: $${quickView.price.toLocaleString()}. Please share more details.`)}`}
-                                                target="_blank" rel="noopener noreferrer"
-                                                className="sm:col-span-2 flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all">
-                                                <WhatsAppIcon />
-                                                Inquire via WhatsApp
-                                            </a>
-                                            <Link href={`/contact?inquiry=shop&product=${encodeURIComponent(quickView.name)}`}
-                                                className="flex items-center justify-center gap-2 bg-[#ffc000] text-[#0a0a08] py-3 font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all">
-                                                Contact Us
-                                            </Link>
-                                            <Link href={`/shop/${quickView.slug}`}
-                                                className="sm:col-span-3 flex items-center justify-center gap-2 bg-transparent border border-[#ffc000] text-[#ffc000] py-3 font-bold uppercase tracking-widest text-xs hover:bg-[#ffc000]/10 transition-all mt-2">
-                                                View Full Details
-                                            </Link>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button disabled
-                                                className="sm:col-span-3 py-3 font-bold uppercase tracking-widest text-xs bg-white/5 text-slate-600 cursor-not-allowed">
-                                                Out of Stock
-                                            </button>
-                                            <Link href={`/shop/${quickView.slug}`}
-                                                className="sm:col-span-3 flex items-center justify-center gap-2 bg-transparent border border-slate-600 text-slate-400 py-3 font-bold uppercase tracking-widest text-xs hover:bg-white/5 transition-all mt-2">
-                                                View Full Details
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Close */}
-                            <button onClick={() => setQuickView(null)}
-                                className="absolute top-4 right-4 w-9 h-9 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
-                                <span className="material-symbols-outlined text-[18px]">close</span>
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            
         </div>
     );
 }

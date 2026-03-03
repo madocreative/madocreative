@@ -140,10 +140,6 @@ export default function HomeClient({
         .filter((v, i, a) => a.indexOf(v) === i)
         .slice(0, 10);
 
-    // Gallery reel: all unique images from all galleries
-    const reelImgs = galleries.flatMap(g => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[];
-    const reelRow1 = reelImgs.filter((_, i) => i % 2 === 0).slice(0, 14);
-    const reelRow2 = reelImgs.filter((_, i) => i % 2 === 1).slice(0, 14);
 
     const excludedSet = new Set(
         excludedImages
@@ -170,65 +166,6 @@ export default function HomeClient({
             ══════════════════════════════════════════════════════════ */}
             <HeroSection heroImgs={heroImgs} ctaText={ctaText} ctaLink={ctaLink} secondaryCtaLink={secondaryCtaLink} />
 
-            {/* ══════════════════════════════════════════════════════════
-                2. GALLERY REEL — double-row auto-scroll strip
-            ══════════════════════════════════════════════════════════ */}
-            {reelImgs.length > 0 && (
-                <Link href="/portfolio" className="block relative overflow-hidden bg-[#060504] group cursor-pointer">
-                    {/* Top + bottom gradient blend */}
-                    <div className="absolute inset-0 pointer-events-none z-10">
-                        <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#090805] to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#060504] to-transparent" />
-                        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060504] to-transparent" />
-                        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060504] to-transparent" />
-                    </div>
-
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-[#090805]/0 group-hover:bg-[#090805]/40 flex items-center justify-center z-20 transition-all duration-500">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-center gap-3 border border-[#ffc000]/60 text-[#ffc000] px-8 py-3 text-xs font-bold uppercase tracking-[0.32em] bg-[#090805]/70">
-                            Explore Portfolio
-                            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5 py-0.5">
-                        {/* Row 1 — scrolls left */}
-                        {reelRow1.length > 0 && (
-                            <div className="overflow-hidden h-[130px] md:h-[160px]">
-                                <motion.div
-                                    className="flex gap-0.5"
-                                    style={{ width: 'max-content' }}
-                                    animate={{ x: ['0%', '-50%'] }}
-                                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-                                >
-                                    {[...reelRow1, ...reelRow1].map((img, i) => (
-                                        <div key={i} className="flex-none w-[200px] md:w-[260px] h-[130px] md:h-[160px] overflow-hidden bg-[#0d0c08]">
-                                            <img src={img} alt="" className="w-full h-full object-cover" />
-                                        </div>
-                                    ))}
-                                </motion.div>
-                            </div>
-                        )}
-                        {/* Row 2 — scrolls right */}
-                        {reelRow2.length > 0 && (
-                            <div className="overflow-hidden h-[130px] md:h-[160px]">
-                                <motion.div
-                                    className="flex gap-0.5"
-                                    style={{ width: 'max-content' }}
-                                    animate={{ x: ['-50%', '0%'] }}
-                                    transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
-                                >
-                                    {[...reelRow2, ...reelRow2].map((img, i) => (
-                                        <div key={i} className="flex-none w-[200px] md:w-[260px] h-[130px] md:h-[160px] overflow-hidden bg-[#0d0c08]">
-                                            <img src={img} alt="" className="w-full h-full object-cover" />
-                                        </div>
-                                    ))}
-                                </motion.div>
-                            </div>
-                        )}
-                    </div>
-                </Link>
-            )}
 
             {/* ══════════════════════════════════════════════════════════
                 3. ABOUT — parallax split: text left, tall image right
@@ -677,19 +614,18 @@ const HERO_ROTATE_MS = 7000;
 /** Add Cloudinary auto-quality + format + resize for hero display */
 function optimizeHeroUrl(url: string): string {
     if (!url.includes('res.cloudinary.com')) return url;
-    return url.replace('/upload/', '/upload/q_auto,f_auto,w_1800/');
+    return url.replace('/upload/', '/upload/q_auto:best,f_auto,dpr_auto,w_2400/');
 }
 
 function HeroPanel({ src, className = '', eager = false }: { src: string; className?: string; eager?: boolean }) {
     return (
-        <div className={`relative overflow-hidden bg-[#060504] ${className}`}>
-            {/* object-contain — full photo always visible, no crop */}
+        <div className={`relative overflow-hidden bg-[#050403] ${className}`}>
             <img
                 key={src}
                 src={optimizeHeroUrl(src)}
                 alt=""
                 loading={eager ? 'eager' : 'lazy'}
-                className="absolute inset-0 h-full w-full object-contain"
+                className="absolute inset-0 h-full w-full object-cover object-center"
             />
         </div>
     );
@@ -716,17 +652,27 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.timeline({ defaults: { ease: 'power3.out' } })
-                .from('.hero-kicker',     { y: 22, autoAlpha: 0, duration: 0.6 })
-                .from('.hero-title-line', { y: 64, autoAlpha: 0, duration: 0.85, stagger: 0.13 }, '-=0.35')
-                .from('.hero-sub',        { y: 20, autoAlpha: 0, duration: 0.55 }, '-=0.25')
-                .from('.hero-ctas',       { y: 18, autoAlpha: 0, duration: 0.5 }, '-=0.2');
+                .from('.hero-overlay',    { y: 24, autoAlpha: 0, duration: 0.6 })
+                .from('.hero-title-line', { y: 24, autoAlpha: 0, duration: 0.55 }, '-=0.25')
+                .from('.hero-ctas',       { y: 16, autoAlpha: 0, duration: 0.4 }, '-=0.18');
         }, sectionRef);
         return () => ctx.revert();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const scrollToNextSection = () => {
+        const next = sectionRef.current?.nextElementSibling as HTMLElement | null;
+        if (!next) return;
+        const headerOffset = 88;
+        const top = next.getBoundingClientRect().top + window.scrollY - headerOffset + 8;
+        window.scrollTo({ top, behavior: 'smooth' });
+    };
+
     return (
-        <section ref={sectionRef} className="relative h-screen min-h-[600px] max-h-[1100px] overflow-hidden">
+        <section
+            ref={sectionRef}
+            className="relative mt-[72px] md:mt-[88px] h-[calc(100svh-72px)] md:h-[calc(100svh-88px)] min-h-[520px] md:min-h-[600px] max-h-[1100px] overflow-hidden"
+        >
 
             {/* Single-image hero slider on desktop and mobile */}
             <div className="absolute inset-0 bg-[#050403]">
@@ -735,50 +681,30 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
 
 
             {/* Gradient — bottom-up for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/95 via-[#050403]/15 to-[#050403]/35 pointer-events-none" />
             {/* Gradient — left fade so text is always readable on desktop */}
-            <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#050403]/88 via-[#050403]/30 to-transparent pointer-events-none" />
 
             {/* ── TEXT OVERLAY ─────────────────────────────────────────── */}
-            <div className="relative z-10 h-full flex flex-col justify-end pb-14 md:pb-18 lg:pb-22 px-6 md:px-12 lg:px-20">
-                <div className="max-w-2xl">
-                    <p className="hero-kicker flex items-center gap-3 text-[10px] font-semibold tracking-[0.44em] text-[#ffc000] uppercase mb-5">
-                        <span className="block h-px w-8 bg-[#ffc000] shrink-0" />
-                        Premium Visual Studio · Kigali
-                    </p>
+            <div className="hero-overlay relative z-10 h-full flex items-end px-5 md:px-10 lg:px-16 pb-6 md:pb-10 pointer-events-none">
+                <div className="pointer-events-auto">
 
-                    <h1
-                        className="font-display font-bold text-white leading-[0.87] tracking-[-0.02em] overflow-hidden"
-                        style={{ fontSize: 'clamp(3.8rem, 10vw, 9.5rem)' }}
-                    >
-                        <span className="hero-title-line block">Mado</span>
-                        <span className="hero-title-line block">Creatives</span>
+                    <h1 className="hero-title-line font-display font-semibold text-white leading-[0.92] tracking-[-0.015em] drop-shadow-[0_4px_16px_rgba(0,0,0,0.55)] text-[clamp(2rem,5.2vw,4.6rem)]">
+                        Mado Creatives
                     </h1>
 
-                    <p className="hero-sub mt-5 md:mt-7 text-white/55 text-[0.87rem] md:text-[0.98rem] max-w-[20rem] md:max-w-[28rem] leading-[1.75]">
-                        Luxury photography &amp; cinematic storytelling for brands and moments that deserve to be remembered.
-                    </p>
-
-                    <div className="hero-ctas mt-8 md:mt-10 flex flex-wrap gap-3">
+                    <div className="hero-ctas mt-4">
                         <Link
                             href={ctaLink}
-                            className="inline-flex items-center gap-2 bg-[#ffc000] text-[#0a0a08] px-7 md:px-9 h-11 md:h-12 text-[0.74rem] font-bold tracking-[0.14em] uppercase hover:bg-white transition-colors"
+                            className="inline-flex items-center gap-2 bg-black/45 border border-white/28 text-white px-5 h-10 text-[0.68rem] font-semibold tracking-[0.16em] uppercase hover:bg-black/60 hover:border-white/45 transition-colors"
                         >
                             {ctaText}
-                            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                        </Link>
-                        <Link
-                            href={secondaryCtaLink}
-                            className="inline-flex items-center gap-2 border border-white/30 text-white px-7 md:px-9 h-11 md:h-12 text-[0.74rem] font-semibold tracking-[0.14em] uppercase hover:border-white/65 hover:bg-white/8 transition-colors"
-                        >
-                            Book a Session
+                            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </Link>
                     </div>
                 </div>
             </div>
 
             {/* ── SLIDE COUNTER ─────────────────────────────────────────── */}
-            <div className="absolute left-6 md:left-12 lg:left-20 bottom-5 md:bottom-7 z-20 text-[10px] tracking-[0.3em] text-white/32 font-mono select-none">
+            <div className="absolute left-6 md:left-12 lg:left-20 bottom-5 md:bottom-7 z-20 text-[10px] tracking-[0.3em] text-white/82 bg-black/55 px-2 py-1 rounded-md font-mono select-none">
                 {String(slide + 1).padStart(2, '0')} / {String(slideCount).padStart(2, '0')}
             </div>
 
@@ -790,12 +716,22 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
                             key={i}
                             type="button"
                             onClick={() => setSlide(i)}
-                            className={`h-[3px] rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-[#ffc000]' : 'w-[5px] bg-white/32 hover:bg-white/60'}`}
+                            className={`h-[3px] rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-[#ffc000]' : 'w-[5px] bg-black/55 hover:bg-black/80'}`}
                             aria-label={`Go to slide ${i + 1}`}
                         />
                     ))}
                 </div>
             )}
+
+            <button
+                type="button"
+                onClick={scrollToNextSection}
+                className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-6 z-20 inline-flex flex-col items-center gap-1 text-[10px] md:text-[11px] tracking-[0.24em] uppercase text-white/80 hover:text-white transition-colors"
+                aria-label="Scroll down"
+            >
+                <span>Scroll</span>
+                <span className="material-symbols-outlined text-[18px] leading-none animate-bounce">expand_more</span>
+            </button>
         </section>
     );
 }

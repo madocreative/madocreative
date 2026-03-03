@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 
@@ -17,6 +17,29 @@ function slugify(value: string): string {
         .trim()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
+}
+
+function getGalleryGroupName(gallery: any): string {
+    const group = String(gallery?.category || gallery?.title || '').trim();
+    return group || 'Uncategorized';
+}
+
+function toNoCropUrl(url: string): string {
+    if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+    const marker = '/upload/';
+    const [prefix, restRaw] = url.split(marker);
+    if (!restRaw) return url;
+
+    const segments = restRaw.split('/').filter(Boolean);
+    if (segments.length === 0) return url;
+
+    // Drop existing transformation segment so server-side crops like c_fill don't persist.
+    if (!segments[0].startsWith('v')) {
+        segments.shift();
+    }
+
+    const path = segments.join('/');
+    return `${prefix}${marker}c_fit,w_2400,h_2400,q_auto:best,f_auto/${path}`;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -50,7 +73,7 @@ function Lightbox({ imgs, idx, onClose, onPrev, onNext }: {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.22 }}
-                    src={imgs[idx]} alt=""
+                    src={toNoCropUrl(imgs[idx])} alt=""
                     className="max-w-[92vw] max-h-[92vh] object-contain"
                     onClick={e => e.stopPropagation()}
                 />
@@ -84,30 +107,31 @@ function Lightbox({ imgs, idx, onClose, onPrev, onNext }: {
    GALLERY HEADER
 ───────────────────────────────────────────────────────────────── */
 function GalleryHeader({ gallery, index }: { gallery: any; index: number }) {
+    const galleryLabel = getGalleryGroupName(gallery);
+    const galleryTitle = String(gallery?.title || galleryLabel);
+
     return (
-        <div className="mb-6 pb-4 border-b border-white/10">
+        <div className="mb-6 pb-4 border-b border-[var(--app-border)]">
             <div className="flex items-end justify-between">
                 <div className="flex items-end gap-5">
                     <span className="text-[#ffc000] font-display font-bold text-sm tabular-nums">
                         {String(index + 1).padStart(2, '0')}
                     </span>
-                    <h2 className="text-2xl md:text-4xl font-display font-bold text-white leading-none">
-                        {gallery.title}
+                    <h2 className="text-2xl md:text-4xl font-display font-bold text-[var(--app-text)] leading-none">
+                        {galleryTitle}
                     </h2>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                    {gallery.category && (
-                        <span className="text-[10px] text-[#6b6250] font-bold uppercase tracking-[0.32em]">
-                            {gallery.category}
-                        </span>
-                    )}
-                    <span className="text-[10px] text-[#3d3828] font-bold uppercase tracking-[0.2em]">
+                    <span className="text-[10px] text-[var(--app-subtle)] font-bold uppercase tracking-[0.32em]">
+                        {galleryLabel}
+                    </span>
+                    <span className="text-[10px] text-[var(--app-muted)] font-bold uppercase tracking-[0.2em]">
                         {gallery.layout || 'masonry'}
                     </span>
                 </div>
             </div>
             {gallery.description && (
-                <p className="mt-3 text-[#7a7260] text-sm leading-relaxed max-w-xl">
+                <p className="mt-3 text-[var(--app-subtle)] text-sm leading-relaxed max-w-xl">
                     {gallery.description}
                 </p>
             )}
@@ -132,7 +156,7 @@ function LayoutMasonry({ imgs, title, onOpen }: { imgs: string[]; title: string;
                     onClick={() => onOpen(i)}
                 >
                     <img
-                        src={img} alt={`${title} ${i + 1}`}
+                        src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
                         className="w-full h-auto object-contain group-hover:scale-[1.025] transition-transform duration-700"
                     />
                 </div>
@@ -167,8 +191,8 @@ function LayoutGrid({ imgs, title, onOpen }: { imgs: string[]; title: string; on
                         onClick={() => onOpen(i)}
                     >
                         <img
-                            src={img} alt={`${title} ${i + 1}`}
-                            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700"
+                            src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
+                            className="w-full h-full object-contain group-hover:scale-[1.06] transition-transform duration-700"
                         />
                     </div>
                 );
@@ -210,7 +234,7 @@ function LayoutSlideshow({ imgs, title, onOpen }: { imgs: string[]; title: strin
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.55, ease: 'easeInOut' }}
-                        src={imgs[current]} alt={`${title} ${current + 1}`}
+                        src={toNoCropUrl(imgs[current])} alt={`${title} ${current + 1}`}
                         className="absolute inset-0 w-full h-full object-contain"
                     />
                 </AnimatePresence>
@@ -244,7 +268,7 @@ function LayoutSlideshow({ imgs, title, onOpen }: { imgs: string[]; title: strin
                             onClick={() => go(i)}
                             className={`flex-none w-16 h-11 overflow-hidden transition-opacity duration-200 ${i === current ? 'opacity-100 ring-1 ring-[#ffc000]' : 'opacity-40 hover:opacity-70'}`}
                         >
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <img src={toNoCropUrl(img)} alt="" className="w-full h-full object-contain" />
                         </button>
                     ))}
                 </div>
@@ -282,8 +306,8 @@ function LayoutEditorial({ imgs, title, onOpen }: { imgs: string[]; title: strin
                     className="col-span-12 md:col-span-8 overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
                     onClick={() => onOpen(0)}
                 >
-                    <img src={hero} alt={title}
-                        className="w-full h-full min-h-[280px] md:min-h-[480px] object-cover group-hover:scale-[1.03] transition-transform duration-700" />
+                    <img src={toNoCropUrl(hero)} alt={title}
+                        className="w-full h-full min-h-[280px] md:min-h-[480px] object-contain group-hover:scale-[1.03] transition-transform duration-700" />
                 </div>
 
                 {/* 2 stacked side images */}
@@ -295,8 +319,8 @@ function LayoutEditorial({ imgs, title, onOpen }: { imgs: string[]; title: strin
                                 className="flex-1 overflow-hidden cursor-zoom-in group bg-[#0d0c08] min-h-[160px]"
                                 onClick={() => onOpen(i + 1)}
                             >
-                                <img src={img} alt={`${title} ${i + 2}`}
-                                    className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700" />
+                                <img src={toNoCropUrl(img)} alt={`${title} ${i + 2}`}
+                                    className="w-full h-full object-contain group-hover:scale-[1.04] transition-transform duration-700" />
                             </div>
                         ))}
                     </div>
@@ -317,7 +341,7 @@ function LayoutEditorial({ imgs, title, onOpen }: { imgs: string[]; title: strin
                             className="overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
                             onClick={() => onOpen(i + 3)}
                         >
-                            <img src={img} alt={`${title} ${i + 4}`}
+                            <img src={toNoCropUrl(img)} alt={`${title} ${i + 4}`}
                                 className="w-full h-auto object-contain group-hover:scale-[1.025] transition-transform duration-700" />
                         </div>
                     ))}
@@ -370,12 +394,12 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
                             onClick={() => onOpen(i)}
                         >
                             <img
-                                src={img} alt={`${title} ${i + 1}`}
+                                src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
                                 className="w-full h-72 md:h-96 object-contain group-hover:scale-[1.03] transition-transform duration-500"
                             />
                             {/* Frame number */}
                             <div className="flex items-center justify-between px-2 py-1 bg-[#0a0908]">
-                                <span className="text-[9px] text-[#3d3828] font-bold uppercase tracking-[0.3em]">
+                                <span className="text-[9px] text-[var(--app-muted)] font-bold uppercase tracking-[0.3em]">
                                     {String(i + 1).padStart(3, '0')}
                                 </span>
                                 <span className="w-3 h-px bg-[#2a2618]" />
@@ -427,7 +451,7 @@ function LayoutSpotlight({ imgs, title, onOpen }: { imgs: string[]; title: strin
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4 }}
-                        src={hero} alt={title}
+                        src={toNoCropUrl(hero)} alt={title}
                         className="w-full max-h-[70vh] object-contain group-hover:scale-[1.015] transition-transform duration-1000"
                     />
                 </AnimatePresence>
@@ -454,7 +478,7 @@ function LayoutSpotlight({ imgs, title, onOpen }: { imgs: string[]; title: strin
                                     : 'opacity-35 hover:opacity-65'
                             }`}
                         >
-                            <img src={img} alt="" className="w-full h-full object-cover" />
+                            <img src={toNoCropUrl(img)} alt="" className="w-full h-full object-contain" />
                         </button>
                     ))}
                 </div>
@@ -477,7 +501,7 @@ function GalleryLayout({ gallery, onOpen }: { gallery: any; onOpen: (i: number) 
     if (imgs.length === 1) {
         return (
             <div className="overflow-hidden cursor-zoom-in group" onClick={() => onOpen(0)}>
-                <img src={imgs[0]} alt={title}
+                <img src={toNoCropUrl(imgs[0])} alt={title}
                     className="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-700" />
             </div>
         );
@@ -504,16 +528,40 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
     const allGalleryImages = galleries.flatMap((g: any) => [g.featuredImage, ...(g.images || [])].filter(Boolean));
     const heroImgs = (allGalleryImages.length > 0 ? allGalleryImages : allMediaUrls).slice(0, 5);
 
-    const categories = ['All', ...Array.from(new Set(galleries.map((g: any) => g.category).filter(Boolean)))];
-    const filteredGalleries = activeCategory === 'All' ? galleries : galleries.filter((g: any) => g.category === activeCategory);
+    const galleriesWithGroup = useMemo(
+        () =>
+            galleries.map((gallery: any) => ({
+                ...gallery,
+                __group: getGalleryGroupName(gallery),
+            })),
+        [galleries],
+    );
+    const categories = useMemo(
+        () => ['All', ...Array.from(new Set(galleriesWithGroup.map((g: any) => g.__group).filter(Boolean)))],
+        [galleriesWithGroup],
+    );
+    const filteredGalleries = useMemo(
+        () =>
+            activeCategory === 'All'
+                ? galleriesWithGroup
+                : galleriesWithGroup.filter((g: any) => g.__group === activeCategory),
+        [activeCategory, galleriesWithGroup],
+    );
     const categoryFromQuery = searchParams.get('category');
 
     useEffect(() => {
         if (!categoryFromQuery) return;
-        const normalized = categoryFromQuery.trim().toLowerCase();
+        const normalized = slugify(categoryFromQuery);
         if (!normalized) return;
-        const match = categories.find((cat) => String(cat).trim().toLowerCase() === normalized);
-        if (match) setActiveCategory(match);
+        const match = categories.find((cat) => slugify(String(cat)) === normalized);
+        if (match) {
+            setActiveCategory((prev) => (prev === match ? prev : match));
+            // Jump to the gallery collection block when coming from header dropdown links.
+            window.setTimeout(() => {
+                const target = document.getElementById('portfolio-collections');
+                target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 90);
+        }
     }, [categoryFromQuery, categories]);
 
     const openLightbox = (imgs: string[], idx: number) => setLightbox({ imgs, idx });
@@ -551,7 +599,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                 HERO — full-screen image slider
             ══════════════════════════════════════════════════ */}
             <section
-                className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-[#090805] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]"
+                className="relative h-[58vh] md:h-[74vh] overflow-hidden bg-[#080806] mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.25rem]"
                 onMouseEnter={() => setHeroPaused(true)}
                 onMouseLeave={() => setHeroPaused(false)}
             >
@@ -570,14 +618,14 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                         >
                             {/* Blurred ambient background — fills empty space */}
                             <img
-                                src={heroImgs[heroIdx]}
+                                src={toNoCropUrl(heroImgs[heroIdx])}
                                 alt=""
                                 className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-30"
                                 aria-hidden="true"
                             />
                             {/* Full image — object-contain so nothing is cropped */}
                             <img
-                                src={heroImgs[heroIdx]}
+                                src={toNoCropUrl(heroImgs[heroIdx])}
                                 alt=""
                                 className="relative z-10 w-full h-full object-contain"
                             />
@@ -588,8 +636,8 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                 )}
 
                 {/* Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090805] via-[#090805]/40 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#090805]/85 via-[#090805]/30 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/28 via-transparent to-transparent pointer-events-none" />
 
                 {/* Prev / Next */}
                 {heroImgs.length > 1 && (
@@ -609,7 +657,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
 
                 {/* Dot indicators */}
                 {heroImgs.length > 1 && (
-                    <div className="absolute bottom-16 left-6 md:left-20 z-20 flex items-center gap-2">
+                    <div className="absolute bottom-6 right-6 md:right-10 z-20 flex items-center gap-2">
                         {heroImgs.map((_, i) => (
                             <button key={i}
                                 onClick={() => { setHeroDir(i > heroIdx ? 1 : -1); setHeroIdx(i); }}
@@ -638,27 +686,31 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                 )}
 
                 {/* Text overlay */}
-                <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-8 lg:px-20 pb-8 md:pb-12 z-10">
-                    <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.44em] text-[10px] mb-3 md:mb-4 flex items-center gap-4">
-                            <span className="w-8 md:w-10 h-px bg-[#ffc000]" />
-                            {heroLabel || 'Selected Archives'}
+                <div className="absolute inset-x-0 bottom-0 z-10 px-5 md:px-8 pb-5 md:pb-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7 }}
+                        className="inline-flex flex-col gap-2 rounded-xl border border-white/20 bg-black/35 px-4 py-3 backdrop-blur-sm"
+                    >
+                        <p className="text-[#ffd24d] font-bold uppercase tracking-[0.32em] text-[10px]">
+                            {heroLabel || 'Portfolio Collection'}
                         </p>
-                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[6rem] font-display font-bold leading-[0.88] tracking-tight text-white">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight text-white">
                             {heroTitle || 'Portfolio'}
                         </h1>
                     </motion.div>
                 </div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-24">
+            <div id="portfolio-collections" className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-24 scroll-mt-28">
 
                 {/* ── Category filter ── */}
                 {categories.length > 1 && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="flex flex-wrap gap-0 mb-14 border-b border-white/10"
+                        className="flex flex-wrap gap-0 mb-14 border-b border-[var(--app-border)]"
                     >
                         {categories.map(cat => (
                             <button
@@ -667,7 +719,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                 className={`px-5 py-3 text-xs font-bold uppercase tracking-[0.28em] transition-all border-b-2 -mb-px ${
                                     activeCategory === cat
                                         ? 'border-[#ffc000] text-[#ffc000]'
-                                        : 'border-transparent text-[#7a7260] hover:text-white'
+                                        : 'border-transparent text-[var(--app-subtle)] hover:text-[var(--app-text)]'
                                 }`}
                             >
                                 {cat}
@@ -678,8 +730,8 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
 
                 {/* ── Gallery sections ── */}
                 {filteredGalleries.length === 0 && allMediaUrls.length === 0 ? (
-                    <div className="py-24 text-center border border-white/10">
-                        <p className="text-xl text-[#6b6250] font-display uppercase tracking-widest">No galleries yet. Add one in the admin.</p>
+                    <div className="py-24 text-center border border-[var(--app-border)]">
+                        <p className="text-xl text-[var(--app-subtle)] font-display uppercase tracking-widest">No galleries yet. Add one in the admin.</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-20">
@@ -698,7 +750,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                         gallery={gallery}
                                         onOpen={(i) => openLightbox(galleryImgs, i)}
                                     />
-                                    <p className="text-[#3d3828] text-[10px] mt-3 text-right uppercase tracking-[0.24em] font-bold">
+                                    <p className="text-[var(--app-muted)] text-[10px] mt-3 text-right uppercase tracking-[0.24em] font-bold">
                                         {galleryImgs.length} frame{galleryImgs.length !== 1 ? 's' : ''}
                                     </p>
                                 </motion.section>
@@ -713,17 +765,17 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                 viewport={{ once: true, margin: '-80px' }}
                                 transition={{ duration: 0.9 }}
                             >
-                                <div className="mb-6 pb-4 border-b border-white/10">
+                                <div className="mb-6 pb-4 border-b border-[var(--app-border)]">
                                     <div className="flex items-end justify-between">
                                         <div className="flex items-end gap-5">
                                             <span className="text-[#ffc000] font-display font-bold text-sm tabular-nums">
                                                 {String(filteredGalleries.length + 1).padStart(2, '0')}
                                             </span>
-                                            <h2 className="text-2xl md:text-4xl font-display font-bold text-white leading-none">
+                                            <h2 className="text-2xl md:text-4xl font-display font-bold text-[var(--app-text)] leading-none">
                                                 From the Archives
                                             </h2>
                                         </div>
-                                        <span className="text-[10px] text-[#6b6250] font-bold uppercase tracking-[0.32em]">
+                                        <span className="text-[10px] text-[var(--app-subtle)] font-bold uppercase tracking-[0.32em]">
                                             {allMediaUrls.length} Images
                                         </span>
                                     </div>
@@ -740,7 +792,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                             className="overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
                                             onClick={() => openLightbox(allMediaUrls, i)}
                                         >
-                                            <img src={url} alt={`Archive ${i + 1}`}
+                                            <img src={toNoCropUrl(url)} alt={`Archive ${i + 1}`}
                                                 className="w-full h-auto object-contain group-hover:scale-[1.03] transition-transform duration-500" />
                                         </motion.div>
                                     ))}

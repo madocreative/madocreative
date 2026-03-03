@@ -33,7 +33,6 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isHomeTop = pathname === '/' && !isScrolled;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
@@ -58,36 +57,25 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
     };
   }, [sidebarOpen]);
 
-  // When on home at top, hero is always dark — use white controls regardless of theme
   const themeClasses = useMemo(() => {
-    if (isHomeTop) {
-      return {
-        shell: 'bg-transparent border-transparent',
-        menuBtn: 'bg-white/15 text-white hover:bg-white/25',
-        roundBtn: 'bg-white/15 text-white border border-white/30 hover:bg-white/25',
-        primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
-        sidebar: theme === 'light' ? 'bg-[#f8f7f3] border-black/12 text-[#111111]' : 'bg-[#0f0d0a] border-white/14 text-white',
-      };
-    }
-
     if (theme === 'light') {
       return {
-        shell: 'bg-white/90 border-black/12',
+        shell: 'bg-[#f6f4ee] border-black/14',
         menuBtn: 'bg-[#111111] text-white',
-        roundBtn: 'bg-[#f3f3f0] text-[#101010] border border-black/10 hover:bg-[#ecebe5]',
+        roundBtn: 'bg-[#ebe8de] text-[#101010] border border-black/14 hover:bg-[#e3e0d5]',
         primaryBtn: 'bg-[#111111] text-white hover:bg-[#2b2b2b]',
         sidebar: 'bg-[#f8f7f3] border-black/12 text-[#111111]',
       };
     }
 
     return {
-      shell: 'bg-[#090705]/84 border-white/16',
+      shell: 'bg-[#090705] border-white/14',
       menuBtn: 'bg-white text-[#090705]',
-      roundBtn: 'bg-white/12 text-white border border-white/25 hover:bg-white/24',
+      roundBtn: 'bg-white/16 text-white border border-white/30 hover:bg-white/26',
       primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
       sidebar: 'bg-[#0f0d0a] border-white/14 text-white',
     };
-  }, [theme, isHomeTop]);
+  }, [theme]);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -112,13 +100,12 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 px-2.5 sm:px-3 md:px-5 pt-2.5 sm:pt-3 md:pt-4">
-        <div
-          className={`mx-auto max-w-[1320px] rounded-[1.1rem] sm:rounded-[1.25rem] md:rounded-[1.5rem] border transition-all duration-500 ${isHomeTop ? '' : 'backdrop-blur-2xl'} ${themeClasses.shell} ${
-            isHomeTop ? '' : isScrolled ? 'shadow-[0_18px_45px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_30px_rgba(0,0,0,0.18)]'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-2.5 px-2.5 py-2.5 sm:px-3 sm:py-3 md:px-5">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 border-b transition-shadow duration-300 ${themeClasses.shell} ${
+          isScrolled ? 'shadow-[0_14px_35px_rgba(0,0,0,0.22)]' : 'shadow-none'
+        }`}
+      >
+        <div className="mx-auto max-w-[1320px] h-[72px] sm:h-[78px] md:h-[88px] flex items-center justify-between gap-2.5 px-2.5 sm:px-3 md:px-5">
             <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
@@ -138,19 +125,28 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                 const itemIsActive =
                   isActive(item.path) || (item.children?.some((child) => isActive(child.path)) ?? false);
 
-                // When isHomeTop, hero is always dark — always use white text
-                const activeClass = itemIsActive
-                  ? (isHomeTop || theme === 'dark') ? 'text-white' : 'text-[#1b1b1b]'
-                  : (isHomeTop || theme === 'dark')
+                const textClass = itemIsActive
+                  ? theme === 'dark'
+                    ? 'text-white'
+                    : 'text-[#1b1b1b]'
+                  : theme === 'dark'
                     ? 'text-white/84 hover:text-white'
                     : 'text-[#383838] hover:text-[#1b1b1b]';
+
+                const underlineClass = itemIsActive
+                  ? 'after:scale-x-100 after:bg-[#ffc000]'
+                  : theme === 'dark'
+                    ? 'after:scale-x-0 after:bg-white/60 hover:after:scale-x-100'
+                    : 'after:scale-x-0 after:bg-black/40 hover:after:scale-x-100';
+
+                const navLinkClass = `relative inline-flex pb-1 text-[0.96rem] font-semibold tracking-tight transition-colors after:content-[''] after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:origin-left after:transition-transform ${textClass} ${underlineClass}`;
 
                 if (!item.children || item.children.length === 0) {
                   return (
                     <Link
                       key={item.path}
                       href={item.path}
-                      className={`text-[0.96rem] font-semibold tracking-tight transition-colors ${activeClass}`}
+                      className={navLinkClass}
                     >
                       {item.name}
                     </Link>
@@ -162,12 +158,12 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={item.path}
-                        className={`text-[0.96rem] font-semibold tracking-tight transition-colors ${activeClass}`}
+                        className={navLinkClass}
                       >
                         {item.name}
                       </Link>
                       <span
-                        className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${activeClass} group-hover:rotate-180`}
+                        className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${textClass} group-hover:rotate-180`}
                       >
                         expand_more
                       </span>
@@ -258,7 +254,6 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                 <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
               </Link>
             </div>
-          </div>
         </div>
       </header>
 

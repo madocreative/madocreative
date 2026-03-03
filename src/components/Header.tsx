@@ -2,6 +2,7 @@ import HeaderClient from '@/components/HeaderClient';
 import { getPublicSiteSettings } from '@/lib/siteSettings';
 import dbConnect from '@/lib/mongodb';
 import Content from '@/models/Content';
+import Gallery from '@/models/Gallery';
 
 type NavChildLink = {
   name: string;
@@ -11,24 +12,24 @@ type NavChildLink = {
 
 const fallbackPortfolioLinks: NavChildLink[] = [
   {
-    name: '01 — Weddings',
-    path: '/portfolio?category=Weddings',
+    name: '01 - Weddings Gallery',
+    path: '/portfolio?category=Weddings#portfolio-collections',
     description: 'Timeless coverage of weddings and love stories.',
   },
   {
-    name: '02 — Portraits',
-    path: '/portfolio?category=Portraits',
-    description: 'Studio portraits, personal branding & fashion.',
+    name: '02 - Portraits Gallery',
+    path: '/portfolio?category=Portraits#portfolio-collections',
+    description: 'Studio portraits and personal branding.',
   },
   {
-    name: '03 — Commercial',
-    path: '/portfolio?category=Commercial',
+    name: '03 - Commercial Gallery',
+    path: '/portfolio?category=Commercial#portfolio-collections',
     description: 'Product, campaign and brand photography.',
   },
   {
-    name: '04 — Events',
-    path: '/portfolio?category=Events',
-    description: 'Corporate events, galas & private celebrations.',
+    name: '04 - Events Gallery',
+    path: '/portfolio?category=Events#portfolio-collections',
+    description: 'Corporate events, galas and private celebrations.',
   },
 ];
 
@@ -52,7 +53,7 @@ const fixedServiceLinks: NavChildLink[] = [
 
 function toGalleryLabel(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) return 'Service Gallery';
+  if (!trimmed) return 'Gallery';
   return /gallery$/i.test(trimmed) ? trimmed : `${trimmed} Gallery`;
 }
 
@@ -64,27 +65,71 @@ export default async function Header() {
   try {
     await dbConnect();
 
-    const servicesContent = await Content.findOne({ page: 'services' }).select('sections').lean();
+    const [galleries, servicesContent] = await Promise.all([
+      Gallery.find({}).select('title category description').lean(),
+      Content.findOne({ page: 'services' }).select('sections').lean(),
+    ]);
+
+    if (Array.isArray(galleries) && galleries.length > 0) {
+      const categoryMap = new Map<string, { count: number; description?: string }>();
+
+      for (const gallery of galleries as any[]) {
+        const raw = String(gallery?.category || gallery?.title || '').trim();
+        if (!raw) continue;
+
+        const existing = categoryMap.get(raw);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          categoryMap.set(raw, {
+            count: 1,
+            description:
+              typeof gallery?.description === 'string' && gallery.description.trim().length > 0
+                ? gallery.description.trim().slice(0, 72)
+                : undefined,
+          });
+        }
+      }
+
+      const mapped = Array.from(categoryMap.entries())
+        .slice(0, 8)
+        .map(([categoryName, meta], index) => ({
+          name: `${String(index + 1).padStart(2, '0')} - ${toGalleryLabel(categoryName)}`,
+          path: `/portfolio?category=${encodeURIComponent(categoryName)}#portfolio-collections`,
+          description: meta.description || `${meta.count} gallery ${meta.count > 1 ? 'collections' : 'collection'}`,
+        }));
+
+      if (mapped.length > 0) {
+        portfolioLinks = mapped;
+      }
+    }
 
     const sectionServices = Array.isArray((servicesContent as any)?.sections?.services)
       ? (servicesContent as any).sections.services
       : [];
 
     if (sectionServices.length > 0) {
-      const mapped = sectionServices
+      const mappedServices = sectionServices
         .slice(0, 4)
-        .map((service: any, index: number) => ({
-          name: `${String(index + 1).padStart(2, '0')} - ${toGalleryLabel(String(service?.title || 'Service'))}`,
-          path: `/portfolio?category=${encodeURIComponent(String(service?.title || ''))}`,
+        .map((service: any) => ({
+          name: String(service?.title || '').trim(),
+          path: '/services',
           description:
             typeof service?.description === 'string' && service.description.trim().length > 0
               ? service.description.trim().slice(0, 72)
               : undefined,
         }))
-        .filter((service: NavChildLink) => service.name.trim().length > 0);
+        .filter((service: NavChildLink) => service.name.length > 0);
 
-      if (mapped.length > 0) {
-        portfolioLinks = mapped;
+      if (mappedServices.length > 0) {
+        serviceLinks = [
+          {
+            name: 'All Services',
+            path: '/services',
+            description: 'See all creative services and packages.',
+          },
+          ...mappedServices,
+        ];
       }
     }
   } catch {
