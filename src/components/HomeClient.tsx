@@ -2,10 +2,9 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useTheme } from '@/components/ThemeProvider';
 
 /* ─────────────────────────────────────────────────────────────────
    TYPES
@@ -568,39 +567,33 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
         >
             {images.map((img, index) => {
                 const spanClass = selectedWorkTileSpans[index % selectedWorkTileSpans.length];
-                const idleDuration = 8 + (index % 5);
-                const driftX = index % 2 === 0 ? [0, -1.5, 0, 1.2, 0] : [0, 1.5, 0, -1.2, 0];
 
                 return (
-                    <motion.div
+                    <div
                         key={`${img}-${index}`}
-                        className={`selected-work-card relative overflow-hidden rounded-[0.95rem] border border-white/12 bg-[#041a1f] ${spanClass}`}
-                        whileHover={{ y: -3 }}
-                        transition={{ duration: 0.35, ease: 'easeOut' }}
+                        className={`selected-work-card relative overflow-hidden bg-[#041a1f] ${spanClass}`}
                     >
                         <Link href="/portfolio" className="group relative block h-full w-full">
-                            <motion.img
+                            <img
                                 src={img}
                                 alt=""
                                 loading="lazy"
-                                className="h-full w-full object-contain scale-100 group-hover:scale-[0.96] group-hover:brightness-[0.94] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
-                                animate={index < 14 ? { x: driftX, y: [0, -4, 0, 2, 0] } : undefined}
-                                transition={
-                                    index < 14
-                                        ? { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' }
-                                        : undefined
-                                }
+                                className="h-full w-full object-cover scale-100 group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-75 group-hover:opacity-95 transition-opacity duration-400" />
-                            <div className="absolute left-3 top-3 rounded-full border border-white/30 bg-black/35 px-2.5 h-6 flex items-center text-[10px] tracking-[0.16em] uppercase text-white/90">
+                            {/* Dark overlay — brightens on hover to reveal image more */}
+                            <div className="absolute inset-0 bg-[#020d0e]/40 group-hover:bg-[#020d0e]/0 transition-colors duration-500" />
+                            {/* Bottom gradient + info strip */}
+                            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#020d0e]/80 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500" />
+                            <div className="absolute left-3 right-3 bottom-3 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-white/70 group-hover:text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
+                                <span>View</span>
+                                <span className="material-symbols-outlined text-[14px]">north_east</span>
+                            </div>
+                            {/* Index badge */}
+                            <div className="absolute left-3 top-3 border border-white/20 bg-black/30 px-2 h-5 flex items-center text-[9px] tracking-[0.2em] uppercase text-white/60 group-hover:border-[#ffc000]/60 group-hover:text-[#ffc000] transition-colors duration-400">
                                 {String(index + 1).padStart(2, '0')}
                             </div>
-                            <div className="absolute left-3 right-3 bottom-3 flex items-center justify-between text-[11px] uppercase tracking-[0.14em] text-white/85">
-                                <span>Portfolio</span>
-                                <span className="material-symbols-outlined text-[15px]">open_in_new</span>
-                            </div>
                         </Link>
-                    </motion.div>
+                    </div>
                 );
             })}
         </div>
@@ -617,120 +610,160 @@ function optimizeHeroUrl(url: string): string {
     return url.replace('/upload/', '/upload/q_auto:best,f_auto,dpr_auto,w_2400/');
 }
 
-function HeroPanel({ src, className = '', eager = false }: { src: string; className?: string; eager?: boolean }) {
-    return (
-        <div className={`relative overflow-hidden bg-[#050403] ${className}`}>
-            <img
-                key={src}
-                src={optimizeHeroUrl(src)}
-                alt=""
-                loading={eager ? 'eager' : 'lazy'}
-                className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-        </div>
-    );
-}
+const CROSSFADE_MS = 1400;
 
 function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
     heroImgs: string[]; ctaText: string; ctaLink: string; secondaryCtaLink: string;
 }) {
     const sectionRef = useRef<HTMLElement>(null);
     const [slide, setSlide] = useState(0);
+    const [prevSlide, setPrevSlide] = useState<number | null>(null);
+    const prevCleanup = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const imgs = heroImgs.length > 0 ? heroImgs : ['/hero/hero-01.jpg'];
     const slideCount = Math.max(1, imgs.length);
-    const activeImage = imgs[slide % imgs.length];
 
-    // Auto-advance slides
+    const goTo = useCallback((next: number) => {
+        setPrevSlide(p => (p === null ? slide : p));
+        setSlide(next);
+        if (prevCleanup.current) clearTimeout(prevCleanup.current);
+        prevCleanup.current = setTimeout(() => setPrevSlide(null), CROSSFADE_MS + 100);
+    }, [slide]);
+
+    // Auto-advance
     useEffect(() => {
         if (slideCount <= 1) return;
-        const t = setInterval(() => setSlide(p => (p + 1) % slideCount), HERO_ROTATE_MS);
-        return () => clearInterval(t);
+        const t = setInterval(() => {
+            setSlide(p => {
+                const next = (p + 1) % slideCount;
+                setPrevSlide(p);
+                if (prevCleanup.current) clearTimeout(prevCleanup.current);
+                prevCleanup.current = setTimeout(() => setPrevSlide(null), CROSSFADE_MS + 100);
+                return next;
+            });
+        }, HERO_ROTATE_MS);
+        return () => { clearInterval(t); if (prevCleanup.current) clearTimeout(prevCleanup.current); };
     }, [slideCount]);
 
     // GSAP entry animation — mount only
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.timeline({ defaults: { ease: 'power3.out' } })
-                .from('.hero-overlay',    { y: 24, autoAlpha: 0, duration: 0.6 })
-                .from('.hero-title-line', { y: 24, autoAlpha: 0, duration: 0.55 }, '-=0.25')
-                .from('.hero-ctas',       { y: 16, autoAlpha: 0, duration: 0.4 }, '-=0.18');
+                .from('.hero-overlay',    { y: 28, autoAlpha: 0, duration: 0.75 })
+                .from('.hero-title-line', { y: 32, autoAlpha: 0, duration: 0.65 }, '-=0.35')
+                .from('.hero-meta',       { y: 14, autoAlpha: 0, duration: 0.5 }, '-=0.28')
+                .from('.hero-ctas',       { y: 14, autoAlpha: 0, duration: 0.45 }, '-=0.22');
         }, sectionRef);
         return () => ctx.revert();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const scrollToNextSection = () => {
+    const scrollToNext = () => {
         const next = sectionRef.current?.nextElementSibling as HTMLElement | null;
         if (!next) return;
-        const headerOffset = 88;
-        const top = next.getBoundingClientRect().top + window.scrollY - headerOffset + 8;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY - 96, behavior: 'smooth' });
     };
 
     return (
         <section
             ref={sectionRef}
-            className="relative mt-[72px] md:mt-[88px] h-[calc(100svh-72px)] md:h-[calc(100svh-88px)] min-h-[520px] md:min-h-[600px] max-h-[1100px] overflow-hidden"
+            className="relative mt-[72px] md:mt-[88px] h-[calc(100svh-72px)] md:h-[calc(100svh-88px)] min-h-[520px] md:min-h-[600px] max-h-[1100px] overflow-hidden bg-[#050403]"
         >
-
-            {/* Single-image hero slider on desktop and mobile */}
-            <div className="absolute inset-0 bg-[#050403]">
-                <HeroPanel src={activeImage} className="h-full" eager />
+            {/* ── IMAGE STACK — crossfade + Ken Burns ─────────────── */}
+            {/* Previous slide: stays opaque underneath while new one fades in */}
+            {prevSlide !== null && (
+                <div key={`prev-${prevSlide}`} className="absolute inset-0 overflow-hidden" style={{ zIndex: 1 }}>
+                    <img
+                        src={optimizeHeroUrl(imgs[prevSlide])}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
+                </div>
+            )}
+            {/* Current slide: fades in and applies Ken Burns */}
+            <div
+                key={`curr-${slide}`}
+                className="absolute inset-0 overflow-hidden hero-crossfade-in"
+                style={{ zIndex: 2 }}
+            >
+                <img
+                    src={optimizeHeroUrl(imgs[slide])}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover object-center hero-ken-burns"
+                    loading="eager"
+                />
             </div>
 
+            {/* ── GRADIENTS ──────────────────────────────────────────── */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/85 via-[#050403]/10 to-[#050403]/25" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#050403]/60 via-transparent to-transparent" style={{ zIndex: 3 }} />
 
-            {/* Gradient — bottom-up for text readability */}
-            {/* Gradient — left fade so text is always readable on desktop */}
+            {/* ── TEXT OVERLAY ─────────────────────────────────────── */}
+            <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-6 md:px-12 lg:px-20 pb-16 md:pb-20" style={{ zIndex: 4 }}>
+                {/* Eyebrow */}
+                <p className="hero-meta text-[10px] md:text-[11px] font-bold uppercase tracking-[0.52em] text-[#ffc000] mb-4 flex items-center gap-3">
+                    <span className="h-px w-7 bg-[#ffc000] shrink-0" />
+                    Premium Visual Studio · Kigali
+                </p>
 
-            {/* ── TEXT OVERLAY ─────────────────────────────────────────── */}
-            <div className="hero-overlay relative z-10 h-full flex items-end px-5 md:px-10 lg:px-16 pb-6 md:pb-10 pointer-events-none">
-                <div className="pointer-events-auto">
+                <h1 className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.02em] mb-5"
+                    style={{ fontSize: 'clamp(3.2rem, 9vw, 9rem)' }}>
+                    Mado<br />Creatives
+                </h1>
 
-                    <h1 className="hero-title-line font-display font-semibold text-white leading-[0.92] tracking-[-0.015em] drop-shadow-[0_4px_16px_rgba(0,0,0,0.55)] text-[clamp(2rem,5.2vw,4.6rem)]">
-                        Mado Creatives
-                    </h1>
-
-                    <div className="hero-ctas mt-4">
-                        <Link
-                            href={ctaLink}
-                            className="inline-flex items-center gap-2 bg-black/45 border border-white/28 text-white px-5 h-10 text-[0.68rem] font-semibold tracking-[0.16em] uppercase hover:bg-black/60 hover:border-white/45 transition-colors"
-                        >
-                            {ctaText}
-                            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                        </Link>
-                    </div>
+                <div className="hero-ctas flex flex-wrap gap-3 items-center">
+                    <Link
+                        href={ctaLink}
+                        className="inline-flex items-center gap-2 bg-[#ffc000] text-[#050403] px-7 h-11 text-[0.7rem] font-bold tracking-[0.18em] uppercase hover:bg-white transition-colors"
+                    >
+                        {ctaText}
+                        <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                    </Link>
+                    <Link
+                        href={secondaryCtaLink}
+                        className="inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 h-11 text-[0.7rem] font-semibold tracking-[0.18em] uppercase hover:border-white/60 hover:bg-white/8 transition-colors"
+                    >
+                        Book a Session
+                    </Link>
                 </div>
             </div>
 
-            {/* ── SLIDE COUNTER ─────────────────────────────────────────── */}
-            <div className="absolute left-6 md:left-12 lg:left-20 bottom-5 md:bottom-7 z-20 text-[10px] tracking-[0.3em] text-white/82 bg-black/55 px-2 py-1 rounded-md font-mono select-none">
-                {String(slide + 1).padStart(2, '0')} / {String(slideCount).padStart(2, '0')}
+            {/* ── SLIDE COUNTER ────────────────────────────────────── */}
+            <div className="absolute left-6 md:left-12 lg:left-20 bottom-6 font-mono text-[10px] tracking-[0.28em] text-white/40 select-none" style={{ zIndex: 5 }}>
+                <span className="text-white/75">{String(slide + 1).padStart(2, '0')}</span>
+                <span className="mx-1.5">—</span>
+                {String(slideCount).padStart(2, '0')}
             </div>
 
-            {/* ── SLIDE DOTS ────────────────────────────────────────────── */}
+            {/* ── SLIDE DOTS ───────────────────────────────────────── */}
             {slideCount > 1 && (
-                <div className="absolute right-5 md:right-10 bottom-5 md:bottom-7 z-20 flex items-center gap-2">
+                <div className="absolute right-6 md:right-10 bottom-6 flex items-center gap-1.5" style={{ zIndex: 5 }}>
                     {Array.from({ length: slideCount }).map((_, i) => (
                         <button
                             key={i}
                             type="button"
-                            onClick={() => setSlide(i)}
-                            className={`h-[3px] rounded-full transition-all duration-300 ${i === slide ? 'w-6 bg-[#ffc000]' : 'w-[5px] bg-black/55 hover:bg-black/80'}`}
+                            onClick={() => goTo(i)}
+                            className={`transition-all duration-400 rounded-full ${
+                                i === slide
+                                    ? 'w-5 h-[3px] bg-[#ffc000]'
+                                    : 'w-[5px] h-[5px] bg-white/28 hover:bg-white/55'
+                            }`}
                             aria-label={`Go to slide ${i + 1}`}
                         />
                     ))}
                 </div>
             )}
 
+            {/* ── SCROLL INDICATOR ─────────────────────────────────── */}
             <button
                 type="button"
-                onClick={scrollToNextSection}
-                className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-6 z-20 inline-flex flex-col items-center gap-1 text-[10px] md:text-[11px] tracking-[0.24em] uppercase text-white/80 hover:text-white transition-colors"
-                aria-label="Scroll down"
+                onClick={scrollToNext}
+                className="absolute left-1/2 -translate-x-1/2 bottom-5 flex flex-col items-center gap-1.5 text-[9px] tracking-[0.32em] uppercase text-white/45 hover:text-white/80 transition-colors"
+                style={{ zIndex: 5 }}
+                aria-label="Scroll to content"
             >
                 <span>Scroll</span>
-                <span className="material-symbols-outlined text-[18px] leading-none animate-bounce">expand_more</span>
+                <span className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
             </button>
         </section>
     );

@@ -177,3 +177,33 @@ body {
   break-inside: avoid;
   margin-bottom: 2px;
 }
+
+/* ── Hero animations ──────────────────────────────────────── */
+@keyframes hero-ken-burns {
+  from { transform: scale(1.08) translate(0.5%, 0.3%); }
+  to   { transform: scale(1.0)  translate(0%, 0%); }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hero-ken-burns {
+  animation: hero-ken-burns 9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+.hero-crossfade-in {
+  animation: hero-fade-in 1.4s ease-in-out forwards;
+}
+
+/* ── Image reveal on scroll ───────────────────────────────── */
+@keyframes img-reveal {
+  from { opacity: 0; transform: scale(1.04) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.img-reveal {
+  animation: img-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Cursor zoom for gallery ──────────────────────────────── */
+.cursor-zoom-in  { cursor: zoom-in; }
+.cursor-zoom-out { cursor: zoom-out; }

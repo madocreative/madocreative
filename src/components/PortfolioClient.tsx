@@ -43,61 +43,131 @@ function toNoCropUrl(url: string): string {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   LIGHTBOX
+   LIGHTBOX — swipe + direction-aware slide transitions
 ───────────────────────────────────────────────────────────────── */
+const lightboxVariants = {
+    enter: (dir: number) => ({ x: dir > 0 ? '55%' : '-55%', opacity: 0, scale: 0.96 }),
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit:  (dir: number) => ({ x: dir < 0 ? '55%' : '-55%', opacity: 0, scale: 0.96 }),
+};
+
 function Lightbox({ imgs, idx, onClose, onPrev, onNext }: {
     imgs: string[]; idx: number;
     onClose: () => void; onPrev: () => void; onNext: () => void;
 }) {
+    const [direction, setDirection] = useState(0);
+    const [localIdx, setLocalIdx] = useState(idx);
+    const pointerStartX = useRef(0);
+    const pointerStartY = useRef(0);
+
+    const go = useCallback((next: number, dir: number) => {
+        setDirection(dir);
+        setLocalIdx(next);
+        if (dir > 0) onNext();
+        else onPrev();
+    }, [onNext, onPrev]);
+
+    // Keep in sync if parent forces idx change (shouldn't happen but safe)
+    useEffect(() => { setLocalIdx(idx); }, [idx]);
+
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
-            if (e.key === 'ArrowLeft') onPrev();
-            if (e.key === 'ArrowRight') onNext();
+            if (e.key === 'ArrowLeft' && imgs.length > 1)  go((localIdx - 1 + imgs.length) % imgs.length, -1);
+            if (e.key === 'ArrowRight' && imgs.length > 1) go((localIdx + 1) % imgs.length, 1);
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [onClose, onPrev, onNext]);
+    }, [onClose, localIdx, imgs.length, go]);
+
+    const onPointerDown = (e: React.PointerEvent) => {
+        pointerStartX.current = e.clientX;
+        pointerStartY.current = e.clientY;
+    };
+    const onPointerUp = (e: React.PointerEvent) => {
+        const dx = pointerStartX.current - e.clientX;
+        const dy = Math.abs(pointerStartY.current - e.clientY);
+        if (Math.abs(dx) > 48 && dy < 80 && imgs.length > 1) {
+            if (dx > 0) go((localIdx + 1) % imgs.length, 1);
+            else        go((localIdx - 1 + imgs.length) % imgs.length, -1);
+        }
+    };
+
+    const hasPrev = localIdx > 0;
+    const hasNext = localIdx < imgs.length - 1;
 
     return (
         <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/97 flex items-center justify-center"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[100] bg-[#050403]/98 flex items-center justify-center"
             onClick={onClose}
+            onPointerDown={onPointerDown}
+            onPointerUp={onPointerUp}
         >
-            <AnimatePresence mode="wait">
+            {/* Image */}
+            <AnimatePresence mode="wait" custom={direction}>
                 <motion.img
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.22 }}
-                    src={toNoCropUrl(imgs[idx])} alt=""
-                    className="max-w-[92vw] max-h-[92vh] object-contain"
+                    key={localIdx}
+                    custom={direction}
+                    variants={lightboxVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.38, ease: [0.25, 1, 0.5, 1] }}
+                    src={toNoCropUrl(imgs[localIdx])} alt=""
+                    className="max-w-[92vw] max-h-[88vh] object-contain select-none"
+                    draggable={false}
                     onClick={e => e.stopPropagation()}
                 />
             </AnimatePresence>
 
-            <button onClick={onClose}
-                className="absolute top-5 right-5 w-10 h-10 bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
-                <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
+            {/* Top bar */}
+            <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-black/70 to-transparent z-10">
+                <p className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/40">
+                    {String(localIdx + 1).padStart(2, '0')} / {String(imgs.length).padStart(2, '0')}
+                </p>
+                <button
+                    onClick={e => { e.stopPropagation(); onClose(); }}
+                    className="w-9 h-9 grid place-items-center border border-white/20 text-white hover:bg-white hover:text-black transition-colors"
+                    aria-label="Close"
+                >
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
 
+            {/* Navigation arrows */}
             {imgs.length > 1 && (
                 <>
-                    <button onClick={e => { e.stopPropagation(); onPrev(); }}
-                        className="absolute left-4 md:left-8 w-11 h-11 bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
-                        <span className="material-symbols-outlined">arrow_back</span>
+                    <button
+                        onClick={e => { e.stopPropagation(); if (hasPrev) go(localIdx - 1, -1); }}
+                        className={`absolute left-4 md:left-7 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center border transition-all duration-200 z-10 ${hasPrev ? 'border-white/25 text-white hover:bg-white hover:text-black' : 'border-white/8 text-white/18 cursor-default'}`}
+                        aria-label="Previous"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">chevron_left</span>
                     </button>
-                    <button onClick={e => { e.stopPropagation(); onNext(); }}
-                        className="absolute right-4 md:right-8 w-11 h-11 bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors">
-                        <span className="material-symbols-outlined">arrow_forward</span>
+                    <button
+                        onClick={e => { e.stopPropagation(); if (hasNext) go(localIdx + 1, 1); }}
+                        className={`absolute right-4 md:right-7 top-1/2 -translate-y-1/2 w-11 h-11 grid place-items-center border transition-all duration-200 z-10 ${hasNext ? 'border-white/25 text-white hover:bg-white hover:text-black' : 'border-white/8 text-white/18 cursor-default'}`}
+                        aria-label="Next"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">chevron_right</span>
                     </button>
-                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/50 text-xs font-bold uppercase tracking-[0.24em] bg-black/60 px-4 py-1.5">
-                        {idx + 1} / {imgs.length}
-                    </div>
                 </>
+            )}
+
+            {/* Bottom dot progress */}
+            {imgs.length > 1 && imgs.length <= 20 && (
+                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                    {imgs.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={e => { e.stopPropagation(); go(i, i > localIdx ? 1 : -1); }}
+                            className={`transition-all duration-300 rounded-full ${i === localIdx ? 'w-5 h-[3px] bg-[#ffc000]' : 'w-[5px] h-[5px] bg-white/28 hover:bg-white/55'}`}
+                            aria-label={`Image ${i + 1}`}
+                        />
+                    ))}
+                </div>
             )}
         </motion.div>
     );
@@ -140,6 +210,22 @@ function GalleryHeader({ gallery, index }: { gallery: any; index: number }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   SHARED — image cell hover overlay
+───────────────────────────────────────────────────────────────── */
+function ImgOverlay({ label }: { label: string }) {
+    return (
+        <div className="absolute inset-0 bg-[#050403]/0 group-hover:bg-[#050403]/55 transition-all duration-500 flex items-end justify-between p-3 pointer-events-none">
+            <span className="translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out text-[9px] font-bold uppercase tracking-[0.28em] text-white/80">
+                {label}
+            </span>
+            <span className="translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out delay-[40ms] material-symbols-outlined text-white text-[18px]">
+                zoom_in
+            </span>
+        </div>
+    );
+}
+
+/* ─────────────────────────────────────────────────────────────────
    LAYOUT 1 — MASONRY
    CSS columns, images fall to natural heights, editorial columns
 ───────────────────────────────────────────────────────────────── */
@@ -152,13 +238,14 @@ function LayoutMasonry({ imgs, title, onOpen }: { imgs: string[]; title: string;
             {imgs.map((img, i) => (
                 <div
                     key={i}
-                    className="break-inside-avoid mb-0.5 overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
+                    className="break-inside-avoid mb-0.5 overflow-hidden cursor-zoom-in group relative bg-[#0d0c08]"
                     onClick={() => onOpen(i)}
                 >
                     <img
                         src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
-                        className="w-full h-auto object-contain group-hover:scale-[1.025] transition-transform duration-700"
+                        className="w-full h-auto object-contain group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                     />
+                    <ImgOverlay label={`${title} · ${String(i + 1).padStart(2, '0')}`} />
                 </div>
             ))}
         </div>
@@ -170,7 +257,6 @@ function LayoutMasonry({ imgs, title, onOpen }: { imgs: string[]; title: string;
    Equal-height square crops, clean and minimal
 ───────────────────────────────────────────────────────────────── */
 function LayoutGrid({ imgs, title, onOpen }: { imgs: string[]; title: string; onOpen: (i: number) => void }) {
-    // Use a numeric colCount so we can compute the remainder for the last row
     const colCount = imgs.length <= 4 ? 2 : imgs.length <= 9 ? 3 : 4;
     const colClass = colCount === 2
         ? 'grid-cols-2'
@@ -182,18 +268,18 @@ function LayoutGrid({ imgs, title, onOpen }: { imgs: string[]; title: string; on
     return (
         <div className={`grid ${colClass} gap-0.5`}>
             {imgs.map((img, i) => {
-                // Lone last item in an incomplete row → span full width, no empty cells
                 const isLone = remainder === 1 && i === imgs.length - 1;
                 return (
                     <div
                         key={i}
-                        className={`overflow-hidden cursor-zoom-in group bg-[#0d0c08] ${isLone ? 'col-span-full h-52 sm:h-64 md:h-80' : 'aspect-square'}`}
+                        className={`overflow-hidden cursor-zoom-in group relative bg-[#0d0c08] ${isLone ? 'col-span-full h-52 sm:h-64 md:h-80' : 'aspect-square'}`}
                         onClick={() => onOpen(i)}
                     >
                         <img
                             src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
-                            className="w-full h-full object-contain group-hover:scale-[1.06] transition-transform duration-700"
+                            className="w-full h-full object-contain group-hover:scale-[1.06] transition-transform duration-700 ease-out"
                         />
+                        <ImgOverlay label={`${title} · ${String(i + 1).padStart(2, '0')}`} />
                     </div>
                 );
             })}
