@@ -2,6 +2,7 @@ export default function AdminPagesList() {
     const pages = [
         { id: 'home', title: 'Homepage', icon: 'home', desc: 'Hero, CTA, featured works' },
         { id: 'services', title: 'Services', icon: 'design_services', desc: 'Services list, stats, CTA' },
+        { id: 'photography', title: 'Photography', icon: 'photo_camera', desc: 'Hero gallery, collections, process, CTA' },
         { id: 'team', title: 'Team', icon: 'group', desc: 'Team members, header, philosophy quote' },
         { id: 'booking', title: 'Booking', icon: 'event', desc: 'Packages, session details' },
         { id: 'contact', title: 'Contact', icon: 'mail', desc: 'Intro text, inquiry types, response time' },

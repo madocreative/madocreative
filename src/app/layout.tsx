@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HideOnAdmin from '@/components/HideOnAdmin';
 import LenisProvider from '@/components/LenisProvider';
+import RouteFeedback from '@/components/RouteFeedback';
 import ScrollProgress from '@/components/ScrollProgress';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
@@ -60,7 +61,10 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <LenisProvider>
-<HideOnAdmin>
+            <HideOnAdmin>
+              <RouteFeedback />
+            </HideOnAdmin>
+            <HideOnAdmin>
               <Header />
             </HideOnAdmin>
             <HideOnAdmin>

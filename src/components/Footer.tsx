@@ -7,6 +7,7 @@ export default async function Footer() {
   return (
     <FooterClient
       siteName={settings.siteName}
+      logoUrl={settings.logoUrl}
       tagline={settings.tagline}
       email={settings.email}
       phone={settings.phone}

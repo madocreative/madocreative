@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const navGroups = [
     {
@@ -61,7 +61,15 @@ function NavLink({ href, icon, label, exact = false, onClick }: { href: string; 
     );
 }
 
-function Sidebar({ onClose }: { onClose?: () => void }) {
+function Sidebar({
+    siteName,
+    logoUrl,
+    onClose,
+}: {
+    siteName: string;
+    logoUrl: string;
+    onClose?: () => void;
+}) {
     return (
         <div className="flex flex-col h-full relative">
             {/* Subtle background glow */}
@@ -69,7 +77,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
             <div className="p-6 border-b border-white/5 flex items-center justify-between relative z-10">
                 <Link href="/" className="flex items-center gap-2" title="Go to Website">
-                    <img src="/logo.png" alt="Mado Creatives Admin" className="h-10 w-auto object-contain" />
+                    <img src={logoUrl || '/logo.png'} alt={`${siteName} Admin`} className="h-10 w-auto object-contain" />
                     <span className="font-display font-bold text-xs tracking-widest uppercase text-[#ffc000] mt-1 drop-shadow-md">Admin</span>
                 </Link>
                 {onClose && (
@@ -79,7 +87,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
                 )}
             </div>
 
-            <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto relative z-10 
+            <nav data-lenis-prevent="true" className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto overscroll-contain relative z-10 
                            scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {navGroups.map(group => (
                     <div key={group.label} className="mb-3">
@@ -114,19 +122,55 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [brand, setBrand] = useState({
+        siteName: 'Mado Creatives',
+        logoUrl: '/logo.png',
+    });
+
+    useEffect(() => {
+        let active = true;
+
+        fetch('/api/admin/settings')
+            .then((response) => response.json())
+            .then((payload) => {
+                if (!active || !payload?.success || !payload?.data) return;
+
+                setBrand((current) => ({
+                    siteName: payload.data.siteName || current.siteName,
+                    logoUrl: payload.data.logoUrl || current.logoUrl,
+                }));
+            })
+            .catch(() => {});
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (mobileOpen) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [mobileOpen]);
 
     return (
         <div className="flex h-screen bg-[#070705] text-white selection:bg-[#ffc000]/30">
             {/* Desktop Sidebar (Glassmorphic) */}
             <aside className="w-72 bg-[#0a0a08] border-r border-white/5 hidden md:flex flex-col shadow-2xl z-20">
-                <Sidebar />
+                <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} />
             </aside>
 
             {/* Mobile Sidebar Overlay */}
             {mobileOpen && (
                 <div className="fixed inset-0 z-[60] md:hidden flex">
                     <div className="w-72 bg-[#0a0a08] border-r border-white/10 flex flex-col shadow-2xl">
-                        <Sidebar onClose={() => setMobileOpen(false)} />
+                        <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} onClose={() => setMobileOpen(false)} />
                     </div>
                     <div className="flex-1 bg-black/60 transition-opacity" onClick={() => setMobileOpen(false)}></div>
                 </div>
@@ -150,7 +194,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                     </button>
                 </header>
 
-                <div className="flex-1 overflow-y-auto p-6 md:p-12 relative z-0 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                <div data-lenis-prevent="true" className="flex-1 overflow-y-auto overscroll-contain p-6 md:p-12 relative z-0 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                     {children}
                 </div>
             </main>

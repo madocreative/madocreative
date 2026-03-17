@@ -6,6 +6,7 @@ const SiteSettingsSchema = new mongoose.Schema({
 
     // Identity
     siteName: { type: String, default: 'Mado Creatives' },
+    logoUrl: { type: String, default: '/logo.png' },
     tagline: { type: String, default: 'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.' },
 
     // Contact

@@ -1,7 +1,6 @@
 import HeaderClient from '@/components/HeaderClient';
 import { getPublicSiteSettings } from '@/lib/siteSettings';
 import dbConnect from '@/lib/mongodb';
-import Content from '@/models/Content';
 import Gallery from '@/models/Gallery';
 
 type NavChildLink = {
@@ -10,24 +9,30 @@ type NavChildLink = {
   description?: string;
 };
 
+type GallerySummary = {
+  title?: string;
+  category?: string;
+  description?: string;
+};
+
 const fallbackPortfolioLinks: NavChildLink[] = [
   {
-    name: '01 - Weddings Gallery',
+    name: 'Weddings Gallery',
     path: '/portfolio?category=Weddings#portfolio-collections',
     description: 'Timeless coverage of weddings and love stories.',
   },
   {
-    name: '02 - Portraits Gallery',
+    name: 'Portraits Gallery',
     path: '/portfolio?category=Portraits#portfolio-collections',
     description: 'Studio portraits and personal branding.',
   },
   {
-    name: '03 - Commercial Gallery',
+    name: 'Commercial Gallery',
     path: '/portfolio?category=Commercial#portfolio-collections',
     description: 'Product, campaign and brand photography.',
   },
   {
-    name: '04 - Events Gallery',
+    name: 'Events Gallery',
     path: '/portfolio?category=Events#portfolio-collections',
     description: 'Corporate events, galas and private celebrations.',
   },
@@ -65,20 +70,17 @@ function toGalleryLabel(value: string): string {
 export default async function Header() {
   const settings = await getPublicSiteSettings();
   let portfolioLinks: NavChildLink[] = fallbackPortfolioLinks;
-  let serviceLinks: NavChildLink[] = fixedServiceLinks;
 
   try {
     await dbConnect();
 
-    const [galleries, servicesContent] = await Promise.all([
-      Gallery.find({}).select('title category description').lean(),
-      Content.findOne({ page: 'services' }).select('sections').lean(),
-    ]);
+    const galleries = await Gallery.find({}).select('title category description').lean();
 
     if (Array.isArray(galleries) && galleries.length > 0) {
+      const galleryDocs = galleries as GallerySummary[];
       const categoryMap = new Map<string, { count: number; description?: string }>();
 
-      for (const gallery of galleries as any[]) {
+      for (const gallery of galleryDocs) {
         const raw = String(gallery?.category || gallery?.title || '').trim();
         if (!raw) continue;
 
@@ -98,8 +100,8 @@ export default async function Header() {
 
       const mapped = Array.from(categoryMap.entries())
         .slice(0, 8)
-        .map(([categoryName, meta], index) => ({
-          name: `${String(index + 1).padStart(2, '0')} - ${toGalleryLabel(categoryName)}`,
+        .map(([categoryName, meta]) => ({
+          name: toGalleryLabel(categoryName),
           path: `/portfolio?category=${encodeURIComponent(categoryName)}#portfolio-collections`,
           description: meta.description || `${meta.count} gallery ${meta.count > 1 ? 'collections' : 'collection'}`,
         }));
@@ -108,49 +110,21 @@ export default async function Header() {
         portfolioLinks = mapped;
       }
     }
-
-    const sectionServices = Array.isArray((servicesContent as any)?.sections?.services)
-      ? (servicesContent as any).sections.services
-      : [];
-
-    if (sectionServices.length > 0) {
-      const mappedServices = sectionServices
-        .slice(0, 4)
-        .map((service: any) => ({
-          name: String(service?.title || '').trim(),
-          path: '/services',
-          description:
-            typeof service?.description === 'string' && service.description.trim().length > 0
-              ? service.description.trim().slice(0, 72)
-              : undefined,
-        }))
-        .filter((service: NavChildLink) => service.name.length > 0);
-
-      if (mappedServices.length > 0) {
-        serviceLinks = [
-          {
-            name: 'All Services',
-            path: '/services',
-            description: 'See all creative services and packages.',
-          },
-          ...mappedServices,
-        ];
-      }
-    }
   } catch {
     portfolioLinks = fallbackPortfolioLinks;
-    serviceLinks = fixedServiceLinks;
   }
 
   return (
     <HeaderClient
+      siteName={settings.siteName}
+      logoUrl={settings.logoUrl}
       contactInfo={{
         phone: settings.phone,
         email: settings.email,
         address: settings.address,
       }}
       portfolioLinks={portfolioLinks}
-      serviceLinks={serviceLinks}
+      serviceLinks={fixedServiceLinks}
     />
   );
 }

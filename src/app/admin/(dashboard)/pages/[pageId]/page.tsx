@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
+import {
+    photographyPageDefaults,
+    type PhotographyCollection,
+    type PhotographyProcessStep,
+    type PhotographyServiceItem,
+    type PhotographyStat,
+} from '@/lib/photographyPageDefaults';
 
 // ---------- types ----------
 interface ServiceItem { title: string; description: string; image: string; tags: string }
@@ -41,7 +48,10 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
             .then(r => r.json())
             .then(d => {
                 if (d.success && d.data) {
-                    const { _id, __v, updatedAt, ...rest } = d.data;
+                    const rest = { ...(d.data as Record<string, unknown>) };
+                    delete rest._id;
+                    delete rest.__v;
+                    delete rest.updatedAt;
                     // flatten sections into top-level for easier editing
                     const { sections, ...top } = rest as Record<string, unknown>;
                     setData({ ...top, ...(sections as Record<string, unknown> || {}) });
@@ -83,7 +93,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
 
     const pageLabels: Record<string, string> = {
         home: 'Home', services: 'Services', team: 'Team',
-        booking: 'Booking', contact: 'Contact', portfolio: 'Portfolio',
+        booking: 'Booking', contact: 'Contact', portfolio: 'Portfolio', photography: 'Photography',
     };
 
     return (
@@ -105,6 +115,7 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
 
                 {/* ═══ SERVICES ═══ */}
                 {pageId === 'services' && <ServicesFields data={data} get={get} set={set} />}
+                {pageId === 'photography' && <PhotographyFields data={data} get={get} set={set} />}
 
                 {/* ═══ TEAM ═══ */}
                 {pageId === 'team' && <TeamFields data={data} get={get} set={set} />}
@@ -583,6 +594,194 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
 // ────────────────────────────────────────────────────────────
 // TEAM page fields
 // ────────────────────────────────────────────────────────────
+function PhotographyFields({ get, set }: { data: Record<string, unknown>; get: (k: string, fb?: unknown) => unknown; set: (k: string, v: unknown) => void }) {
+    const heroImages: string[] = (get('heroImages', photographyPageDefaults.heroImages) as string[]);
+    const stats: PhotographyStat[] = (get('stats', photographyPageDefaults.stats) as PhotographyStat[]);
+    const services: PhotographyServiceItem[] = (get('services', photographyPageDefaults.services) as PhotographyServiceItem[]);
+    const collections: PhotographyCollection[] = (get('collections', photographyPageDefaults.collections) as PhotographyCollection[]);
+    const process: PhotographyProcessStep[] = (get('process', photographyPageDefaults.process) as PhotographyProcessStep[]);
+
+    const updateHeroImage = (i: number, value: string) => set('heroImages', heroImages.map((item, idx) => idx === i ? value : item));
+    const addHeroImage = () => set('heroImages', [...heroImages, '']);
+    const removeHeroImage = (i: number) => set('heroImages', heroImages.filter((_, idx) => idx !== i));
+
+    const updateStat = (i: number, field: keyof PhotographyStat, value: string) => {
+        set('stats', stats.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
+    };
+    const addStat = () => set('stats', [...stats, { value: '', label: '' }]);
+    const removeStat = (i: number) => set('stats', stats.filter((_, idx) => idx !== i));
+
+    const updateService = (i: number, field: keyof PhotographyServiceItem, value: string) => {
+        set('services', services.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
+    };
+    const addService = () => set('services', [...services, { title: 'New Service', description: '', tags: '', image: '' }]);
+    const removeService = (i: number) => set('services', services.filter((_, idx) => idx !== i));
+
+    const updateCollection = (i: number, field: keyof PhotographyCollection, value: string) => {
+        set('collections', collections.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
+    };
+    const addCollection = () => set('collections', [...collections, { title: 'New Collection', href: '/portfolio', description: '' }]);
+    const removeCollection = (i: number) => set('collections', collections.filter((_, idx) => idx !== i));
+
+    const updateProcess = (i: number, field: keyof PhotographyProcessStep, value: string) => {
+        set('process', process.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
+    };
+    const addProcess = () => set('process', [...process, { step: String(process.length + 1).padStart(2, '0'), title: 'New Step', desc: '' }]);
+    const removeProcess = (i: number) => set('process', process.filter((_, idx) => idx !== i));
+
+    return (
+        <>
+            <Section title="Page Header" icon="photo_camera">
+                <TextInput label="Page Title" value={String(get('title', photographyPageDefaults.title))} onChange={v => set('title', v)} />
+                <TextInput label="Hero Label" value={String(get('heroLabel', photographyPageDefaults.heroLabel))} onChange={v => set('heroLabel', v)} />
+                <div className="flex flex-col gap-2 relative group">
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Subtitle</label>
+                    <textarea rows={4} value={String(get('subtitle', photographyPageDefaults.subtitle))} onChange={e => set('subtitle', e.target.value)}
+                        className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                </div>
+            </Section>
+
+            <Section title="Hero Gallery" icon="imagesmode">
+                <div className="flex flex-col gap-5">
+                    {heroImages.map((image, i) => (
+                        <div key={i} className="bg-[#1a1812] p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Hero Image {i + 1}</span>
+                                <button type="button" onClick={() => removeHeroImage(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <ImageField label={`Image ${i + 1}`} value={image} onChange={v => updateHeroImage(i, v)} />
+                        </div>
+                    ))}
+                    <button type="button" onClick={addHeroImage}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_photo_alternate</span> Add Hero Image
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Stats" icon="bar_chart">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {stats.map((stat, i) => (
+                        <div key={i} className="bg-[#221e10] p-4 rounded-lg flex flex-col gap-3 border border-white/5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Stat {i + 1}</span>
+                                <button type="button" onClick={() => removeStat(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Value" value={stat.value} onChange={v => updateStat(i, 'value', v)} />
+                            <TextInput label="Label" value={stat.label} onChange={v => updateStat(i, 'label', v)} />
+                        </div>
+                    ))}
+                </div>
+                <button type="button" onClick={addStat}
+                    className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Stat
+                </button>
+            </Section>
+
+            <Section title="Photography Services" icon="photo_camera">
+                <div className="flex flex-col gap-8">
+                    {services.map((service, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-5 relative hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#111109] border border-white/5 flex items-center justify-center">
+                                        <span className="text-[#ffc000] font-mono text-sm font-bold">{i + 1}</span>
+                                    </div>
+                                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Service Block</span>
+                                </div>
+                                <button type="button" onClick={() => removeService(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Title" value={service.title} onChange={v => updateService(i, 'title', v)} />
+                            <div className="flex flex-col gap-2 relative group">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
+                                <textarea rows={3} value={service.description} onChange={e => updateService(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                            <TextInput label="Tags (comma separated)" value={service.tags} onChange={v => updateService(i, 'tags', v)} />
+                            <ImageField label="Service Image" value={service.image} onChange={v => updateService(i, 'image', v)} />
+                        </div>
+                    ))}
+                    <button type="button" onClick={addService}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Service
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Featured Collections" icon="collections">
+                <TextInput label="Section Label" value={String(get('collectionsLabel', photographyPageDefaults.collectionsLabel))} onChange={v => set('collectionsLabel', v)} />
+                <TextInput label="Section Title" value={String(get('collectionsTitle', photographyPageDefaults.collectionsTitle))} onChange={v => set('collectionsTitle', v)} />
+                <div className="flex flex-col gap-6">
+                    {collections.map((collection, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4 hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Collection Card {i + 1}</span>
+                                <button type="button" onClick={() => removeCollection(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Title" value={collection.title} onChange={v => updateCollection(i, 'title', v)} />
+                            <TextInput label="Link" value={collection.href} onChange={v => updateCollection(i, 'href', v)} placeholder="/portfolio?category=Weddings#portfolio-collections" />
+                            <div className="flex flex-col gap-2 relative group">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
+                                <textarea rows={2} value={collection.description} onChange={e => updateCollection(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addCollection}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Collection
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Process" icon="timeline">
+                <TextInput label="Section Label" value={String(get('processLabel', photographyPageDefaults.processLabel))} onChange={v => set('processLabel', v)} />
+                <TextInput label="Section Title" value={String(get('processTitle', photographyPageDefaults.processTitle))} onChange={v => set('processTitle', v)} />
+                <div className="flex flex-col gap-6">
+                    {process.map((item, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4 hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Process Step {i + 1}</span>
+                                <button type="button" onClick={() => removeProcess(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Step Number" value={item.step} onChange={v => updateProcess(i, 'step', v)} />
+                            <TextInput label="Title" value={item.title} onChange={v => updateProcess(i, 'title', v)} />
+                            <div className="flex flex-col gap-2 relative group">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
+                                <textarea rows={3} value={item.desc} onChange={e => updateProcess(i, 'desc', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                        </div>
+                    ))}
+                    <button type="button" onClick={addProcess}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Process Step
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="CTA Section" icon="campaign">
+                <TextInput label="CTA Headline" value={String(get('ctaTitle', photographyPageDefaults.ctaTitle))} onChange={v => set('ctaTitle', v)} />
+                <TextInput label="CTA Subtitle" value={String(get('ctaSubtitle', photographyPageDefaults.ctaSubtitle))} onChange={v => set('ctaSubtitle', v)} />
+                <TextInput label="Primary Button Text" value={String(get('ctaButton', photographyPageDefaults.ctaButton))} onChange={v => set('ctaButton', v)} />
+                <TextInput label="Primary Button Link" value={String(get('ctaLink', photographyPageDefaults.ctaLink))} onChange={v => set('ctaLink', v)} />
+                <TextInput label="Secondary Button Text" value={String(get('ctaSecondaryButton', photographyPageDefaults.ctaSecondaryButton))} onChange={v => set('ctaSecondaryButton', v)} />
+                <TextInput label="Secondary Button Link" value={String(get('ctaSecondaryLink', photographyPageDefaults.ctaSecondaryLink))} onChange={v => set('ctaSecondaryLink', v)} />
+            </Section>
+        </>
+    );
+}
+
 function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: string, fb?: unknown) => unknown; set: (k: string, v: unknown) => void }) {
     const defaultMembers: TeamMember[] = [
         { name: 'Yonathan Ayele', role: 'Founder & Creative Director', image: '' },

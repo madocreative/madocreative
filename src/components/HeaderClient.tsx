@@ -18,6 +18,8 @@ type NavChildItem = {
 };
 
 type HeaderClientProps = {
+  siteName: string;
+  logoUrl: string;
   contactInfo: {
     phone: string;
     email: string;
@@ -27,7 +29,7 @@ type HeaderClientProps = {
   serviceLinks: NavChildItem[];
 };
 
-export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
+export default function HeaderClient({ siteName, logoUrl, contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
@@ -48,11 +50,13 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
     if (sidebarOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       window.addEventListener('keydown', onKeyDown);
     }
 
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [sidebarOpen]);
@@ -95,7 +99,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
           isScrolled ? 'shadow-[0_14px_35px_rgba(0,0,0,0.22)]' : 'shadow-none'
         }`}
       >
-        <div className="mx-auto max-w-[1320px] h-[72px] sm:h-[78px] md:h-[88px] flex items-center justify-between gap-2.5 px-2.5 sm:px-3 md:px-5">
+        <div className="mx-auto max-w-[1320px] h-[68px] sm:h-[78px] md:h-[88px] flex items-center justify-between gap-2.5 px-3 sm:px-3.5 md:px-5">
             <div className="flex items-center gap-2.5 sm:gap-3">
               <button
                 type="button"
@@ -105,8 +109,12 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               >
                 <span className="material-symbols-outlined text-[19px] md:text-[20px]">menu</span>
               </button>
-              <Link href="/" className="block">
-                <img src="/logo.png" alt="Mado Creatives" className="h-10 sm:h-11 md:h-16 w-auto object-contain" />
+              <Link href="/" className="flex items-center gap-2.5 min-w-0">
+                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-10 sm:h-11 md:h-16 w-auto object-contain" />
+                <div className="hidden min-[380px]:block">
+                  <p className="text-[9px] uppercase tracking-[0.28em] text-white/45">Creative Studio</p>
+                  <p className="text-sm sm:text-base font-semibold text-white/88 leading-tight">{siteName}</p>
+                </div>
               </Link>
             </div>
 
@@ -157,7 +165,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                       <div
                         className="w-[340px] rounded-2xl border p-2 shadow-[0_20px_40px_rgba(0,0,0,0.28)] bg-[var(--app-card)] border-[color:var(--app-border)]"
                       >
-                        <div className="max-h-[56vh] overflow-y-auto pr-0.5 space-y-1">
+                        <div data-lenis-prevent="true" className="max-h-[56vh] overflow-y-auto overscroll-contain pr-0.5 space-y-1">
                           {item.children.map((child) => (
                             <Link
                               key={child.path}
@@ -193,7 +201,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               <button
                 type="button"
                 onClick={toggleTheme}
-                className={`h-10 w-10 md:h-11 md:w-11 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
+                className={`hidden sm:grid h-10 w-10 md:h-11 md:w-11 rounded-full place-items-center transition-colors ${themeClasses.roundBtn}`}
                 aria-label="Toggle theme"
                 title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
@@ -203,20 +211,20 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               </button>
 
               <Link
-                href="/contact"
-                className={`md:hidden h-10 w-10 rounded-full grid place-items-center transition-colors ${themeClasses.roundBtn}`}
-                aria-label="Contact us"
+                href="/booking"
+                className={`sm:hidden inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold transition-colors ${themeClasses.primaryBtn}`}
               >
-                <span className="material-symbols-outlined text-[18px]">chat</span>
+                Book
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
 
-              <button
-                type="button"
-                className={`hidden md:flex items-center gap-1.5 h-11 px-4 rounded-full transition-colors ${themeClasses.roundBtn}`}
+              <Link
+                href="/contact"
+                className={`hidden sm:inline-flex lg:hidden items-center gap-2 h-10 px-4 rounded-full text-sm font-semibold transition-colors ${themeClasses.roundBtn}`}
               >
-                <span className="text-sm font-semibold">En</span>
-                <span className="material-symbols-outlined text-[18px]">expand_more</span>
-              </button>
+                Contact
+                <span className="material-symbols-outlined text-[16px]">north_east</span>
+              </Link>
 
               <Link
                 href="/contact"
@@ -238,9 +246,15 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
             aria-label="Close menu"
           />
 
-          <aside className={`relative h-full w-full sm:w-[min(88vw,420px)] border-r px-5 md:px-7 py-6 md:py-7 overflow-y-auto ${themeClasses.sidebar}`}>
+          <aside data-lenis-prevent="true" className={`relative h-full w-full sm:w-[min(88vw,420px)] border-r px-5 md:px-7 py-6 md:py-7 overflow-y-auto overscroll-contain ${themeClasses.sidebar}`}>
             <div className="flex items-center justify-between pb-6 border-b border-current/10">
-              <p className="text-[11px] uppercase tracking-[0.3em] opacity-70">Navigation</p>
+              <div className="flex items-center gap-3 min-w-0">
+                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-10 w-auto object-contain" />
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.28em] opacity-55">Navigation</p>
+                  <p className="text-sm font-semibold text-white/88 truncate">{siteName}</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
@@ -309,7 +323,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-2.5">
+            <div className="mt-5 grid grid-cols-3 gap-2.5">
               <Link
                 href="/booking"
                 onClick={() => setSidebarOpen(false)}
@@ -324,6 +338,15 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               >
                 Message Us
               </Link>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="h-10 rounded-full grid place-items-center text-sm font-semibold border border-current/20 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+                </span>
+              </button>
             </div>
           </aside>
         </div>

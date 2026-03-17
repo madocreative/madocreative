@@ -2,7 +2,6 @@ import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
 import ShopClient from './ShopClient';
-import ShopHeroSlider from './ShopHeroSlider';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +55,6 @@ export default async function ShopPage() {
 
     return (
         <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
-            <ShopHeroSlider />
             <ShopClient products={products} categories={categories} />
         </div>
     );

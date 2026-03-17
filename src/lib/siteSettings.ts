@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 
 export type PublicSiteSettings = {
   siteName: string;
+  logoUrl: string;
   tagline: string;
   email: string;
   phone: string;
@@ -17,6 +18,7 @@ export type PublicSiteSettings = {
 
 export const defaultPublicSiteSettings: PublicSiteSettings = {
   siteName: 'Mado Creatives',
+  logoUrl: '/logo.png',
   tagline: 'Premium photography & cinematic storytelling for brands and moments that deserve to be remembered.',
   email: 'hello@madocreatives.com',
   phone: '+251 911 000 000',
@@ -39,6 +41,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
 
     return {
       siteName: parsed.siteName || defaultPublicSiteSettings.siteName,
+      logoUrl: parsed.logoUrl || defaultPublicSiteSettings.logoUrl,
       tagline: parsed.tagline || defaultPublicSiteSettings.tagline,
       email: parsed.email || defaultPublicSiteSettings.email,
       phone: parsed.phone || defaultPublicSiteSettings.phone,

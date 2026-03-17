@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 type FooterClientProps = {
   siteName: string;
+  logoUrl: string;
   tagline: string;
   email: string;
   phone: string;
@@ -26,6 +27,7 @@ const navLinks = [
 
 export default function FooterClient({
   siteName,
+  logoUrl,
   tagline,
   email,
   phone,
@@ -52,7 +54,7 @@ export default function FooterClient({
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="max-w-xl">
               <Link href="/" className="inline-block">
-                <img src="/logo.png" alt={siteName} className="h-12 w-auto object-contain" />
+                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-12 w-auto object-contain" />
               </Link>
               <p className="mt-3 text-sm text-white/65 leading-relaxed">{tagline}</p>
               <p className="mt-4 text-sm text-white/80">{address}</p>
@@ -99,9 +101,6 @@ export default function FooterClient({
 
             <div className="text-xs text-white/40">
               <span>{new Date().getFullYear()} {siteName}. All rights reserved.</span>
-              <Link href="/admin" className="ml-3 hover:text-white/70 transition-colors">
-                Admin
-              </Link>
             </div>
           </div>
         </div>

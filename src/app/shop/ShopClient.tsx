@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -57,6 +57,18 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
     const [search, setSearch] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    useEffect(() => {
+        if (!sidebarOpen) return;
+
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
+        };
+    }, [sidebarOpen]);
+
     const parsedCategories = useMemo(() => {
         if (!categories || categories.length === 0) return FALLBACK_CATEGORIES;
         const parents = categories.filter(c => !c.parent);
@@ -96,29 +108,29 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
 
     return (
         <div className="bg-[var(--app-bg)] text-[var(--app-text)]">
-            <div className="max-w-7xl mx-auto px-4 lg:px-8 pb-20">
+            <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-[88px] sm:pt-[96px] md:pt-[112px] pb-20">
 
                 {/* Search + Sort bar */}
-                <div className="py-6 border-b border-white/5 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-                    <div className="relative flex-1 max-w-sm">
+                <div className="rounded-[1.5rem] border border-[color:var(--app-border)] bg-[var(--section-bg)] px-4 py-4 sm:px-5 sm:py-5 flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                    <div className="relative w-full lg:flex-1 lg:max-w-md">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">search</span>
                         <input
                             type="text"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             placeholder="Search products..."
-                            className="w-full bg-[#111109] border border-white/10 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-600 focus:border-[#ffc000]/50 focus:outline-none transition-colors"
+                            className="w-full rounded-full bg-[#111109] border border-white/10 pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:border-[#ffc000]/50 focus:outline-none transition-colors"
                         />
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-slate-600 text-xs uppercase tracking-widest font-bold">Sort:</span>
+                    <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                        <span className="text-slate-600 text-xs uppercase tracking-widest font-bold mr-1">Sort:</span>
                         {([
                             { value: 'newest', label: 'Newest' },
                             { value: 'price-asc', label: 'Price ↑' },
                             { value: 'price-desc', label: 'Price ↓' },
                         ] as { value: SortOption; label: string }[]).map(opt => (
                             <button key={opt.value} onClick={() => setSort(opt.value)}
-                                className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider border transition-all ${sort === opt.value ? 'bg-[#ffc000] text-[#0a0a08] border-[#ffc000]' : 'border-white/10 text-slate-500 hover:text-white hover:border-white/30'}`}>
+                                className={`rounded-full px-3.5 py-2 text-xs font-bold uppercase tracking-wider border transition-all ${sort === opt.value ? 'bg-[#ffc000] text-[#0a0a08] border-[#ffc000]' : 'border-white/10 text-slate-500 hover:text-white hover:border-white/30'}`}>
                                 {opt.label}
                             </button>
                         ))}
@@ -138,9 +150,10 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                             />
                         )}
 
-                        <aside className={`
-                            fixed top-0 left-0 z-[70] h-full w-72 bg-[#0d0d0b] border-r border-white/5 overflow-y-auto transition-transform duration-300
-                            lg:static lg:z-[1] lg:h-auto lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:border lg:border-white/5 lg:self-start lg:sticky lg:top-6
+                        <aside data-lenis-prevent="true" className={`
+                            fixed top-[68px] left-0 z-[70] h-[calc(100dvh-68px)] w-[min(86vw,320px)] bg-[#0d0d0b] border-r border-white/5 overflow-y-auto overscroll-contain transition-transform duration-300
+                            sm:top-[78px] sm:h-[calc(100dvh-78px)]
+                            lg:static lg:z-[1] lg:h-auto lg:w-64 lg:flex-shrink-0 lg:translate-x-0 lg:border lg:border-white/5 lg:self-start lg:sticky lg:top-28
                             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                         `}>
                             {/* All Departments Header — gold bar */}
@@ -212,10 +225,10 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                     <div className="flex-1 min-w-0">
 
                         {/* Mobile: category toggle button + active label */}
-                        <div className="flex items-center gap-3 mb-4 lg:hidden">
+                        <div className="flex flex-wrap items-center gap-3 mb-4 lg:hidden rounded-[1.25rem] border border-[color:var(--app-border)] bg-[var(--section-bg)] px-4 py-3">
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="flex items-center gap-2 bg-[#ffc000] text-[#0a0a08] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wider"
+                                className="flex items-center gap-2 rounded-full bg-[#ffc000] text-[#0a0a08] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wider"
                             >
                                 <span className="material-symbols-outlined text-[16px]">format_list_bulleted</span>
                                 Categories
@@ -223,7 +236,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                             <span className="text-slate-500 text-xs">
                                 Showing: <span className="text-[#ffc000] font-bold">{activeCategory}</span>
                             </span>
-                            <span className="ml-auto text-slate-600 text-xs font-bold">{filtered.length} items</span>
+                            <span className="sm:ml-auto text-slate-600 text-xs font-bold">{filtered.length} items</span>
                         </div>
 
                         {/* Desktop: result count + active category label */}
