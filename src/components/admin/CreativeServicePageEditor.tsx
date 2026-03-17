@@ -13,7 +13,7 @@ import type {
 import { digitalMarketingPageDefaults } from '@/lib/digitalMarketingPageDefaults';
 import { photographyPageDefaults } from '@/lib/photographyPageDefaults';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
-import { getPlayableCloudinaryVideoUrl } from '@/lib/cloudinaryVideo';
+import { getCloudinaryVideoSources } from '@/lib/cloudinaryVideo';
 
 type CreativeServicePageId = 'photography' | 'videography' | 'digital-marketing';
 
@@ -361,7 +361,11 @@ function VideoField({ label, value, onChange }: { label: string; value: string; 
             <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
             {value && (
                 <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-[#ffc000]/30 transition-colors bg-[#0a0a08]">
-                    <video src={getPlayableCloudinaryVideoUrl(value)} controls preload="metadata" playsInline className="w-full h-56 md:h-72 object-contain bg-black" />
+                    <video controls preload="metadata" playsInline className="w-full h-56 md:h-72 object-contain bg-black">
+                        {getCloudinaryVideoSources(value).map((source) => (
+                            <source key={source.src} src={source.src} type={source.type} />
+                        ))}
+                    </video>
                 </div>
             )}
             <div className="flex flex-col md:flex-row gap-3">

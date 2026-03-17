@@ -8,7 +8,7 @@ import type {
     CreativeServiceVideoGalleryLayout,
     CreativeServiceVideoItem,
 } from '@/lib/creativeServicePage';
-import { getPlayableCloudinaryVideoUrl } from '@/lib/cloudinaryVideo';
+import { getCloudinaryVideoSources } from '@/lib/cloudinaryVideo';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
@@ -35,13 +35,16 @@ function VideoGalleryCard({
                 <div className="relative mx-auto w-full max-w-[20rem] rounded-[1.75rem] border border-white/10 bg-black/80 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
                     <div className="relative aspect-[9/16] overflow-hidden rounded-[1.2rem] bg-black">
                         <video
-                            src={getPlayableCloudinaryVideoUrl(video.videoUrl)}
                             poster={video.posterImage || undefined}
                             controls
                             preload="metadata"
                             playsInline
                             className="block h-full w-full object-contain bg-black"
-                        />
+                        >
+                            {getCloudinaryVideoSources(video.videoUrl).map((source) => (
+                                <source key={source.src} src={source.src} type={source.type} />
+                            ))}
+                        </video>
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/45 to-transparent" />
                     </div>
                 </div>
@@ -130,13 +133,16 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                         <div className="relative mx-auto w-full max-w-[20rem] rounded-[1.75rem] border border-white/10 bg-black/80 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
                                             <div className="relative aspect-[9/16] overflow-hidden rounded-[1.2rem] bg-black">
                                                 <video
-                                                    src={getPlayableCloudinaryVideoUrl(video.videoUrl)}
                                                     poster={video.posterImage || undefined}
                                                     controls
                                                     preload="metadata"
                                                     playsInline
                                                     className="block h-full w-full object-contain bg-black"
-                                                />
+                                                >
+                                                    {getCloudinaryVideoSources(video.videoUrl).map((source) => (
+                                                        <source key={source.src} src={source.src} type={source.type} />
+                                                    ))}
+                                                </video>
                                                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/45 to-transparent" />
                                             </div>
                                         </div>
