@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import ProductCard from '@/components/shop/ProductCard';
 
 const FALLBACK_CATEGORIES = [
     { label: 'All', icon: 'storefront', hasChildren: false },
@@ -38,10 +39,6 @@ interface Category {
 }
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
-
-function formatRwf(amount: number): string {
-    return `RWF ${amount.toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-}
 
 function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
     return (
@@ -270,47 +267,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                                             transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.3) }}
                                             className="bg-[#0a0a08]"
                                         >
-                                            <Link href={`/shop/${product.slug}`} className="group flex h-full flex-col">
-                                                {/* Image */}
-                                                <div className="aspect-square relative overflow-hidden bg-[#111109]">
-                                                    <img
-                                                        src={product.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
-                                                        alt={product.name}
-                                                        className={`w-full h-full object-contain p-2 transition-all duration-500 ease-out ${product.images.length > 1 ? 'group-hover:opacity-0 group-hover:scale-105' : 'group-hover:scale-105'}`}
-                                                    />
-                                                    {product.images.length > 1 && (
-                                                        <img
-                                                            src={product.images[1]}
-                                                            alt={`${product.name} alternate view`}
-                                                            className="absolute inset-0 w-full h-full object-contain p-2 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
-                                                        />
-                                                    )}
-                                                    {!product.inStock && (
-                                                        <div className="absolute inset-0 bg-[#0a0a08]/70 flex items-center justify-center">
-                                                            <span className="text-white text-[10px] font-bold uppercase tracking-widest border border-white/30 px-3 py-1">
-                                                                Out of Stock
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                    {product.inStock && (
-                                                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--gold)]" title="In Stock" />
-                                                    )}
-                                                </div>
-
-                                                {/* Info */}
-                                                <div className="px-3 py-2.5 flex flex-col gap-1.5 flex-1 bg-[#0d0d0b] border-t border-white/5">
-                                                    <p className="text-[#ffc000] text-[9px] font-bold uppercase tracking-widest">{product.category}</p>
-                                                    <h3 className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors">
-                                                        {product.name}
-                                                    </h3>
-                                                    <div className="flex items-center justify-between mt-auto pt-1">
-                                                        <span className="text-[#ffc000] font-bold text-sm">
-                                                            {formatRwf(product.price)}
-                                                        </span>
-                                                        <span className="material-symbols-outlined text-slate-600 text-[14px] group-hover:text-[#ffc000] transition-colors">chevron_right</span>
-                                                    </div>
-                                                </div>
-                                            </Link>
+                                            <ProductCard product={product} variant="catalog" />
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import CreativeServiceHero from '@/components/CreativeServiceHero';
 import {
   photographyPageDefaults,
   type PhotographyPageData,
@@ -11,32 +12,11 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function PhotographyClient({ data = photographyPageDefaults }: { data?: PhotographyPageData }) {
   const heroImages = data.heroImages.length > 0 ? data.heroImages : photographyPageDefaults.heroImages;
+  const primaryHeroImage = heroImages[0] || '';
 
   return (
     <div className="flex flex-col bg-[var(--app-bg)]">
-      <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]">
-        <div className="absolute inset-0 flex gap-px">
-          {heroImages.map((img, index) => (
-            <div key={img} className={`overflow-hidden ${index === 0 ? 'flex-[2]' : 'flex-1'}`}>
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-          ))}
-        </div>
-        <div className="absolute inset-0 bg-black/35 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-[var(--app-bg)]" />
-        <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-16 max-w-7xl mx-auto w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <p className="text-[var(--gold)] font-bold uppercase tracking-[0.4em] text-xs mb-3">{data.heroLabel}</p>
-            <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none whitespace-pre-line">
-              {data.title}
-            </h1>
-          </motion.div>
-        </div>
-      </section>
+      <CreativeServiceHero heroImage={primaryHeroImage} heroLabel={data.heroLabel} title={data.title} />
 
       <section className="bg-[var(--section-bg)] py-10 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col md:flex-row gap-12 md:gap-20 items-start">

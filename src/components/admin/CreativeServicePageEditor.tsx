@@ -191,15 +191,12 @@ export default function CreativeServicePageEditor({
     const config = creativeServicePageConfigs[pageId];
     const defaults = config.defaults;
     const heroImages: string[] = (get('heroImages', defaults.heroImages) as string[]);
+    const primaryHeroImage = heroImages.find((image) => typeof image === 'string' && image.trim().length > 0) || '';
     const stats: CreativeServiceStat[] = (get('stats', defaults.stats) as CreativeServiceStat[]);
     const services: CreativeServiceServiceItem[] = (get('services', defaults.services) as CreativeServiceServiceItem[]);
     const showcaseVideos: CreativeServiceVideoItem[] = (get('showcaseVideos', defaults.showcaseVideos ?? []) as CreativeServiceVideoItem[]);
     const collections: CreativeServiceCollection[] = (get('collections', defaults.collections) as CreativeServiceCollection[]);
     const process: CreativeServiceProcessStep[] = (get('process', defaults.process) as CreativeServiceProcessStep[]);
-
-    const updateHeroImage = (i: number, value: string) => set('heroImages', heroImages.map((item, idx) => idx === i ? value : item));
-    const addHeroImage = () => set('heroImages', [...heroImages, '']);
-    const removeHeroImage = (i: number) => set('heroImages', heroImages.filter((_, idx) => idx !== i));
 
     const updateStat = (i: number, field: keyof CreativeServiceStat, value: string) => {
         set('stats', stats.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
@@ -241,27 +238,16 @@ export default function CreativeServicePageEditor({
                     <textarea rows={4} value={String(get('subtitle', defaults.subtitle))} onChange={e => set('subtitle', e.target.value)}
                         className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed">Hero images display in collage order. The first image appears larger, so put the strongest visual first.</p>
+                <p className="text-xs text-slate-500 leading-relaxed">The live service page now uses one clean hero image. Upload the strongest cover visual here.</p>
             </Section>
 
-            <Section title="Hero Gallery" icon="imagesmode">
-                <div className="flex flex-col gap-5">
-                    {heroImages.map((image, i) => (
-                        <div key={i} className="bg-[#1a1812] p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Hero Image {i + 1}</span>
-                                <button type="button" onClick={() => removeHeroImage(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
-                                    <span className="material-symbols-outlined text-[16px]">delete</span>
-                                </button>
-                            </div>
-                            <ImageField label={`Image ${i + 1}`} value={image} onChange={v => updateHeroImage(i, v)} />
-                        </div>
-                    ))}
-                    <button type="button" onClick={addHeroImage}
-                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
-                        <span className="material-symbols-outlined text-[18px]">add_photo_alternate</span> Add Hero Image
-                    </button>
-                </div>
+            <Section title="Hero Image" icon="imagesmode">
+                <ImageField
+                    label="Hero Background Image"
+                    value={primaryHeroImage}
+                    onChange={v => set('heroImages', v.trim().length > 0 ? [v] : [])}
+                />
+                <p className="text-xs text-slate-500 leading-relaxed">Only one hero image is shown on the public page for a cleaner first impression.</p>
             </Section>
 
             <Section title="Stats" icon="bar_chart">

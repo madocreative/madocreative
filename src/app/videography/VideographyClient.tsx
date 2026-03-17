@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import CreativeServiceHero from '@/components/CreativeServiceHero';
 import type { CreativeServicePageData, CreativeServiceVideoItem } from '@/lib/creativeServicePage';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
 
@@ -9,29 +10,14 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
 
 export default function VideographyClient({ data = videographyPageDefaults }: { data?: CreativeServicePageData }) {
     const heroImages = data.heroImages.length > 0 ? data.heroImages : videographyPageDefaults.heroImages;
+    const primaryHeroImage = heroImages[0] || '';
     const showcaseVideos: CreativeServiceVideoItem[] = data.showcaseVideos && data.showcaseVideos.length > 0
         ? data.showcaseVideos
         : (videographyPageDefaults.showcaseVideos ?? []);
 
     return (
         <div className="flex flex-col bg-[var(--app-bg)]">
-            <section className="relative h-[72vh] overflow-hidden mx-3 md:mx-5 mt-[104px] md:mt-[116px] rounded-[1.55rem]">
-                <div className="absolute inset-0 flex gap-px">
-                    {heroImages.map((img, i) => (
-                        <div key={`${img}-${i}`} className={`overflow-hidden ${i === 0 ? 'flex-[2]' : 'flex-1'}`}>
-                            <img src={img} alt="" className="w-full h-full object-contain" />
-                        </div>
-                    ))}
-                </div>
-                <div className="absolute inset-0 bg-[#0a0a08]/35 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0a08]" />
-                <div className="absolute inset-0 flex flex-col items-start justify-end pb-24 px-6 lg:px-16 max-w-7xl mx-auto w-full">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-                        <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-3">{data.heroLabel}</p>
-                        <h1 className="text-5xl md:text-8xl font-display font-extrabold uppercase text-white leading-none whitespace-pre-line">{data.title}</h1>
-                    </motion.div>
-                </div>
-            </section>
+            <CreativeServiceHero heroImage={primaryHeroImage} heroLabel={data.heroLabel} title={data.title} />
 
             <section className="bg-[#0a0a08] py-10 border-b border-white/5">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 flex flex-col md:flex-row gap-12 md:gap-20 items-start">

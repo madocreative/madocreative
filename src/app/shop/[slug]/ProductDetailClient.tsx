@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import ProductCard from '@/components/shop/ProductCard';
 
 interface Product {
     _id: string;
@@ -237,18 +238,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                         </h2>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-white/5">
                             {related.map(p => (
-                                <Link key={p._id} href={`/shop/${p.slug}`}
-                                    className="group bg-[#0a0a08] flex flex-col hover:bg-[#0d0d0b] transition-colors">
-                                    <div className="aspect-square overflow-hidden bg-[#111109]">
-                                        <img src={p.images[0] || 'https://placehold.co/400x400/111109/ffc000?text=No+Image'}
-                                            alt={p.name}
-                                            className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" />
-                                    </div>
-                                    <div className="px-3 py-3 border-t border-white/5">
-                                        <p className="text-white text-xs font-bold leading-snug line-clamp-2 group-hover:text-[#ffc000] transition-colors mb-1">{p.name}</p>
-                                        <p className="text-[#ffc000] font-bold text-sm">{formatRwf(p.price)}</p>
-                                    </div>
-                                </Link>
+                                <ProductCard key={p._id} product={p} variant="related" />
                             ))}
                         </div>
                     </div>
