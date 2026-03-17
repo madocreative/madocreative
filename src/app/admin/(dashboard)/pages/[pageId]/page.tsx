@@ -370,12 +370,15 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
     return (
         <>
             <Section title="Hero Section" icon="star">
+                <p className="text-sm leading-relaxed text-slate-400">
+                    Keep the homepage hero minimal. A short title, short plain-text subtitle, and one strong image reads best on mobile.
+                </p>
                 <TextInput label="Hero Title (HTML allowed)" value={String(get('title', ''))} onChange={v => set('title', v)} placeholder="Capturing<br />The Unseen" />
                 <div className="flex flex-col gap-2 relative group">
-                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Hero Subtitle</label>
+                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Hero Subtitle (keep it short)</label>
                     <textarea rows={3} value={String(get('subtitle', ''))} onChange={e => set('subtitle', e.target.value)}
                         className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner"
-                        placeholder="We are Mado Creatives..." />
+                        placeholder="Luxury photography and film studio for modern brands, weddings, and campaigns." />
                 </div>
                 <ImageField label="Hero Background Image" value={String(get('heroImage', ''))} onChange={v => set('heroImage', v)} />
                 <TextInput label="Hero Label" value={String(get('heroLabel', 'Premium Visual Studio · Kigali'))} onChange={v => set('heroLabel', v)} />

@@ -83,6 +83,14 @@ function getImageList(v: unknown): string[] {
 function withLineBreaks(value: string): string {
     return value.includes('<') ? value : value.replace(/\n/g, '<br />');
 }
+function toPlainText(value: string): string {
+    return value
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/?[^>]+(>|$)/g, '')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\r\n/g, '\n')
+        .trim();
+}
 
 /* ─────────────────────────────────────────────────────────────────
    PARALLAX IMAGE — reusable component
@@ -705,19 +713,20 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
 
     const imgs = heroImgs.length > 0 ? heroImgs : ['/hero/hero-01.jpg'];
     const slideCount = Math.max(1, imgs.length);
+    const cleanHeroLabel = toPlainText(heroLabel);
+    const cleanHeroSubtitle = toPlainText(heroSubtitle);
 
     const goTo = useCallback((next: number) => {
-        setPrevSlide(p => (p === null ? slide : p));
+        setPrevSlide((p) => (p === null ? slide : p));
         setSlide(next);
         if (prevCleanup.current) clearTimeout(prevCleanup.current);
         prevCleanup.current = setTimeout(() => setPrevSlide(null), CROSSFADE_MS + 100);
     }, [slide]);
 
-    // Auto-advance
     useEffect(() => {
         if (slideCount <= 1) return;
         const t = setInterval(() => {
-            setSlide(p => {
+            setSlide((p) => {
                 const next = (p + 1) % slideCount;
                 setPrevSlide(p);
                 if (prevCleanup.current) clearTimeout(prevCleanup.current);
@@ -725,17 +734,19 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                 return next;
             });
         }, HERO_ROTATE_MS);
-        return () => { clearInterval(t); if (prevCleanup.current) clearTimeout(prevCleanup.current); };
+        return () => {
+            clearInterval(t);
+            if (prevCleanup.current) clearTimeout(prevCleanup.current);
+        };
     }, [slideCount]);
 
-    // GSAP entry animation — mount only
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.timeline({ defaults: { ease: 'power3.out' } })
-                .from('.hero-overlay',    { y: 28, autoAlpha: 0, duration: 0.75 })
+                .from('.hero-overlay', { y: 28, autoAlpha: 0, duration: 0.75 })
                 .from('.hero-title-line', { y: 32, autoAlpha: 0, duration: 0.65 }, '-=0.35')
-                .from('.hero-meta',       { y: 14, autoAlpha: 0, duration: 0.5 }, '-=0.28')
-                .from('.hero-ctas',       { y: 14, autoAlpha: 0, duration: 0.45 }, '-=0.22');
+                .from('.hero-meta', { y: 14, autoAlpha: 0, duration: 0.5 }, '-=0.28')
+                .from('.hero-ctas', { y: 14, autoAlpha: 0, duration: 0.45 }, '-=0.22');
         }, sectionRef);
         return () => ctx.revert();
     }, []);
@@ -751,8 +762,6 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
             ref={sectionRef}
             className="relative mt-[72px] md:mt-[88px] h-[calc(100svh-72px)] md:h-[calc(100svh-88px)] min-h-[520px] md:min-h-[600px] max-h-[1100px] overflow-hidden bg-[#050403]"
         >
-            {/* ── IMAGE STACK — crossfade + Ken Burns ─────────────── */}
-            {/* Previous slide: stays opaque underneath while new one fades in */}
             {prevSlide !== null && (
                 <div key={`prev-${prevSlide}`} className="absolute inset-0 overflow-hidden" style={{ zIndex: 1 }}>
                     <img
@@ -762,7 +771,7 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                     />
                 </div>
             )}
-            {/* Current slide: fades in and applies Ken Burns */}
+
             <div
                 key={`curr-${slide}`}
                 className="absolute inset-0 overflow-hidden hero-crossfade-in"
@@ -776,56 +785,56 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                 />
             </div>
 
-            {/* ── GRADIENTS ──────────────────────────────────────────── */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/85 via-[#050403]/10 to-[#050403]/25" style={{ zIndex: 3 }} />
-            <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#050403]/60 via-transparent to-transparent" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/78 via-[#050403]/18 to-[#050403]/12 md:from-[#050403]/70 md:via-[#050403]/12 md:to-[#050403]/18" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050403]/24 via-transparent to-transparent md:from-[#050403]/48" style={{ zIndex: 3 }} />
 
-            {/* ── TEXT OVERLAY ─────────────────────────────────────── */}
-            <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-6 md:px-12 lg:px-20 pb-16 md:pb-20" style={{ zIndex: 4 }}>
-                {/* Eyebrow */}
-                <p data-label={heroLabel} className="hero-meta text-[0] font-bold uppercase tracking-[0.52em] text-[#ffc000] mb-4 flex items-center gap-3 after:content-[attr(data-label)] after:text-[10px] md:after:text-[11px] after:leading-none">
-                    <span className="h-px w-7 bg-[#ffc000] shrink-0" />
-                    Premium Visual Studio · Kigali
-                </p>
+            <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-16 md:pb-20" style={{ zIndex: 4 }}>
+                <div className="max-w-[22rem] sm:max-w-[30rem] md:max-w-[42rem]">
+                    {cleanHeroLabel && (
+                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffc000]/20 bg-black/20 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#f2d28b] backdrop-blur-sm mb-5">
+                            <span className="h-px w-6 bg-[#d4af6a] shrink-0" />
+                            <span>{cleanHeroLabel}</span>
+                        </p>
+                    )}
 
-                <h1
-                    className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.02em] mb-5"
-                    style={{ fontSize: 'clamp(3.2rem, 9vw, 9rem)' }}
-                    dangerouslySetInnerHTML={{ __html: withLineBreaks(heroTitle) }}
-                />
-                {heroSubtitle && (
-                    <p className="hero-meta max-w-xl text-sm md:text-base text-white/78 leading-relaxed mb-7">
-                        {heroSubtitle}
-                    </p>
-                )}
+                    <h1
+                        className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.03em] mb-4 md:mb-5 text-balance"
+                        style={{ fontSize: 'clamp(2.9rem, 11vw, 9rem)' }}
+                        dangerouslySetInnerHTML={{ __html: withLineBreaks(heroTitle) }}
+                    />
 
-                <div className="hero-ctas flex flex-wrap gap-3 items-center">
-                    <Link
-                        href={ctaLink}
-                        className="inline-flex items-center gap-2 bg-[#ffc000] text-[#050403] px-7 h-11 text-[0.7rem] font-bold tracking-[0.18em] uppercase hover:bg-white transition-colors"
-                    >
-                        {ctaText}
-                        <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-                    </Link>
-                    <Link
-                        href={secondaryCtaLink}
-                        className="inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 h-11 text-[0.7rem] font-semibold tracking-[0.18em] uppercase hover:border-white/60 hover:bg-white/8 transition-colors"
-                    >
-                        {secondaryCtaText}
-                    </Link>
+                    {cleanHeroSubtitle && (
+                        <p className="hero-meta hidden md:block max-w-xl text-sm md:text-base text-white/76 leading-relaxed mb-7 whitespace-pre-line">
+                            {cleanHeroSubtitle}
+                        </p>
+                    )}
+
+                    <div className="hero-ctas flex flex-wrap gap-3 items-center">
+                        <Link
+                            href={ctaLink}
+                            className="inline-flex items-center gap-2 bg-[#d4af6a] text-[#050403] px-6 sm:px-7 h-11 text-[0.68rem] sm:text-[0.7rem] font-bold tracking-[0.18em] uppercase hover:bg-[#f2d28b] transition-colors"
+                        >
+                            {ctaText}
+                            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                        </Link>
+                        <Link
+                            href={secondaryCtaLink}
+                            className="hidden sm:inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 h-11 text-[0.7rem] font-semibold tracking-[0.18em] uppercase hover:border-white/60 hover:bg-white/8 transition-colors"
+                        >
+                            {secondaryCtaText}
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            {/* ── SLIDE COUNTER ────────────────────────────────────── */}
-            <div className="absolute left-6 md:left-12 lg:left-20 bottom-6 font-mono text-[10px] tracking-[0.28em] text-white/40 select-none" style={{ zIndex: 5 }}>
+            <div className="absolute left-5 md:left-12 lg:left-20 bottom-5 md:bottom-6 hidden sm:block font-mono text-[10px] tracking-[0.28em] text-white/40 select-none" style={{ zIndex: 5 }}>
                 <span className="text-white/75">{String(slide + 1).padStart(2, '0')}</span>
-                <span className="mx-1.5">—</span>
+                <span className="mx-1.5">-</span>
                 {String(slideCount).padStart(2, '0')}
             </div>
 
-            {/* ── SLIDE DOTS ───────────────────────────────────────── */}
             {slideCount > 1 && (
-                <div className="absolute right-6 md:right-10 bottom-6 flex items-center gap-1.5" style={{ zIndex: 5 }}>
+                <div className="absolute right-5 md:right-10 bottom-5 md:bottom-6 flex items-center gap-1.5" style={{ zIndex: 5 }}>
                     {Array.from({ length: slideCount }).map((_, i) => (
                         <button
                             key={i}
@@ -833,7 +842,7 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                             onClick={() => goTo(i)}
                             className={`transition-all duration-400 rounded-full ${
                                 i === slide
-                                    ? 'w-5 h-[3px] bg-[#ffc000]'
+                                    ? 'w-5 h-[3px] bg-[#d4af6a]'
                                     : 'w-[5px] h-[5px] bg-white/28 hover:bg-white/55'
                             }`}
                             aria-label={`Go to slide ${i + 1}`}
@@ -842,11 +851,10 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                 </div>
             )}
 
-            {/* ── SCROLL INDICATOR ─────────────────────────────────── */}
             <button
                 type="button"
                 onClick={scrollToNext}
-                className="absolute left-1/2 -translate-x-1/2 bottom-5 flex flex-col items-center gap-1.5 text-[9px] tracking-[0.32em] uppercase text-white/45 hover:text-white/80 transition-colors"
+                className="absolute left-1/2 -translate-x-1/2 bottom-5 hidden md:flex flex-col items-center gap-1.5 text-[9px] tracking-[0.32em] uppercase text-white/45 hover:text-white/80 transition-colors"
                 style={{ zIndex: 5 }}
                 aria-label="Scroll to content"
             >
