@@ -167,8 +167,8 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                         </div>
 
                         {/* Stock */}
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-widest w-fit ${product.inStock ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
-                            <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'}`} />
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-widest w-fit ${product.inStock ? 'bg-[rgba(212,175,106,0.10)] border-[rgba(212,175,106,0.30)] text-[var(--gold)]' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                            <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-[var(--gold)]' : 'bg-red-500'}`} />
                             {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </div>
 
@@ -186,14 +186,14 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                                     <a
                                         href={`https://wa.me/?text=${waMessage}`}
                                         target="_blank" rel="noopener noreferrer"
-                                        className="flex-1 flex items-center justify-center gap-2 bg-[#25D366] text-white py-4 font-bold uppercase tracking-widest text-sm hover:brightness-110 transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 bg-[var(--gold)] text-black py-4 font-bold uppercase tracking-widest text-sm hover:bg-[var(--gold-hover)] transition-all"
                                     >
                                         <WhatsAppIcon />
                                         Inquire via WhatsApp
                                     </a>
                                     <Link
                                         href={`/contact?inquiry=shop&product=${encodeURIComponent(product.name)}`}
-                                        className="flex-1 flex items-center justify-center gap-2 bg-[#ffc000] text-[#0a0a08] py-4 font-bold uppercase tracking-widest text-sm hover:brightness-110 transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 bg-[var(--gold)] text-black py-4 font-bold uppercase tracking-widest text-sm hover:bg-[var(--gold-hover)] transition-all"
                                     >
                                         <span className="material-symbols-outlined text-[18px]">mail</span>
                                         Contact Us

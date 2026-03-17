@@ -23,7 +23,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     whatsappUrl: { type: String, default: '#' },
 
     // Appearance
-    accentColor: { type: String, default: '#ffc000' },
+    accentColor: { type: String, default: '#D4AF6A' },
     bookingCta: { type: String, default: 'Book a Session' },
     acceptingClients: { type: Boolean, default: true },
 

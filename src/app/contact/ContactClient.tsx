@@ -124,7 +124,7 @@ export default function ContactClient({ data }: { data: PageData }) {
 
                     {/* Response time note */}
                     <div className="mt-14 flex items-center gap-3">
-                        <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                        <span className="w-2 h-2 bg-[var(--gold)] rounded-full flex-shrink-0" />
                         <p className="text-[#6b6250] text-xs uppercase tracking-[0.28em] font-bold">
                             {data.responseTime || 'We respond within 24 hours'}
                         </p>
@@ -218,7 +218,7 @@ export default function ContactClient({ data }: { data: PageData }) {
                                 <button
                                     type="submit"
                                     disabled={status === 'loading'}
-                                    className="mt-4 bg-[#ffc000] text-[#090805] w-full py-4 font-bold text-sm uppercase tracking-[0.22em] hover:bg-white transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
+                                    className="mt-4 bg-[var(--gold)] text-black w-full py-4 font-bold text-sm uppercase tracking-[0.22em] hover:bg-[var(--gold-hover)] transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
                                 >
                                     {status === 'loading' ? (
                                         <><div className="w-5 h-5 border-2 border-[#090805]/40 border-t-[#090805] rounded-full animate-spin" /> Sending...</>

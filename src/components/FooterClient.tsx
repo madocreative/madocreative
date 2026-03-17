@@ -46,7 +46,7 @@ export default function FooterClient({
   ].filter((item) => typeof item.href === 'string' && item.href.trim().length > 0);
 
   return (
-    <footer className="border-t border-white/10 bg-[#0a0906] text-white">
+    <footer className="border-t border-[color:var(--app-border)] bg-[var(--section-bg)] text-white">
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-10 md:py-12">
         <div className="flex flex-col gap-8 md:gap-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
@@ -57,10 +57,10 @@ export default function FooterClient({
               <p className="mt-3 text-sm text-white/65 leading-relaxed">{tagline}</p>
               <p className="mt-4 text-sm text-white/80">{address}</p>
               <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
-                <a href={`mailto:${email}`} className="text-white/75 hover:text-[#ffc000] transition-colors">
+                <a href={`mailto:${email}`} className="text-white/75 hover:text-[var(--gold)] transition-colors">
                   {email}
                 </a>
-                <a href={`tel:${phone}`} className="text-white/75 hover:text-[#ffc000] transition-colors">
+                <a href={`tel:${phone}`} className="text-white/75 hover:text-[var(--gold)] transition-colors">
                   {phone}
                 </a>
               </div>
@@ -71,7 +71,7 @@ export default function FooterClient({
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="h-9 px-4 rounded-full border border-white/14 text-sm text-white/85 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors inline-flex items-center"
+                  className="h-9 px-4 rounded-full border border-[color:var(--app-border)] bg-[var(--app-card)] text-sm text-white/85 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors inline-flex items-center"
                 >
                   {link.label}
                 </Link>
@@ -87,13 +87,13 @@ export default function FooterClient({
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#ffc000] transition-colors"
+                  className="hover:text-[var(--gold)] transition-colors"
                 >
                   {item.label}
                 </a>
               ))}
               {acceptingClients && (
-                <span className="text-emerald-400/85 uppercase tracking-[0.12em]">Accepting Clients</span>
+                <span className="text-[var(--gold)] uppercase tracking-[0.12em]">Accepting Clients</span>
               )}
             </div>
 

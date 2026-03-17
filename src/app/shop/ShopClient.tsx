@@ -280,7 +280,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                                                         </div>
                                                     )}
                                                     {product.inStock && (
-                                                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500" title="In Stock" />
+                                                        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--gold)]" title="In Stock" />
                                                     )}
                                                 </div>
 
@@ -340,8 +340,8 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                                 Request a Quote
                             </Link>
                         </div>
-                        <div className="bg-[#0d1a12] p-8">
-                            <p className="text-[#25D366] font-bold uppercase tracking-[0.3em] text-xs mb-2">Quick Inquiry</p>
+                        <div className="bg-[var(--app-card)] p-8">
+                            <p className="text-[var(--gold)] font-bold uppercase tracking-[0.3em] text-xs mb-2">Quick Inquiry</p>
                             <h3 className="text-xl font-display font-extrabold uppercase text-white leading-tight mb-3">
                                 Chat with us on WhatsApp
                             </h3>
@@ -349,7 +349,7 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                                 Get instant answers about availability, pricing, and delivery. We respond within minutes.
                             </p>
                             <a href="https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C" target="_blank" rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 font-bold uppercase tracking-wider text-xs hover:brightness-110 transition-all">
+                                className="inline-flex items-center gap-2 bg-[var(--gold)] text-black px-6 py-3 font-bold uppercase tracking-wider text-xs hover:bg-[var(--gold-hover)] transition-all">
                                 <WhatsAppIcon />
                                 Follow on WhatsApp
                             </a>

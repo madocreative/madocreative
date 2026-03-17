@@ -58,24 +58,14 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
   }, [sidebarOpen]);
 
   const themeClasses = useMemo(() => {
-    if (theme === 'light') {
-      return {
-        shell: 'bg-[#f6f4ee] border-black/14',
-        menuBtn: 'bg-[#111111] text-white',
-        roundBtn: 'bg-[#ebe8de] text-[#101010] border border-black/14 hover:bg-[#e3e0d5]',
-        primaryBtn: 'bg-[#111111] text-white hover:bg-[#2b2b2b]',
-        sidebar: 'bg-[#f8f7f3] border-black/12 text-[#111111]',
-      };
-    }
-
     return {
-      shell: 'bg-[#090705] border-white/14',
-      menuBtn: 'bg-white text-[#090705]',
-      roundBtn: 'bg-white/16 text-white border border-white/30 hover:bg-white/26',
-      primaryBtn: 'bg-white text-[#090705] hover:bg-[#ffe9a4]',
-      sidebar: 'bg-[#0f0d0a] border-white/14 text-white',
+      shell: 'bg-[var(--app-bg)]/95 border-[color:var(--app-border)] backdrop-blur-xl',
+      menuBtn: 'bg-[var(--gold)] text-black hover:bg-[var(--gold-hover)]',
+      roundBtn: 'bg-[var(--app-card)] text-[var(--app-text)] border border-[color:var(--app-border)] hover:border-[var(--gold)] hover:text-[var(--gold)]',
+      primaryBtn: 'bg-[var(--gold)] text-black hover:bg-[var(--gold-hover)]',
+      sidebar: 'bg-[var(--section-bg)] border-[color:var(--app-border)] text-[var(--app-text)]',
     };
-  }, [theme]);
+  }, []);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -126,18 +116,12 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                   isActive(item.path) || (item.children?.some((child) => isActive(child.path)) ?? false);
 
                 const textClass = itemIsActive
-                  ? theme === 'dark'
-                    ? 'text-white'
-                    : 'text-[#1b1b1b]'
-                  : theme === 'dark'
-                    ? 'text-white/84 hover:text-white'
-                    : 'text-[#383838] hover:text-[#1b1b1b]';
+                  ? 'text-[var(--app-text)]'
+                  : 'text-white/74 hover:text-[var(--gold)]';
 
                 const underlineClass = itemIsActive
-                  ? 'after:scale-x-100 after:bg-[#ffc000]'
-                  : theme === 'dark'
-                    ? 'after:scale-x-0 after:bg-white/60 hover:after:scale-x-100'
-                    : 'after:scale-x-0 after:bg-black/40 hover:after:scale-x-100';
+                  ? 'after:scale-x-100 after:bg-[var(--gold)]'
+                  : 'after:scale-x-0 after:bg-[var(--gold)] hover:after:scale-x-100';
 
                 const navLinkClass = `relative inline-flex pb-1 text-[0.96rem] font-semibold tracking-tight transition-colors after:content-[''] after:absolute after:left-0 after:-bottom-[6px] after:h-[2px] after:w-full after:origin-left after:transition-transform ${textClass} ${underlineClass}`;
 
@@ -171,28 +155,20 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
                     <div className="absolute left-0 top-full pt-3 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-220 z-50">
                       <div
-                        className={`w-[340px] rounded-2xl border p-2 shadow-[0_20px_40px_rgba(0,0,0,0.28)] ${
-                          theme === 'dark' ? 'bg-[#100d09] border-white/12' : 'bg-[#f8f6f1] border-black/10'
-                        }`}
+                        className="w-[340px] rounded-2xl border p-2 shadow-[0_20px_40px_rgba(0,0,0,0.28)] bg-[var(--app-card)] border-[color:var(--app-border)]"
                       >
                         <div className="max-h-[56vh] overflow-y-auto pr-0.5 space-y-1">
                           {item.children.map((child) => (
                             <Link
                               key={child.path}
                               href={child.path}
-                                className={`block rounded-xl px-3 py-2.5 transition-colors ${
-                                  theme === 'dark' ? 'hover:bg-white/8' : 'hover:bg-black/[0.06]'
-                                }`}
+                              className="block rounded-xl px-3 py-2.5 transition-colors hover:bg-white/[0.04]"
                             >
-                              <p
-                                className={`text-[0.86rem] font-semibold tracking-tight ${
-                                  theme === 'dark' ? 'text-white/92' : 'text-[#1e1e1e]'
-                                }`}
-                              >
+                              <p className="text-[0.86rem] font-semibold tracking-tight text-white/92">
                                 {child.name}
                               </p>
                               {child.description && (
-                                <p className={`mt-0.5 text-[11px] leading-relaxed ${theme === 'dark' ? 'text-white/55' : 'text-[#5a5a5a]'}`}>
+                                <p className="mt-0.5 text-[11px] leading-relaxed text-white/55">
                                   {child.description}
                                 </p>
                               )}
@@ -202,11 +178,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
 
                         <Link
                           href={item.path}
-                          className={`mt-2 h-9 rounded-xl grid place-items-center text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors ${
-                            theme === 'dark'
-                              ? 'bg-white/10 text-white hover:bg-[#ffc000] hover:text-[#111]'
-                              : 'bg-black/[0.06] text-[#1a1a1a] hover:bg-[#111] hover:text-white'
-                          }`}
+                          className="mt-2 h-9 rounded-xl grid place-items-center text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors bg-[var(--gold)] text-black hover:bg-[var(--gold-hover)]"
                         >
                           View All {item.name}
                         </Link>
@@ -283,12 +255,8 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               {navItems.map((item) => {
                 const parentBaseClasses = `flex items-center justify-between rounded-xl px-3.5 py-3.5 text-[1rem] font-semibold transition-colors ${
                   isActive(item.path)
-                    ? theme === 'dark'
-                      ? 'bg-white/12 text-white'
-                      : 'bg-black/[0.07] text-black'
-                    : theme === 'dark'
-                      ? 'text-white/82 hover:bg-white/[0.07] hover:text-white'
-                      : 'text-[#1e1e1e] hover:bg-black/[0.06]'
+                    ? 'bg-white/[0.06] text-[var(--app-text)] border border-[color:var(--app-border)]'
+                    : 'text-white/82 hover:bg-white/[0.05] hover:text-[var(--app-text)]'
                 }`;
 
                 if (!item.children || item.children.length === 0) {
@@ -306,7 +274,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                 }
 
                 return (
-                  <div key={item.path} className={`rounded-xl border ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
+                  <div key={item.path} className="rounded-xl border border-[color:var(--app-border)]">
                     <Link href={item.path} onClick={() => setSidebarOpen(false)} className={parentBaseClasses}>
                       <span>{item.name}</span>
                       <span className="material-symbols-outlined text-[18px] opacity-70">north_east</span>
@@ -317,11 +285,7 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
                           key={child.path}
                           href={child.path}
                           onClick={() => setSidebarOpen(false)}
-                          className={`block rounded-lg px-2.5 py-2 text-sm transition-colors ${
-                            theme === 'dark'
-                              ? 'text-white/68 hover:text-white hover:bg-white/8'
-                              : 'text-[#3b3b3b] hover:text-black hover:bg-black/[0.05]'
-                          }`}
+                          className="block rounded-lg px-2.5 py-2 text-sm transition-colors text-white/68 hover:text-[var(--app-text)] hover:bg-white/[0.04]"
                         >
                           {child.name}
                         </Link>
@@ -349,14 +313,14 @@ export default function HeaderClient({ contactInfo, portfolioLinks, serviceLinks
               <Link
                 href="/booking"
                 onClick={() => setSidebarOpen(false)}
-                className="h-10 rounded-full grid place-items-center text-sm font-semibold bg-[#ffc000] text-[#111] hover:bg-[#ffe0a0] transition-colors"
+                className="h-10 rounded-full grid place-items-center text-sm font-semibold bg-[var(--gold)] text-black hover:bg-[var(--gold-hover)] transition-colors"
               >
                 Book Now
               </Link>
               <Link
                 href="/contact"
                 onClick={() => setSidebarOpen(false)}
-                className="h-10 rounded-full grid place-items-center text-sm font-semibold border border-current/20 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
+                className="h-10 rounded-full grid place-items-center text-sm font-semibold border border-current/20 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors"
               >
                 Message Us
               </Link>

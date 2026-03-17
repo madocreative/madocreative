@@ -107,7 +107,7 @@ export default function BookingClient({ data }: { data: PageData }) {
                 </div>
                 <h2 className="text-4xl font-display font-bold text-white mb-4">Booking Received!</h2>
                 <p className="text-[#9a9078] text-lg mb-10 max-w-md mx-auto">We&apos;ve received your request and will be in touch within 24 hours.</p>
-                <Link href="/" className="bg-[#ffc000] text-[#090805] px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors inline-block">
+                <Link href="/" className="bg-[var(--gold)] text-black px-10 py-4 font-bold text-sm uppercase tracking-[0.2em] hover:bg-[var(--gold-hover)] transition-colors inline-block">
                     Back to Home
                 </Link>
             </motion.div>
@@ -175,7 +175,7 @@ export default function BookingClient({ data }: { data: PageData }) {
                             {data.subtitle}
                         </p>
                         <div className="flex items-center gap-3">
-                            <span className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${data.acceptingClients ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
+                            <span className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${data.acceptingClients ? 'bg-[var(--gold)] animate-pulse' : 'bg-red-500'}`} />
                             <span className="text-white font-bold text-xs md:text-sm uppercase tracking-[0.2em]">
                                 {data.acceptingClients ? 'Accepting Clients' : 'Fully Booked'}
                             </span>
@@ -384,7 +384,7 @@ export default function BookingClient({ data }: { data: PageData }) {
 
                                 <button type="submit"
                                     disabled={status === 'loading' || !data.acceptingClients}
-                                    className="bg-[#ffc000] text-[#090805] py-5 font-bold text-sm uppercase tracking-[0.22em] hover:bg-white transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
+                                    className="bg-[var(--gold)] text-black py-5 font-bold text-sm uppercase tracking-[0.22em] hover:bg-[var(--gold-hover)] transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
                                 >
                                     {status === 'loading'
                                         ? <><div className="w-5 h-5 border-2 border-[#090805]/40 border-t-[#090805] rounded-full animate-spin" /> Processing...</>
