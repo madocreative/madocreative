@@ -75,14 +75,14 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                     transition={{ duration: 0.7, delay: index * 0.08 }}
                                     className={`group bg-[#0a0a08] border border-white/5 overflow-hidden ${index === 0 && showcaseVideos.length > 1 ? 'lg:col-span-2' : ''}`}
                                 >
-                                    <div className="relative aspect-video bg-black">
+                                    <div className="relative bg-black">
                                         <video
                                             src={video.videoUrl}
                                             poster={video.posterImage || undefined}
                                             controls
                                             preload="metadata"
                                             playsInline
-                                            className="w-full h-full object-cover"
+                                            className="block w-full h-auto max-h-[78vh] bg-black"
                                         />
                                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
                                     </div>

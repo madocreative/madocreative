@@ -22,6 +22,7 @@ interface ServicePillar  { title: string; description: string; note: string; }
 interface ProcessStep    { title: string; description: string; }
 interface ClientLogo     { name: string; image: string; }
 interface StatItem       { value: string; label: string; }
+interface HighlightCard  { stat: string; title: string; description: string; }
 interface HomeContent    { title?: string; subtitle?: string; heroImage?: string; sections?: Record<string, unknown>; }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -52,6 +53,10 @@ const defaultStats: StatItem[] = [
     { value: '4', label: 'Operating Locations' },
     { value: '24/7', label: 'Client Support' },
 ];
+const defaultHighlightCards: HighlightCard[] = [
+    { stat: 'Creative + Tech', title: 'Dual Expertise Under One Studio', description: 'Photography, film, branding content, and premium electronics support under one creative ecosystem.' },
+    { stat: 'International Reach', title: 'Multi-Country Presence', description: 'Consistent production quality across Addis Ababa, Kigali, Nairobi, and Dubai.' },
+];
 const defaultHeroImages = [
     '/hero/hero-01.jpg',
     '/hero/hero-02.jpg',
@@ -70,6 +75,14 @@ const defaultHeroImages = [
 ───────────────────────────────────────────────────────────────── */
 function getList<T>(v: unknown, fb: T[]): T[] { return Array.isArray(v) ? (v as T[]) : fb; }
 function getString(v: unknown, fb: string): string { return typeof v === 'string' && v.trim() ? v : fb; }
+function getImageList(v: unknown): string[] {
+    return Array.isArray(v)
+        ? v.map((item) => (typeof item === 'string' ? item.trim() : '')).filter(Boolean)
+        : [];
+}
+function withLineBreaks(value: string): string {
+    return value.includes('<') ? value : value.replace(/\n/g, '<br />');
+}
 
 /* ─────────────────────────────────────────────────────────────────
    PARALLAX IMAGE — reusable component
@@ -117,24 +130,52 @@ export default function HomeClient({
     excludedImages?: string[];
 }) {
     const sections         = content?.sections || {};
+    const heroLabel        = getString(sections.heroLabel,        'Premium Visual Studio · Kigali');
+    const heroTitle        = getString(content?.title,            'Mado<br />Creatives');
+    const heroSubtitle     = getString(content?.subtitle,         'Independent studio crafting premium imagery for visionaries.');
     const ctaText          = getString(sections.ctaText,           'View Portfolio');
     const ctaLink          = getString(sections.ctaLink,           '/portfolio');
+    const secondaryCtaText = getString(sections.secondaryCtaText,  'Book a Session');
     const secondaryCtaLink = getString(sections.secondaryCtaLink,  '/contact');
+    const introLabel       = getString(sections.introLabel,       'About the Studio');
+    const introTitle       = getString(sections.introTitle,       'Creative Agency. Premium Production Partner.');
     const introDescription = getString(sections.introDescription,  'From luxury weddings to commercial campaigns, Mado Creatives builds high-impact visuals that blend emotion, strategy, and international creative standards.');
     // highlightCards removed — section replaced by dense gallery grid
+    const highlightCards   = getList<HighlightCard>(sections.highlightCards, defaultHighlightCards);
+    const worksLabel       = getString(sections.worksLabel,       'Our Work');
+    const worksTitle       = getString(sections.worksTitle,       'Selected Work');
+    const worksDescription = getString(sections.worksDescription, 'A curated visual selection from recent projects. Tap any frame to open the full portfolio.');
+    const servicePillarsLabel = getString(sections.servicePillarsLabel, 'Signature Services');
+    const servicePillarsTitle = getString(sections.servicePillarsTitle, 'Signature Service Pillars');
     const servicePillars   = getList<ServicePillar>(sections.servicePillars,  defaultServicePillars);
+    const processLabel     = getString(sections.processLabel,     'How We Work');
+    const processTitle     = getString(sections.processTitle,     'A Clear Production Flow.');
+    const processSubtitle  = getString(sections.processSubtitle,  'Our process keeps every project strategic, efficient, and creatively strong from first brief to final delivery.');
     const processSteps     = getList<ProcessStep>(sections.processSteps,      defaultProcessSteps);
+    const clientLabel      = getString(sections.clientLabel,      'Trusted by Past Clients');
+    const clientTitle      = getString(sections.clientTitle,      'Brands We\'ve Worked With.');
+    const clientSubtitle   = getString(sections.clientSubtitle,   '');
     const clientLogos      = getList<ClientLogo>(sections.clientLogos,        defaultClientLogos);
+    const statsLabel       = getString(sections.statsLabel,       'Why Clients Choose Mado');
+    const statsTitle       = getString(sections.statsTitle,       'Premium Quality with Measurable Impact');
     const stats            = getList<StatItem>(sections.stats,                defaultStats);
+    const ctaLabel         = getString(sections.ctaLabel,        'Start Your Project');
     const ctaTitle         = getString(sections.ctaTitle,       'Ready to build your next visual campaign?');
     const ctaSubtitle      = getString(sections.ctaSubtitle,    'Book a photography session, request a campaign shoot, or discuss a custom production plan with our team.');
+    const ctaButtonText    = getString(sections.ctaButtonText,  'Book a Session');
     const ctaButtonLink    = getString(sections.ctaButtonLink,  '/booking');
+    const customHeroImages = getImageList(sections.heroImages);
+    const customWorkImages = getImageList(sections.workImages);
+    const introImageOverride = getString(sections.introImage, '');
+    const servicesImageOverride = getString(sections.servicesImage, '');
+    const statsImageOverride = getString(sections.statsImage, '');
+    const ctaImageOverride = getString(sections.ctaImage, '');
 
     // Hero images: use curated hero set first; keep CMS hero as optional fallback.
-    const heroImgs = [
-        ...defaultHeroImages,
+    const heroImgs = (customHeroImages.length > 0 ? customHeroImages : [
         content?.heroImage,
-    ]
+        ...defaultHeroImages,
+    ])
         .filter((img): img is string => typeof img === 'string' && img.length > 0)
         .filter((v, i, a) => a.indexOf(v) === i)
         .slice(0, 10);
@@ -145,17 +186,19 @@ export default function HomeClient({
             .map((img) => (typeof img === 'string' ? img.trim() : ''))
             .filter(Boolean),
     );
-    const workImages = Array.from(
+    const galleryWorkImages = Array.from(
         new Set(
             (galleries.flatMap((g) => [g.featuredImage, ...(g.images || [])].filter(Boolean)) as string[])
                 .map((img) => img.trim())
                 .filter((img) => img.length > 0 && !excludedSet.has(img)),
         ),
     );
-
-    const statsParallaxImg  = galleries[2]?.featuredImage || galleries[0]?.featuredImage;
-    const ctaBgImg          = galleries[0]?.featuredImage;
-    const servicesImg       = galleries[1]?.featuredImage || galleries[0]?.featuredImage;
+    const workImages = customWorkImages.length > 0 ? customWorkImages : galleryWorkImages;
+    const introImage = introImageOverride || galleries[0]?.featuredImage || '';
+    const servicesImg = servicesImageOverride || galleries[1]?.featuredImage || galleries[0]?.featuredImage || '';
+    const statsParallaxImg = statsImageOverride || galleries[2]?.featuredImage || galleries[0]?.featuredImage || '';
+    const ctaBgImg = ctaImageOverride || galleries[0]?.featuredImage || '';
+    const featuredHighlights = highlightCards.filter((card) => card?.title || card?.description || card?.stat).slice(0, 2);
 
     return (
         <div className="flex flex-col bg-[var(--app-bg)] text-[var(--app-text)]">
@@ -163,7 +206,16 @@ export default function HomeClient({
             {/* ══════════════════════════════════════════════════════════
                 1. HERO — cinematic 3-col parallax grid + text + ticker
             ══════════════════════════════════════════════════════════ */}
-            <HeroSection heroImgs={heroImgs} ctaText={ctaText} ctaLink={ctaLink} secondaryCtaLink={secondaryCtaLink} />
+            <HeroSection
+                heroImgs={heroImgs}
+                heroLabel={heroLabel}
+                heroTitle={heroTitle}
+                heroSubtitle={heroSubtitle}
+                ctaText={ctaText}
+                ctaLink={ctaLink}
+                secondaryCtaText={secondaryCtaText}
+                secondaryCtaLink={secondaryCtaLink}
+            />
 
 
             {/* ══════════════════════════════════════════════════════════
@@ -171,7 +223,7 @@ export default function HomeClient({
             ══════════════════════════════════════════════════════════ */}
             <section className="py-28 md:py-40 bg-[#f9f8f5] overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
-                    <SectionLabel text="About the Studio" />
+                    <SectionLabel text={introLabel} />
 
                     <div className="grid lg:grid-cols-[1.15fr_1fr] gap-16 lg:gap-28 items-start">
                         {/* Left */}
@@ -181,13 +233,23 @@ export default function HomeClient({
                             viewport={{ once: true }}
                             transition={{ duration: 0.85 }}
                         >
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.0] text-[#111009] mb-8">
-                                Creative Agency.<br />Premium Production<br />
-                                <span className="text-[#ffc000]">Partner.</span>
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.0] text-[#111009] mb-8 whitespace-pre-line">
+                                {introTitle}
                             </h2>
                             <p className="text-[#4a4535] leading-relaxed text-base md:text-lg mb-10 max-w-lg">
                                 {introDescription}
                             </p>
+                            {featuredHighlights.length > 0 && (
+                                <div className="grid gap-4 sm:grid-cols-2 mb-10">
+                                    {featuredHighlights.map((card, index) => (
+                                        <div key={`${card.title}-${index}`} className="border border-black/10 bg-white/65 px-5 py-5 backdrop-blur-sm">
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#ffc000] mb-3">{card.stat}</p>
+                                            <h3 className="text-lg font-display font-bold text-[#111009] mb-2 leading-tight">{card.title}</h3>
+                                            <p className="text-sm text-[#6b6250] leading-relaxed">{card.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                             <Link href="/services"
                                 className="inline-flex items-center gap-2 text-[#ffc000] uppercase tracking-[0.26em] text-xs font-bold border-b border-[#ffc000]/60 pb-1 hover:text-[#111009] hover:border-[#111009]/40 transition-colors">
                                 Explore Services
@@ -209,22 +271,24 @@ export default function HomeClient({
                         </motion.div>
 
                         {/* Right — tall parallax image */}
-                        {(galleries[0]?.featuredImage) && (
+                        {introImage && (
                             <div className="relative hidden lg:block">
                                 {/* Gold vertical accent */}
                                 <div className="absolute -left-14 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#ffc000]/40 to-transparent" />
                                 <ParallaxImage
-                                    src={galleries[0].featuredImage!}
+                                    src={introImage}
                                     alt="Featured work"
                                     containerClassName="relative aspect-[3/4] overflow-hidden bg-[#e8e4dc]"
                                     imageClassName="w-full h-[120%] object-cover"
                                     movement={60}
                                 />
                                 {/* Overlay caption */}
-                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#111009]/80 to-transparent">
-                                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#ffc000] mb-1">{galleries[0]?.category || 'Featured'}</p>
-                                    <p className="text-white font-display font-bold text-base">{galleries[0]?.title}</p>
-                                </div>
+                                {!introImageOverride && galleries[0]?.featuredImage && (
+                                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#111009]/80 to-transparent">
+                                        <p className="text-[10px] uppercase tracking-[0.3em] text-[#ffc000] mb-1">{galleries[0]?.category || 'Featured'}</p>
+                                        <p className="text-white font-display font-bold text-base">{galleries[0]?.title}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -235,7 +299,7 @@ export default function HomeClient({
                 4. OUR WORK — dense masonry image grid (Legacy Studio style)
             ══════════════════════════════════════════════════════════ */}
             {workImages.length > 0 && (
-                <section className="bg-[#03292b] py-16 md:py-24 border-y border-white/10">
+                <section className="bg-[var(--section-bg)] py-16 md:py-24 border-y border-white/10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-10 mb-9 md:mb-12">
                             <motion.div
@@ -244,12 +308,12 @@ export default function HomeClient({
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7 }}
                             >
-                                <SectionLabel text="Our Work" />
-                                <h2 className="text-[2.2rem] sm:text-5xl md:text-6xl font-display font-bold text-white leading-[0.95]">
-                                    Selected <span className="text-[#ffc000]">Work</span>
+                                <SectionLabel text={worksLabel} />
+                                <h2 className="text-[2.2rem] sm:text-5xl md:text-6xl font-display font-bold text-white leading-[0.95] whitespace-pre-line">
+                                    {worksTitle}
                                 </h2>
                                 <p className="mt-4 text-sm md:text-base max-w-xl text-white/72 leading-relaxed">
-                                    A curated visual selection from recent projects. Tap any frame to open the full portfolio.
+                                    {worksDescription}
                                 </p>
                             </motion.div>
 
@@ -267,7 +331,7 @@ export default function HomeClient({
                         <div className="mt-10 md:mt-12 flex justify-center">
                             <Link
                                 href="/portfolio"
-                                className="inline-flex items-center gap-2 rounded-full bg-[#ffc000] text-[#091314] px-8 md:px-10 h-11 md:h-12 text-sm font-semibold tracking-[0.1em] uppercase hover:bg-white transition-colors"
+                                className="inline-flex items-center gap-2 rounded-full bg-[#ffc000] text-[#05070a] px-8 md:px-10 h-11 md:h-12 text-sm font-semibold tracking-[0.1em] uppercase hover:bg-white transition-colors"
                             >
                                 See More on Portfolio
                                 <span className="material-symbols-outlined text-[18px]">north_east</span>
@@ -284,7 +348,10 @@ export default function HomeClient({
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <div className="flex items-center justify-between mb-16">
                         <div>
-                            <SectionLabel text="Signature Services" />
+                            <SectionLabel text={servicePillarsLabel} />
+                            <h2 className="mt-6 text-4xl md:text-5xl font-display font-bold text-[#111009] leading-tight max-w-3xl whitespace-pre-line">
+                                {servicePillarsTitle}
+                            </h2>
                         </div>
                         <Link href="/services"
                             className="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#6b6250] hover:text-[#ffc000] transition-colors">
@@ -347,15 +414,15 @@ export default function HomeClient({
                 <div className="max-w-7xl mx-auto px-6 lg:px-16">
                     <div className="grid md:grid-cols-2 gap-6 items-end mb-20">
                         <div>
-                            <SectionLabel text="How We Work" />
+                            <SectionLabel text={processLabel} />
                             <motion.h2
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.7 }}
-                                className="text-4xl md:text-5xl font-display font-bold text-[#111009] leading-tight"
+                                className="text-4xl md:text-5xl font-display font-bold text-[#111009] leading-tight whitespace-pre-line"
                             >
-                                A Clear<br />Production Flow.
+                                {processTitle}
                             </motion.h2>
                         </div>
                         <motion.p
@@ -365,7 +432,7 @@ export default function HomeClient({
                             transition={{ duration: 0.7, delay: 0.12 }}
                             className="text-[#4a4535] leading-relaxed text-base md:text-lg"
                         >
-                            Our process keeps every project strategic, efficient, and creatively strong from first brief to final delivery.
+                            {processSubtitle}
                         </motion.p>
                     </div>
 
@@ -413,6 +480,12 @@ export default function HomeClient({
                     </div>
                 )}
                 <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-16">
+                    <div className="mb-12 md:mb-16">
+                        <SectionLabel text={statsLabel} />
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white max-w-3xl leading-tight whitespace-pre-line">
+                            {statsTitle}
+                        </h2>
+                    </div>
                     <div className="grid grid-cols-2 lg:grid-cols-4">
                         {stats.map((stat, idx) => (
                             <motion.div
@@ -442,8 +515,11 @@ export default function HomeClient({
             ══════════════════════════════════════════════════════════ */}
             <section className="py-24 md:py-28 bg-[#f9f8f5]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-16 mb-14">
-                    <SectionLabel text="Trusted by Past Clients" />
-                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#111009]">Brands We&apos;ve Worked With.</h2>
+                    <SectionLabel text={clientLabel} />
+                    <h2 className="text-3xl md:text-5xl font-display font-bold text-[#111009] whitespace-pre-line">{clientTitle}</h2>
+                    {clientSubtitle && (
+                        <p className="mt-4 max-w-2xl text-[#6b6250] leading-relaxed">{clientSubtitle}</p>
+                    )}
                 </div>
                 <div className="relative overflow-hidden border-y border-black/8 py-8">
                     {/* Edge fades */}
@@ -490,7 +566,7 @@ export default function HomeClient({
                         viewport={{ once: true }}
                         transition={{ duration: 0.9 }}
                     >
-                        <SectionLabel text="Start Your Project" />
+                        <SectionLabel text={ctaLabel} />
                         <h2 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white leading-[0.9] mb-8 max-w-4xl">
                             {ctaTitle}
                         </h2>
@@ -498,7 +574,7 @@ export default function HomeClient({
                         <div className="flex flex-wrap gap-4">
                             <Link href={ctaButtonLink}
                                 className="inline-flex items-center gap-2 bg-[#ffc000] text-[#090805] px-10 py-5 font-bold text-sm uppercase tracking-[0.2em] hover:bg-white transition-colors">
-                                Book a Session
+                                {ctaButtonText}
                                 <span className="material-symbols-outlined text-[18px]">arrow_right_alt</span>
                             </Link>
                             <Link href="/contact"
@@ -571,7 +647,7 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
                 return (
                     <div
                         key={`${img}-${index}`}
-                        className={`selected-work-card relative overflow-hidden bg-[#041a1f] ${spanClass}`}
+                        className={`selected-work-card relative overflow-hidden bg-[var(--app-card)] ${spanClass}`}
                     >
                         <Link href="/portfolio" className="group relative block h-full w-full">
                             <img
@@ -581,9 +657,9 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
                                 className="h-full w-full object-cover scale-100 group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
                             />
                             {/* Dark overlay — brightens on hover to reveal image more */}
-                            <div className="absolute inset-0 bg-[#020d0e]/40 group-hover:bg-[#020d0e]/0 transition-colors duration-500" />
+                            <div className="absolute inset-0 bg-[#05070a]/40 group-hover:bg-[#05070a]/0 transition-colors duration-500" />
                             {/* Bottom gradient + info strip */}
-                            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#020d0e]/80 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500" />
+                            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#05070a]/80 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500" />
                             <div className="absolute left-3 right-3 bottom-3 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-white/70 group-hover:text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
                                 <span>View</span>
                                 <span className="material-symbols-outlined text-[14px]">north_east</span>
@@ -612,8 +688,15 @@ function optimizeHeroUrl(url: string): string {
 
 const CROSSFADE_MS = 1400;
 
-function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
-    heroImgs: string[]; ctaText: string; ctaLink: string; secondaryCtaLink: string;
+function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ctaLink, secondaryCtaText, secondaryCtaLink }: {
+    heroImgs: string[];
+    heroLabel: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    ctaText: string;
+    ctaLink: string;
+    secondaryCtaText: string;
+    secondaryCtaLink: string;
 }) {
     const sectionRef = useRef<HTMLElement>(null);
     const [slide, setSlide] = useState(0);
@@ -655,7 +738,6 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
                 .from('.hero-ctas',       { y: 14, autoAlpha: 0, duration: 0.45 }, '-=0.22');
         }, sectionRef);
         return () => ctx.revert();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const scrollToNext = () => {
@@ -701,15 +783,21 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
             {/* ── TEXT OVERLAY ─────────────────────────────────────── */}
             <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-6 md:px-12 lg:px-20 pb-16 md:pb-20" style={{ zIndex: 4 }}>
                 {/* Eyebrow */}
-                <p className="hero-meta text-[10px] md:text-[11px] font-bold uppercase tracking-[0.52em] text-[#ffc000] mb-4 flex items-center gap-3">
+                <p data-label={heroLabel} className="hero-meta text-[0] font-bold uppercase tracking-[0.52em] text-[#ffc000] mb-4 flex items-center gap-3 after:content-[attr(data-label)] after:text-[10px] md:after:text-[11px] after:leading-none">
                     <span className="h-px w-7 bg-[#ffc000] shrink-0" />
                     Premium Visual Studio · Kigali
                 </p>
 
-                <h1 className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.02em] mb-5"
-                    style={{ fontSize: 'clamp(3.2rem, 9vw, 9rem)' }}>
-                    Mado<br />Creatives
-                </h1>
+                <h1
+                    className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.02em] mb-5"
+                    style={{ fontSize: 'clamp(3.2rem, 9vw, 9rem)' }}
+                    dangerouslySetInnerHTML={{ __html: withLineBreaks(heroTitle) }}
+                />
+                {heroSubtitle && (
+                    <p className="hero-meta max-w-xl text-sm md:text-base text-white/78 leading-relaxed mb-7">
+                        {heroSubtitle}
+                    </p>
+                )}
 
                 <div className="hero-ctas flex flex-wrap gap-3 items-center">
                     <Link
@@ -723,7 +811,7 @@ function HeroSection({ heroImgs, ctaText, ctaLink, secondaryCtaLink }: {
                         href={secondaryCtaLink}
                         className="inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 h-11 text-[0.7rem] font-semibold tracking-[0.18em] uppercase hover:border-white/60 hover:bg-white/8 transition-colors"
                     >
-                        Book a Session
+                        {secondaryCtaText}
                     </Link>
                 </div>
             </div>

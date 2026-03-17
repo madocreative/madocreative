@@ -218,6 +218,61 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
     );
 }
 
+function ImageListField({
+    label,
+    values,
+    onChange,
+    addLabel,
+}: {
+    label: string;
+    values: string[];
+    onChange: (next: string[]) => void;
+    addLabel: string;
+}) {
+    const updateItem = (index: number, nextValue: string) => {
+        onChange(values.map((value, itemIndex) => (itemIndex === index ? nextValue : value)));
+    };
+    const removeItem = (index: number) => {
+        onChange(values.filter((_, itemIndex) => itemIndex !== index));
+    };
+
+    return (
+        <div className="flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</p>
+                <button
+                    type="button"
+                    onClick={() => onChange([...values, ''])}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-300 transition-all hover:border-[#ffc000]/60 hover:bg-[#ffc000]/5 hover:text-[#ffc000]"
+                >
+                    <span className="material-symbols-outlined text-[16px]">add_circle</span>
+                    {addLabel}
+                </button>
+            </div>
+            {values.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-[#1a1812]/70 px-5 py-4 text-sm text-slate-500">
+                    No images added yet.
+                </div>
+            )}
+            {values.map((value, index) => (
+                <div key={`${label}-${index}`} className="rounded-2xl border border-white/5 bg-[#1a1812] p-5">
+                    <div className="mb-4 flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-500">{label} {index + 1}</span>
+                        <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </div>
+                    <ImageField label={`${label} ${index + 1}`} value={value} onChange={(nextValue) => updateItem(index, nextValue)} />
+                </div>
+            ))}
+        </div>
+    );
+}
+
 // ────────────────────────────────────────────────────────────
 // HOME page fields
 // ────────────────────────────────────────────────────────────
@@ -279,6 +334,8 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
     const processSteps: ProcessStep[] = ensureList(get('processSteps', defaultProcessSteps), defaultProcessSteps);
     const clientLogos: ClientLogo[] = ensureList(get('clientLogos', defaultClientLogos), defaultClientLogos);
     const stats: StatItem[] = ensureList(get('stats', defaultStats), defaultStats);
+    const heroImages: string[] = ensureList(get('heroImages', []), []);
+    const workImages: string[] = ensureList(get('workImages', []), []);
 
     const updateHighlight = (i: number, field: keyof HighlightCard, val: string) => {
         set('highlightCards', highlightCards.map((c, idx) => (idx === i ? { ...c, [field]: val } : c)));
@@ -321,11 +378,33 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                         placeholder="We are Mado Creatives..." />
                 </div>
                 <ImageField label="Hero Background Image" value={String(get('heroImage', ''))} onChange={v => set('heroImage', v)} />
-                <TextInput label="Hero Label" value={String(get('heroLabel', 'Mado Creatives Studio'))} onChange={v => set('heroLabel', v)} />
+                <TextInput label="Hero Label" value={String(get('heroLabel', 'Premium Visual Studio · Kigali'))} onChange={v => set('heroLabel', v)} />
                 <TextInput label="CTA Button Text" value={String(get('ctaText', 'View Our Work'))} onChange={v => set('ctaText', v)} />
                 <TextInput label="CTA Button Link" value={String(get('ctaLink', '/portfolio'))} onChange={v => set('ctaLink', v)} />
-                <TextInput label="Secondary CTA Text" value={String(get('secondaryCtaText', 'Start a Project'))} onChange={v => set('secondaryCtaText', v)} />
+                <TextInput label="Secondary CTA Text" value={String(get('secondaryCtaText', 'Book a Session'))} onChange={v => set('secondaryCtaText', v)} />
                 <TextInput label="Secondary CTA Link" value={String(get('secondaryCtaLink', '/contact'))} onChange={v => set('secondaryCtaLink', v)} />
+            </Section>
+
+            <Section title="Homepage Images" icon="imagesmode">
+                <p className="text-sm leading-relaxed text-slate-400">
+                    These uploads control the key homepage visuals directly. If Selected Work Images is empty, the homepage will keep pulling images automatically from your portfolio galleries.
+                </p>
+                <ImageListField
+                    label="Hero Slider Image"
+                    values={heroImages}
+                    onChange={v => set('heroImages', v)}
+                    addLabel="Add Hero Image"
+                />
+                <ImageField label="Intro Feature Image" value={String(get('introImage', ''))} onChange={v => set('introImage', v)} />
+                <ImageListField
+                    label="Selected Work Image"
+                    values={workImages}
+                    onChange={v => set('workImages', v)}
+                    addLabel="Add Work Image"
+                />
+                <ImageField label="Services Section Image" value={String(get('servicesImage', ''))} onChange={v => set('servicesImage', v)} />
+                <ImageField label="Stats Background Image" value={String(get('statsImage', ''))} onChange={v => set('statsImage', v)} />
+                <ImageField label="Final CTA Background Image" value={String(get('ctaImage', ''))} onChange={v => set('ctaImage', v)} />
             </Section>
 
             <Section title="Studio Intro + Highlights" icon="auto_stories">
@@ -481,6 +560,7 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                     <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Stat
                 </button>
 
+                <TextInput label="Final CTA Label" value={String(get('ctaLabel', 'Start Your Project'))} onChange={v => set('ctaLabel', v)} />
                 <TextInput label="Final CTA Title" value={String(get('ctaTitle', 'Ready to build your next visual campaign?'))} onChange={v => set('ctaTitle', v)} />
                 <div className="flex flex-col gap-2">
                     <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Final CTA Subtitle</label>
