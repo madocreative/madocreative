@@ -13,6 +13,7 @@ import type {
 import { digitalMarketingPageDefaults } from '@/lib/digitalMarketingPageDefaults';
 import { photographyPageDefaults } from '@/lib/photographyPageDefaults';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
+import { getPlayableCloudinaryVideoUrl } from '@/lib/cloudinaryVideo';
 
 type CreativeServicePageId = 'photography' | 'videography' | 'digital-marketing';
 
@@ -118,18 +119,42 @@ const VIDEO_GALLERY_LAYOUTS: Array<{
     },
 ];
 
-async function uploadAsset(file: File): Promise<string> {
-    const fd = new FormData();
-    fd.append('file', file);
-    const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
-    if (!res.ok) {
-        throw new Error('Upload failed. Please try again.');
-    }
-    const data = await res.json();
-    if (!data?.url) {
-        throw new Error('Upload failed. Please try again.');
-    }
-    return data.url as string;
+async function uploadAsset(
+    file: File,
+    onProgress?: (percent: number) => void,
+): Promise<string> {
+    return await new Promise<string>((resolve, reject) => {
+        const fd = new FormData();
+        fd.append('file', file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/admin/upload');
+
+        xhr.upload.onprogress = (event) => {
+            if (!event.lengthComputable) return;
+            onProgress?.(Math.round((event.loaded / event.total) * 100));
+        };
+
+        xhr.onerror = () => reject(new Error('Upload failed. Please try again.'));
+
+        xhr.onload = () => {
+            try {
+                const data = JSON.parse(xhr.responseText || '{}');
+
+                if (xhr.status >= 200 && xhr.status < 300 && data?.url) {
+                    onProgress?.(100);
+                    resolve(data.url as string);
+                    return;
+                }
+
+                reject(new Error(data?.error || 'Upload failed. Please try again.'));
+            } catch {
+                reject(new Error('Upload failed. Please try again.'));
+            }
+        };
+
+        xhr.send(fd);
+    });
 }
 
 async function getSignedVideoUploadParams(): Promise<{
@@ -238,15 +263,24 @@ function TextInput({ label, value, onChange, placeholder = '' }: { label: string
 
 function ImageField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
     const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState<number | null>(null);
+    const [error, setError] = useState('');
 
     const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        setError('');
         setUploading(true);
+        setProgress(0);
         try {
-            onChange(await uploadAsset(file));
+            onChange(await uploadAsset(file, setProgress));
+            setProgress(100);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
         } finally {
             setUploading(false);
+            setTimeout(() => setProgress(null), 1200);
+            e.target.value = '';
         }
     };
 
@@ -271,11 +305,30 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
                 <label className="cursor-pointer group/btn relative bg-white/5 border border-white/10 hover:border-[#ffc000] px-6 py-3.5 rounded-xl text-slate-300 hover:text-[#0a0a08] transition-all text-sm font-bold uppercase tracking-wider whitespace-nowrap flex items-center justify-center gap-3 overflow-hidden shrink-0">
                     <div className="absolute inset-0 bg-[#ffc000] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                     <span className="relative z-10 flex items-center gap-2">
-                        {uploading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : <><span className="material-symbols-outlined text-[18px]">cloud_upload</span> Upload Image</>}
+                        {uploading ? (
+                            <>
+                                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                {progress !== null ? `Uploading ${progress}%` : 'Uploading'}
+                            </>
+                        ) : <><span className="material-symbols-outlined text-[18px]">cloud_upload</span> Upload Image</>}
                     </span>
                     <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
                 </label>
             </div>
+            {progress !== null && (
+                <div className="flex flex-col gap-2">
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                        <div
+                            className="h-full bg-[#ffc000] transition-[width] duration-300"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    <p className="text-xs text-slate-400">
+                        {progress < 100 ? `Uploading image: ${progress}%` : 'Upload complete.'}
+                    </p>
+                </div>
+            )}
+            {error && <p className="text-xs text-red-400">{error}</p>}
         </div>
     );
 }
@@ -308,7 +361,7 @@ function VideoField({ label, value, onChange }: { label: string; value: string; 
             <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
             {value && (
                 <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-[#ffc000]/30 transition-colors bg-[#0a0a08]">
-                    <video src={value} controls preload="metadata" playsInline className="w-full h-56 md:h-72 object-contain bg-black" />
+                    <video src={getPlayableCloudinaryVideoUrl(value)} controls preload="metadata" playsInline className="w-full h-56 md:h-72 object-contain bg-black" />
                 </div>
             )}
             <div className="flex flex-col md:flex-row gap-3">

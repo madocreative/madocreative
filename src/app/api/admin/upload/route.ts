@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
+import { getAdminSession } from '@/lib/auth';
 import cloudinary from '@/lib/cloudinary';
 import dbConnect from '@/lib/mongodb';
 import MediaItem from '@/models/MediaItem';
 
 export async function POST(req: Request) {
     try {
+        const session = await getAdminSession();
+
+        if (!session || session.role !== 'admin') {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
         const data = await req.formData();
         const file = data.get('file') as File;
         if (!file) {

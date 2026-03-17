@@ -8,6 +8,7 @@ import type {
     CreativeServiceVideoGalleryLayout,
     CreativeServiceVideoItem,
 } from '@/lib/creativeServicePage';
+import { getPlayableCloudinaryVideoUrl } from '@/lib/cloudinaryVideo';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
@@ -30,16 +31,20 @@ function VideoGalleryCard({
             transition={{ duration: 0.7, delay: index * 0.06 }}
             className={`group bg-[#111109] border border-white/5 overflow-hidden ${className}`}
         >
-            <div className="relative bg-black">
-                <video
-                    src={video.videoUrl}
-                    poster={video.posterImage || undefined}
-                    controls
-                    preload="metadata"
-                    playsInline
-                    className="block w-full h-auto bg-black"
-                />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/65 to-transparent" />
+            <div className="p-5 pb-0 md:p-6 md:pb-0">
+                <div className="relative mx-auto w-full max-w-[20rem] rounded-[1.75rem] border border-white/10 bg-black/80 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                    <div className="relative aspect-[9/16] overflow-hidden rounded-[1.2rem] bg-black">
+                        <video
+                            src={getPlayableCloudinaryVideoUrl(video.videoUrl)}
+                            poster={video.posterImage || undefined}
+                            controls
+                            preload="metadata"
+                            playsInline
+                            className="block h-full w-full object-contain bg-black"
+                        />
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/45 to-transparent" />
+                    </div>
+                </div>
             </div>
             <div className="p-5 md:p-6">
                 <div className="flex items-center gap-4 mb-4">
@@ -110,7 +115,7 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                             </p>
                         </motion.div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
                             {showcaseVideos.map((video, index) => (
                                 <motion.article
                                     key={`${video.videoUrl}-${index}`}
@@ -119,18 +124,22 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                     whileInView="show"
                                     viewport={{ once: true, margin: '-60px' }}
                                     transition={{ duration: 0.7, delay: index * 0.08 }}
-                                    className={`group bg-[#0a0a08] border border-white/5 overflow-hidden ${index === 0 && showcaseVideos.length > 1 ? 'lg:col-span-2' : ''}`}
+                                    className="group w-full max-w-[24rem] bg-[#0a0a08] border border-white/5 overflow-hidden"
                                 >
-                                    <div className="relative bg-black">
-                                        <video
-                                            src={video.videoUrl}
-                                            poster={video.posterImage || undefined}
-                                            controls
-                                            preload="metadata"
-                                            playsInline
-                                            className="block w-full h-auto max-h-[78vh] bg-black"
-                                        />
-                                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent" />
+                                    <div className="p-5 pb-0 md:p-6 md:pb-0">
+                                        <div className="relative mx-auto w-full max-w-[20rem] rounded-[1.75rem] border border-white/10 bg-black/80 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
+                                            <div className="relative aspect-[9/16] overflow-hidden rounded-[1.2rem] bg-black">
+                                                <video
+                                                    src={getPlayableCloudinaryVideoUrl(video.videoUrl)}
+                                                    poster={video.posterImage || undefined}
+                                                    controls
+                                                    preload="metadata"
+                                                    playsInline
+                                                    className="block h-full w-full object-contain bg-black"
+                                                />
+                                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/45 to-transparent" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="p-6 md:p-7">
                                         <div className="flex items-center gap-4 mb-4">
@@ -176,7 +185,7 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                         key={`${video.videoUrl}-${index}`}
                                         video={video}
                                         index={index}
-                                        className="min-w-[85vw] sm:min-w-[34rem] lg:min-w-[42rem] flex-none snap-start"
+                                        className="min-w-[18rem] sm:min-w-[22rem] flex-none snap-start"
                                     />
                                 ))}
                             </div>
@@ -187,17 +196,18 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                         key={`${video.videoUrl}-${index}`}
                                         video={video}
                                         index={index}
-                                        className="masonry-item mb-6"
+                                        className="masonry-item mb-6 w-full max-w-[24rem] mx-auto"
                                     />
                                 ))}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
                                 {videoGalleryVideos.map((video, index) => (
                                     <VideoGalleryCard
                                         key={`${video.videoUrl}-${index}`}
                                         video={video}
                                         index={index}
+                                        className="w-full max-w-[24rem]"
                                     />
                                 ))}
                             </div>

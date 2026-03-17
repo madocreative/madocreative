@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
 
+import { getAdminSession } from '@/lib/auth';
 import cloudinary from '@/lib/cloudinary';
 
 export async function POST(req: Request) {
     try {
+        const session = await getAdminSession();
+
+        if (!session || session.role !== 'admin') {
+            return NextResponse.json(
+                { success: false, error: 'Unauthorized' },
+                { status: 401 },
+            );
+        }
+
         const body = await req.json().catch(() => ({}));
         const requestedResourceType = body?.resourceType;
         const resourceType = requestedResourceType === 'image' ? 'image' : 'video';
