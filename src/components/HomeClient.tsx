@@ -788,8 +788,8 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
             <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/78 via-[#050403]/18 to-[#050403]/12 md:from-[#050403]/70 md:via-[#050403]/12 md:to-[#050403]/18" style={{ zIndex: 3 }} />
             <div className="absolute inset-0 bg-gradient-to-r from-[#050403]/24 via-transparent to-transparent md:from-[#050403]/48" style={{ zIndex: 3 }} />
 
-            <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-16 md:pb-20" style={{ zIndex: 4 }}>
-                <div className="max-w-[22rem] sm:max-w-[30rem] md:max-w-[42rem]">
+            <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-14 md:pb-16" style={{ zIndex: 4 }}>
+                <div className="max-w-[19rem] sm:max-w-[26rem] md:max-w-[34rem] lg:max-w-[38rem]">
                     {cleanHeroLabel && (
                         <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffc000]/20 bg-black/20 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#f2d28b] backdrop-blur-sm mb-5">
                             <span className="h-px w-6 bg-[#d4af6a] shrink-0" />
@@ -798,8 +798,8 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                     )}
 
                     <h1
-                        className="hero-title-line font-display font-bold text-white leading-[0.88] tracking-[-0.03em] mb-4 md:mb-5 text-balance"
-                        style={{ fontSize: 'clamp(2.9rem, 11vw, 9rem)' }}
+                        className="hero-title-line font-display font-bold text-white leading-[0.92] tracking-[-0.025em] mb-3 md:mb-4 text-balance"
+                        style={{ fontSize: 'clamp(2.2rem, 7.8vw, 6.6rem)' }}
                         dangerouslySetInnerHTML={{ __html: withLineBreaks(heroTitle) }}
                     />
 
