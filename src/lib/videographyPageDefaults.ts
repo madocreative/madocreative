@@ -75,6 +75,12 @@ export const videographyPageDefaults: CreativeServicePageData = {
       posterImage: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971898/mado-creatives/qiojrpgavumzxuqhc8tn.jpg',
     },
   ],
+  videoGalleryLabel: 'Video Gallery',
+  videoGalleryTitle: 'Past Work in Motion',
+  videoGallerySubtitle:
+    'Build a flexible gallery of past video projects and switch between grid, masonry, or film-strip layouts anytime from the videography editor.',
+  videoGalleryLayout: 'masonry',
+  videoGalleryVideos: [],
   collectionsLabel: 'Portfolio',
   collectionsTitle: 'Featured Work',
   collections: [],

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type {
     CreativeServiceCollection,
     CreativeServicePageData,
     CreativeServiceProcessStep,
     CreativeServiceServiceItem,
     CreativeServiceStat,
+    CreativeServiceVideoGalleryLayout,
     CreativeServiceVideoItem,
 } from '@/lib/creativeServicePage';
 import { digitalMarketingPageDefaults } from '@/lib/digitalMarketingPageDefaults';
@@ -23,6 +24,7 @@ const creativeServicePageConfigs: Record<CreativeServicePageId, {
     showProcess: boolean;
     showSecondaryCta: boolean;
     showVideoShowcase: boolean;
+    showVideoGallery: boolean;
 }> = {
     photography: {
         icon: 'photo_camera',
@@ -32,6 +34,7 @@ const creativeServicePageConfigs: Record<CreativeServicePageId, {
         showProcess: true,
         showSecondaryCta: true,
         showVideoShowcase: false,
+        showVideoGallery: false,
     },
     videography: {
         icon: 'movie',
@@ -41,6 +44,7 @@ const creativeServicePageConfigs: Record<CreativeServicePageId, {
         showProcess: false,
         showSecondaryCta: false,
         showVideoShowcase: true,
+        showVideoGallery: true,
     },
     'digital-marketing': {
         icon: 'campaign',
@@ -50,8 +54,69 @@ const creativeServicePageConfigs: Record<CreativeServicePageId, {
         showProcess: true,
         showSecondaryCta: false,
         showVideoShowcase: false,
+        showVideoGallery: false,
     },
 };
+
+const VIDEO_GALLERY_LAYOUTS: Array<{
+    id: CreativeServiceVideoGalleryLayout;
+    label: string;
+    icon: string;
+    desc: string;
+    preview: ReactNode;
+}> = [
+    {
+        id: 'grid',
+        label: 'Grid',
+        icon: 'apps',
+        desc: 'Balanced rows for a clean commercial presentation.',
+        preview: (
+            <div className="grid grid-cols-3 grid-rows-2 gap-0.5 h-10">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="bg-current rounded-sm" />
+                ))}
+            </div>
+        ),
+    },
+    {
+        id: 'masonry',
+        label: 'Masonry',
+        icon: 'view_quilt',
+        desc: 'Editorial mixed heights that adapt to each video naturally.',
+        preview: (
+            <div className="grid grid-cols-3 gap-0.5 h-10">
+                <div className="flex flex-col gap-0.5">
+                    <div className="bg-current rounded-sm flex-[2]" />
+                    <div className="bg-current rounded-sm flex-1" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                    <div className="bg-current rounded-sm flex-1" />
+                    <div className="bg-current rounded-sm flex-[2]" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                    <div className="bg-current rounded-sm flex-[1.5]" />
+                    <div className="bg-current rounded-sm flex-[1.5]" />
+                </div>
+            </div>
+        ),
+    },
+    {
+        id: 'strip',
+        label: 'Film Strip',
+        icon: 'view_carousel',
+        desc: 'Horizontal scroll for reels, campaigns, and event highlights.',
+        preview: (
+            <div className="flex gap-0.5 h-10">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex-none w-6 bg-current rounded-sm" />
+                ))}
+                <div className="flex-1 bg-current/20 rounded-sm flex items-center justify-end pr-0.5">
+                    <div className="w-1 h-3 bg-current/50 rounded-sm" />
+                </div>
+            </div>
+        ),
+    },
+];
 
 async function uploadAsset(file: File): Promise<string> {
     const fd = new FormData();
@@ -195,6 +260,8 @@ export default function CreativeServicePageEditor({
     const stats: CreativeServiceStat[] = (get('stats', defaults.stats) as CreativeServiceStat[]);
     const services: CreativeServiceServiceItem[] = (get('services', defaults.services) as CreativeServiceServiceItem[]);
     const showcaseVideos: CreativeServiceVideoItem[] = (get('showcaseVideos', defaults.showcaseVideos ?? []) as CreativeServiceVideoItem[]);
+    const videoGalleryVideos: CreativeServiceVideoItem[] = (get('videoGalleryVideos', defaults.videoGalleryVideos ?? []) as CreativeServiceVideoItem[]);
+    const videoGalleryLayout = (get('videoGalleryLayout', defaults.videoGalleryLayout ?? 'masonry') as CreativeServiceVideoGalleryLayout);
     const collections: CreativeServiceCollection[] = (get('collections', defaults.collections) as CreativeServiceCollection[]);
     const process: CreativeServiceProcessStep[] = (get('process', defaults.process) as CreativeServiceProcessStep[]);
 
@@ -215,6 +282,12 @@ export default function CreativeServicePageEditor({
     };
     const addShowcaseVideo = () => set('showcaseVideos', [...showcaseVideos, { title: 'New Video', description: '', videoUrl: '', posterImage: '' }]);
     const removeShowcaseVideo = (i: number) => set('showcaseVideos', showcaseVideos.filter((_, idx) => idx !== i));
+
+    const updateVideoGalleryVideo = (i: number, field: keyof CreativeServiceVideoItem, value: string) => {
+        set('videoGalleryVideos', videoGalleryVideos.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
+    };
+    const addVideoGalleryVideo = () => set('videoGalleryVideos', [...videoGalleryVideos, { title: 'New Gallery Video', description: '', videoUrl: '', posterImage: '' }]);
+    const removeVideoGalleryVideo = (i: number) => set('videoGalleryVideos', videoGalleryVideos.filter((_, idx) => idx !== i));
 
     const updateCollection = (i: number, field: keyof CreativeServiceCollection, value: string) => {
         set('collections', collections.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
@@ -342,6 +415,92 @@ export default function CreativeServicePageEditor({
                         <button type="button" onClick={addShowcaseVideo}
                             className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
                             <span className="material-symbols-outlined text-[18px]">video_library</span> Add Showcase Video
+                        </button>
+                    </div>
+                </Section>
+            )}
+
+            {config.showVideoGallery && (
+                <Section title="Video Gallery" icon="video_library">
+                    <p className="text-sm leading-relaxed text-slate-400">
+                        This gallery appears directly under the featured video showcase on the public videography page. Upload as many past-project videos as you want and switch the layout anytime.
+                    </p>
+                    <TextInput label="Section Label" value={String(get('videoGalleryLabel', defaults.videoGalleryLabel ?? ''))} onChange={v => set('videoGalleryLabel', v)} />
+                    <TextInput label="Section Title" value={String(get('videoGalleryTitle', defaults.videoGalleryTitle ?? ''))} onChange={v => set('videoGalleryTitle', v)} />
+                    <div className="flex flex-col gap-2 relative group">
+                        <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Section Subtitle</label>
+                        <textarea rows={3} value={String(get('videoGallerySubtitle', defaults.videoGallerySubtitle ?? ''))} onChange={e => set('videoGallerySubtitle', e.target.value)}
+                            className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                    </div>
+
+                    <div className="bg-[#1a1812] border border-white/5 rounded-2xl p-5 flex flex-col gap-4">
+                        <h3 className="font-display font-bold text-white text-base flex items-center gap-3">
+                            <span className="material-symbols-outlined text-[#ffc000] text-[18px]">dashboard_customize</span>
+                            Gallery Layout
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            {VIDEO_GALLERY_LAYOUTS.map((layout) => {
+                                const active = videoGalleryLayout === layout.id;
+                                return (
+                                    <button
+                                        key={layout.id}
+                                        type="button"
+                                        onClick={() => set('videoGalleryLayout', layout.id)}
+                                        className={`relative flex flex-col gap-3 p-3 rounded-xl border transition-all text-left group ${
+                                            active
+                                                ? 'bg-[#ffc000]/10 border-[#ffc000]/40 shadow-[0_0_20px_rgba(255,192,0,0.08)]'
+                                                : 'bg-[#111109] border-white/8 hover:border-white/20'
+                                        }`}
+                                    >
+                                        {active && (
+                                            <div className="absolute top-2 right-2 w-4 h-4 bg-[#ffc000] rounded-full flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-[10px] text-[#090805]">check</span>
+                                            </div>
+                                        )}
+                                        <div className={`w-full ${active ? 'text-[#ffc000]' : 'text-white/20 group-hover:text-white/40'} transition-colors`}>
+                                            {layout.preview}
+                                        </div>
+                                        <div>
+                                            <p className={`text-xs font-bold uppercase tracking-widest ${active ? 'text-[#ffc000]' : 'text-slate-400'}`}>
+                                                {layout.label}
+                                            </p>
+                                            <p className="text-[10px] text-slate-600 leading-tight mt-0.5">{layout.desc}</p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                        {videoGalleryVideos.map((video, i) => (
+                            <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-5 hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-[#111109] border border-white/5 flex items-center justify-center">
+                                            <span className="text-[#ffc000] font-mono text-sm font-bold">{i + 1}</span>
+                                        </div>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Gallery Video</span>
+                                    </div>
+                                    <button type="button" onClick={() => removeVideoGalleryVideo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </div>
+
+                                <TextInput label="Video Title" value={video.title} onChange={v => updateVideoGalleryVideo(i, 'title', v)} />
+                                <div className="flex flex-col gap-2 relative group">
+                                    <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
+                                    <textarea rows={3} value={video.description} onChange={e => updateVideoGalleryVideo(i, 'description', e.target.value)}
+                                        className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                                </div>
+                                <VideoField label="Video File / URL" value={video.videoUrl} onChange={v => updateVideoGalleryVideo(i, 'videoUrl', v)} />
+                                <ImageField label="Poster Image (optional)" value={video.posterImage} onChange={v => updateVideoGalleryVideo(i, 'posterImage', v)} />
+                            </div>
+                        ))}
+
+                        <button type="button" onClick={addVideoGalleryVideo}
+                            className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                            <span className="material-symbols-outlined text-[18px]">video_library</span> Add Gallery Video
                         </button>
                     </div>
                 </Section>

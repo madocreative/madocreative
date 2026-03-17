@@ -32,6 +32,8 @@ export type CreativeServiceVideoItem = {
   posterImage: string;
 };
 
+export type CreativeServiceVideoGalleryLayout = 'grid' | 'masonry' | 'strip';
+
 export type CreativeServicePageData = {
   title: string;
   heroLabel: string;
@@ -43,6 +45,11 @@ export type CreativeServicePageData = {
   showcaseTitle?: string;
   showcaseSubtitle?: string;
   showcaseVideos?: CreativeServiceVideoItem[];
+  videoGalleryLabel?: string;
+  videoGalleryTitle?: string;
+  videoGallerySubtitle?: string;
+  videoGalleryLayout?: CreativeServiceVideoGalleryLayout;
+  videoGalleryVideos?: CreativeServiceVideoItem[];
   collectionsLabel: string;
   collectionsTitle: string;
   collections: CreativeServiceCollection[];
@@ -115,6 +122,13 @@ function normalizeVideos(value: unknown, fallback: CreativeServiceVideoItem[]): 
   return normalized.length > 0 ? normalized : fallback;
 }
 
+function normalizeVideoGalleryLayout(
+  value: unknown,
+  fallback: CreativeServiceVideoGalleryLayout,
+): CreativeServiceVideoGalleryLayout {
+  return value === 'grid' || value === 'masonry' || value === 'strip' ? value : fallback;
+}
+
 function normalizeCollections(value: unknown, fallback: CreativeServiceCollection[]): CreativeServiceCollection[] {
   if (!Array.isArray(value)) return fallback;
   const normalized = value
@@ -169,6 +183,11 @@ export async function getCreativeServicePageData(
     showcaseTitle: getString(sections.showcaseTitle, defaults.showcaseTitle ?? ''),
     showcaseSubtitle: getString(sections.showcaseSubtitle, defaults.showcaseSubtitle ?? ''),
     showcaseVideos: normalizeVideos(sections.showcaseVideos, defaults.showcaseVideos ?? []),
+    videoGalleryLabel: getString(sections.videoGalleryLabel, defaults.videoGalleryLabel ?? ''),
+    videoGalleryTitle: getString(sections.videoGalleryTitle, defaults.videoGalleryTitle ?? ''),
+    videoGallerySubtitle: getString(sections.videoGallerySubtitle, defaults.videoGallerySubtitle ?? ''),
+    videoGalleryLayout: normalizeVideoGalleryLayout(sections.videoGalleryLayout, defaults.videoGalleryLayout ?? 'masonry'),
+    videoGalleryVideos: normalizeVideos(sections.videoGalleryVideos, defaults.videoGalleryVideos ?? []),
     collectionsLabel: getString(sections.collectionsLabel, defaults.collectionsLabel),
     collectionsTitle: getString(sections.collectionsTitle, defaults.collectionsTitle),
     collections: normalizeCollections(sections.collections, defaults.collections),

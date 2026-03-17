@@ -3,10 +3,64 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CreativeServiceHero from '@/components/CreativeServiceHero';
-import type { CreativeServicePageData, CreativeServiceVideoItem } from '@/lib/creativeServicePage';
+import type {
+    CreativeServicePageData,
+    CreativeServiceVideoGalleryLayout,
+    CreativeServiceVideoItem,
+} from '@/lib/creativeServicePage';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } };
+
+function VideoGalleryCard({
+    video,
+    index,
+    className = '',
+}: {
+    video: CreativeServiceVideoItem;
+    index: number;
+    className?: string;
+}) {
+    return (
+        <motion.article
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, delay: index * 0.06 }}
+            className={`group bg-[#111109] border border-white/5 overflow-hidden ${className}`}
+        >
+            <div className="relative bg-black">
+                <video
+                    src={video.videoUrl}
+                    poster={video.posterImage || undefined}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="block w-full h-auto bg-black"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/65 to-transparent" />
+            </div>
+            <div className="p-5 md:p-6">
+                <div className="flex items-center gap-4 mb-4">
+                    <span className="text-[#ffc000] font-mono text-sm font-bold">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="h-px w-10 bg-[#ffc000]/30" />
+                    <span className="text-[10px] uppercase tracking-[0.28em] text-slate-500">Video Gallery</span>
+                </div>
+                {video.title && (
+                    <h3 className="text-xl md:text-2xl font-display font-extrabold uppercase text-white mb-3 group-hover:text-[#ffc000] transition-colors">
+                        {video.title}
+                    </h3>
+                )}
+                {video.description && (
+                    <p className="text-slate-400 leading-relaxed">
+                        {video.description}
+                    </p>
+                )}
+            </div>
+        </motion.article>
+    );
+}
 
 export default function VideographyClient({ data = videographyPageDefaults }: { data?: CreativeServicePageData }) {
     const heroImages = data.heroImages.length > 0 ? data.heroImages : videographyPageDefaults.heroImages;
@@ -14,6 +68,12 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
     const showcaseVideos: CreativeServiceVideoItem[] = data.showcaseVideos && data.showcaseVideos.length > 0
         ? data.showcaseVideos
         : (videographyPageDefaults.showcaseVideos ?? []);
+    const videoGalleryVideos: CreativeServiceVideoItem[] = data.videoGalleryVideos && data.videoGalleryVideos.length > 0
+        ? data.videoGalleryVideos
+        : (videographyPageDefaults.videoGalleryVideos ?? []);
+    const videoGalleryLayout: CreativeServiceVideoGalleryLayout = data.videoGalleryLayout
+        || videographyPageDefaults.videoGalleryLayout
+        || 'masonry';
 
     return (
         <div className="flex flex-col bg-[var(--app-bg)]">
@@ -90,6 +150,58 @@ export default function VideographyClient({ data = videographyPageDefaults }: { 
                                 </motion.article>
                             ))}
                         </div>
+                    </div>
+                </section>
+            )}
+
+            {videoGalleryVideos.length > 0 && (
+                <section className="bg-[#0a0a08] py-24 border-b border-white/5">
+                    <div className="max-w-7xl mx-auto px-6 lg:px-16">
+                        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ duration: 0.8 }} className="max-w-3xl mb-14">
+                            <p className="text-[#ffc000] font-bold uppercase tracking-[0.4em] text-xs mb-3">
+                                {data.videoGalleryLabel || videographyPageDefaults.videoGalleryLabel}
+                            </p>
+                            <h2 className="text-4xl md:text-6xl font-display font-extrabold text-white uppercase leading-none mb-5">
+                                {data.videoGalleryTitle || videographyPageDefaults.videoGalleryTitle}
+                            </h2>
+                            <p className="text-lg text-slate-400 leading-relaxed">
+                                {data.videoGallerySubtitle || videographyPageDefaults.videoGallerySubtitle}
+                            </p>
+                        </motion.div>
+
+                        {videoGalleryLayout === 'strip' ? (
+                            <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory">
+                                {videoGalleryVideos.map((video, index) => (
+                                    <VideoGalleryCard
+                                        key={`${video.videoUrl}-${index}`}
+                                        video={video}
+                                        index={index}
+                                        className="min-w-[85vw] sm:min-w-[34rem] lg:min-w-[42rem] flex-none snap-start"
+                                    />
+                                ))}
+                            </div>
+                        ) : videoGalleryLayout === 'masonry' ? (
+                            <div className="masonry-grid [column-gap:1.5rem]">
+                                {videoGalleryVideos.map((video, index) => (
+                                    <VideoGalleryCard
+                                        key={`${video.videoUrl}-${index}`}
+                                        video={video}
+                                        index={index}
+                                        className="masonry-item mb-6"
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {videoGalleryVideos.map((video, index) => (
+                                    <VideoGalleryCard
+                                        key={`${video.videoUrl}-${index}`}
+                                        video={video}
+                                        index={index}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </section>
             )}
