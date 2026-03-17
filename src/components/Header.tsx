@@ -118,6 +118,7 @@ export default async function Header() {
     <HeaderClient
       siteName={settings.siteName}
       logoUrl={settings.logoUrl}
+      logoVersion={settings.logoVersion}
       contactInfo={{
         phone: settings.phone,
         email: settings.email,

@@ -37,6 +37,12 @@ const navGroups = [
     },
 ];
 
+function buildLogoSrc(logoUrl: string, logoVersion?: string) {
+    if (!logoUrl) return '/logo.png';
+    if (!logoVersion) return logoUrl;
+    return `${logoUrl}${logoUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(logoVersion)}`;
+}
+
 function NavLink({ href, icon, label, exact = false, onClick }: { href: string; icon: string; label: string; exact?: boolean; onClick?: () => void }) {
     const pathname = usePathname();
     const active = exact ? pathname === href : pathname === href || (pathname.startsWith(href + '/') && !pathname.startsWith(href + '/categories'));
@@ -64,12 +70,16 @@ function NavLink({ href, icon, label, exact = false, onClick }: { href: string; 
 function Sidebar({
     siteName,
     logoUrl,
+    logoVersion,
     onClose,
 }: {
     siteName: string;
     logoUrl: string;
+    logoVersion?: string;
     onClose?: () => void;
 }) {
+    const resolvedLogoUrl = buildLogoSrc(logoUrl, logoVersion);
+
     return (
         <div className="flex flex-col h-full relative">
             {/* Subtle background glow */}
@@ -77,7 +87,7 @@ function Sidebar({
 
             <div className="p-6 border-b border-white/5 flex items-center justify-between relative z-10">
                 <Link href="/" className="flex items-center gap-2" title="Go to Website">
-                    <img src={logoUrl || '/logo.png'} alt={`${siteName} Admin`} className="h-10 w-auto object-contain" />
+                    <img src={resolvedLogoUrl} alt={`${siteName} Admin`} className="h-10 w-auto object-contain" />
                     <span className="font-display font-bold text-xs tracking-widest uppercase text-[#ffc000] mt-1 drop-shadow-md">Admin</span>
                 </Link>
                 {onClose && (
@@ -125,25 +135,42 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     const [brand, setBrand] = useState({
         siteName: 'Mado Creatives',
         logoUrl: '/logo.png',
+        logoVersion: '',
     });
 
     useEffect(() => {
         let active = true;
 
-        fetch('/api/admin/settings')
+        const applyBrand = (data: Record<string, unknown>) => {
+            setBrand((current) => ({
+                siteName: typeof data.siteName === 'string' && data.siteName ? data.siteName : current.siteName,
+                logoUrl: typeof data.logoUrl === 'string' && data.logoUrl ? data.logoUrl : current.logoUrl,
+                logoVersion: data.updatedAt ? new Date(String(data.updatedAt)).getTime().toString() : current.logoVersion,
+            }));
+        };
+
+        const loadBrand = () => {
+            fetch('/api/admin/settings', { cache: 'no-store' })
             .then((response) => response.json())
             .then((payload) => {
                 if (!active || !payload?.success || !payload?.data) return;
-
-                setBrand((current) => ({
-                    siteName: payload.data.siteName || current.siteName,
-                    logoUrl: payload.data.logoUrl || current.logoUrl,
-                }));
+                applyBrand(payload.data);
             })
             .catch(() => {});
+        };
+
+        const handleSettingsUpdated = (event: Event) => {
+            const customEvent = event as CustomEvent<Record<string, unknown>>;
+            if (!customEvent.detail) return;
+            applyBrand(customEvent.detail);
+        };
+
+        loadBrand();
+        window.addEventListener('site-settings-updated', handleSettingsUpdated as EventListener);
 
         return () => {
             active = false;
+            window.removeEventListener('site-settings-updated', handleSettingsUpdated as EventListener);
         };
     }, []);
 
@@ -163,14 +190,14 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <div className="flex h-screen bg-[#070705] text-white selection:bg-[#ffc000]/30">
             {/* Desktop Sidebar (Glassmorphic) */}
             <aside className="w-72 bg-[#0a0a08] border-r border-white/5 hidden md:flex flex-col shadow-2xl z-20">
-                <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} />
+                <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} logoVersion={brand.logoVersion} />
             </aside>
 
             {/* Mobile Sidebar Overlay */}
             {mobileOpen && (
                 <div className="fixed inset-0 z-[60] md:hidden flex">
                     <div className="w-72 bg-[#0a0a08] border-r border-white/10 flex flex-col shadow-2xl">
-                        <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} onClose={() => setMobileOpen(false)} />
+                        <Sidebar siteName={brand.siteName} logoUrl={brand.logoUrl} logoVersion={brand.logoVersion} onClose={() => setMobileOpen(false)} />
                     </div>
                     <div className="flex-1 bg-black/60 transition-opacity" onClick={() => setMobileOpen(false)}></div>
                 </div>
@@ -184,10 +211,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                 {/* Mobile Header */}
                 <header className="md:hidden bg-[#0a0a08] border-b border-white/5 px-6 py-4 flex justify-between items-center z-10 sticky top-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-[#ffc000] to-[#b38600] rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(255,192,0,0.3)]">
-                            <span className="material-symbols-outlined text-[#0a0a08] text-[16px]">diamond</span>
-                        </div>
-                        <span className="font-display font-bold uppercase tracking-widest text-sm">Mado <span className="text-[#ffc000]">Admin</span></span>
+                        <img src={buildLogoSrc(brand.logoUrl, brand.logoVersion)} alt={`${brand.siteName} Admin`} className="h-8 w-auto object-contain max-w-[120px]" />
+                        <span className="font-display font-bold uppercase tracking-widest text-sm text-white/85">Admin</span>
                     </div>
                     <button className="text-white bg-white/5 p-2 rounded-lg hover:bg-white/10 transition-colors" onClick={() => setMobileOpen(true)}>
                         <span className="material-symbols-outlined">menu</span>

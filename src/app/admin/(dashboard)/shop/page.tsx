@@ -4,8 +4,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+type ShopProduct = {
+    _id: string;
+    name: string;
+    price: number;
+    inStock: boolean;
+    images?: string[];
+};
+
+function formatRwf(amount: number) {
+    return `RWF ${Number(amount || 0).toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
 export default function ShopList() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<ShopProduct[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -61,7 +73,7 @@ export default function ShopList() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product: any) => (
+                {products.map((product) => (
                     <div key={product._id} className="group relative bg-[#111109] border border-white/5 rounded-2xl overflow-hidden hover:border-[#ffc000]/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(255,192,0,0.15)] flex flex-col">
 
                         {/* Image Container */}
@@ -79,7 +91,7 @@ export default function ShopList() {
                         {/* Content Area */}
                         <div className="p-6 flex flex-col flex-1 relative z-10">
                             <h3 className="font-bold text-xl text-white truncate mb-2 group-hover:text-[#ffc000] transition-colors">{product.name}</h3>
-                            <p className="text-[#ffc000] font-mono text-lg mb-6 flex-1">${product.price}</p>
+                            <p className="text-[#ffc000] font-mono text-lg mb-6 flex-1">{formatRwf(product.price)}</p>
 
                             <Link href={`/admin/shop/${product._id}`} className="block text-center bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-300 border border-white/10 py-3.5 rounded-xl hover:bg-[#ffc000] hover:text-[#0a0a08] hover:border-[#ffc000] transition-all duration-300 w-full mt-auto">
                                 Edit Product

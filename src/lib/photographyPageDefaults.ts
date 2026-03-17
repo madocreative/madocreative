@@ -1,47 +1,16 @@
-export type PhotographyServiceItem = {
-  title: string;
-  description: string;
-  tags: string;
-  image: string;
-};
+import type {
+  CreativeServiceCollection,
+  CreativeServicePageData,
+  CreativeServiceProcessStep,
+  CreativeServiceServiceItem,
+  CreativeServiceStat,
+} from '@/lib/creativeServicePage';
 
-export type PhotographyStat = {
-  value: string;
-  label: string;
-};
-
-export type PhotographyCollection = {
-  title: string;
-  href: string;
-  description: string;
-};
-
-export type PhotographyProcessStep = {
-  step: string;
-  title: string;
-  desc: string;
-};
-
-export type PhotographyPageData = {
-  title: string;
-  heroLabel: string;
-  subtitle: string;
-  heroImages: string[];
-  stats: PhotographyStat[];
-  services: PhotographyServiceItem[];
-  collectionsLabel: string;
-  collectionsTitle: string;
-  collections: PhotographyCollection[];
-  processLabel: string;
-  processTitle: string;
-  process: PhotographyProcessStep[];
-  ctaTitle: string;
-  ctaSubtitle: string;
-  ctaButton: string;
-  ctaLink: string;
-  ctaSecondaryButton: string;
-  ctaSecondaryLink: string;
-};
+export type PhotographyServiceItem = CreativeServiceServiceItem;
+export type PhotographyStat = CreativeServiceStat;
+export type PhotographyCollection = CreativeServiceCollection;
+export type PhotographyProcessStep = CreativeServiceProcessStep;
+export type PhotographyPageData = CreativeServicePageData;
 
 export const photographyPageDefaults: PhotographyPageData = {
   title: 'Photography',

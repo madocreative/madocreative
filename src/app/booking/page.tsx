@@ -11,8 +11,8 @@ export const metadata = {
 };
 
 const defaultPackages = [
-    { name: 'Editorial', description: 'Perfect for magazine submissions and high-fashion spreads.', price: 'From $2,500' },
-    { name: 'Campaign', description: 'Comprehensive commercial shoots for major brand releases.', price: 'From $8,000' },
+    { name: 'Editorial', description: 'Perfect for magazine submissions and high-fashion spreads.', price: 'From RWF 2,500,000' },
+    { name: 'Campaign', description: 'Comprehensive commercial shoots for major brand releases.', price: 'From RWF 8,000,000' },
 ];
 
 export default async function BookingPage() {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 type FooterClientProps = {
   siteName: string;
   logoUrl: string;
+  logoVersion?: string;
   tagline: string;
   email: string;
   phone: string;
@@ -17,6 +18,12 @@ type FooterClientProps = {
   acceptingClients: boolean;
 };
 
+function buildLogoSrc(logoUrl: string, logoVersion?: string) {
+  if (!logoUrl) return '/logo.png';
+  if (!logoVersion) return logoUrl;
+  return `${logoUrl}${logoUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(logoVersion)}`;
+}
+
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Portfolio', href: '/portfolio' },
@@ -28,6 +35,7 @@ const navLinks = [
 export default function FooterClient({
   siteName,
   logoUrl,
+  logoVersion,
   tagline,
   email,
   phone,
@@ -39,6 +47,7 @@ export default function FooterClient({
   whatsappUrl,
   acceptingClients,
 }: FooterClientProps) {
+  const resolvedLogoUrl = buildLogoSrc(logoUrl, logoVersion);
   const socialLinks = [
     { label: 'Instagram', href: instagramUrl },
     { label: 'YouTube', href: youtubeUrl },
@@ -54,7 +63,7 @@ export default function FooterClient({
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="max-w-xl">
               <Link href="/" className="inline-block">
-                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-12 w-auto object-contain" />
+                <img src={resolvedLogoUrl} alt={siteName} className="h-12 w-auto object-contain" />
               </Link>
               <p className="mt-3 text-sm text-white/65 leading-relaxed">{tagline}</p>
               <p className="mt-4 text-sm text-white/80">{address}</p>

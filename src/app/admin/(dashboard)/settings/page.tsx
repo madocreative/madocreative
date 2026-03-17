@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
+    const router = useRouter();
     const [form, setForm] = useState({
         siteName: 'Mado Creatives',
         logoUrl: '/logo.png',
@@ -26,7 +28,7 @@ export default function SettingsPage() {
     const logoInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        fetch('/api/admin/settings')
+        fetch('/api/admin/settings', { cache: 'no-store' })
             .then(r => r.json())
             .then(d => {
                 if (d.success && d.data) {
@@ -65,7 +67,7 @@ export default function SettingsPage() {
 
             setForm((current) => ({ ...current, logoUrl: payload.url }));
             setLogoUploadState('idle');
-            setLogoUploadMessage('Logo uploaded. Save settings to publish it.');
+            setLogoUploadMessage('Logo uploaded. Click Publish Settings to apply it site-wide.');
         } catch {
             setLogoUploadState('error');
             setLogoUploadMessage('Logo upload failed. Try again.');
@@ -83,8 +85,24 @@ export default function SettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(form),
             });
-            if (res.ok) { setStatus('success'); setTimeout(() => setStatus('idle'), 3000); }
-            else setStatus('error');
+            const payload = await res.json();
+
+            if (!res.ok || !payload?.success || !payload?.data) {
+                setStatus('error');
+                return;
+            }
+
+            const sanitized = { ...payload.data };
+            delete sanitized.key;
+            delete sanitized._id;
+            delete sanitized.__v;
+            delete sanitized.updatedAt;
+
+            setForm((current) => ({ ...current, ...sanitized }));
+            window.dispatchEvent(new CustomEvent('site-settings-updated', { detail: payload.data }));
+            router.refresh();
+            setStatus('success');
+            setTimeout(() => setStatus('idle'), 3000);
         } catch { setStatus('error'); }
     };
 

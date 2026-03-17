@@ -8,6 +8,7 @@ export default async function Footer() {
     <FooterClient
       siteName={settings.siteName}
       logoUrl={settings.logoUrl}
+      logoVersion={settings.logoVersion}
       tagline={settings.tagline}
       email={settings.email}
       phone={settings.phone}

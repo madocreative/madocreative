@@ -4,11 +4,30 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Editor } from '@tinymce/tinymce-react';
 
+type ProductFormData = {
+    _id: string;
+    name: string;
+    category: string;
+    price: number;
+    description: string;
+    inStock: boolean;
+    images: string[];
+};
+
+type CategoryOption = {
+    _id: string;
+    name: string;
+};
+
+function formatRwf(amount: number) {
+    return `RWF ${Number(amount || 0).toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
 export default function ProductEditor({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const router = useRouter();
-    const [formData, setFormData] = useState<any>(null);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [formData, setFormData] = useState<ProductFormData | null>(null);
+    const [categories, setCategories] = useState<CategoryOption[]>([]);
     const [status, setStatus] = useState<'loading' | 'idle' | 'saving' | 'success' | 'error'>('loading');
     const [uploading, setUploading] = useState(false);
 
@@ -19,9 +38,30 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
         ])
             .then(([productData, categoriesData]) => {
                 if (productData.success) {
-                    setFormData(productData.data);
+                    const product = productData.data as Partial<ProductFormData>;
+                    setFormData({
+                        _id: String(product._id || ''),
+                        name: String(product.name || ''),
+                        category: String(product.category || 'Other'),
+                        price: Number(product.price || 0),
+                        description: String(product.description || ''),
+                        inStock: Boolean(product.inStock),
+                        images: Array.isArray(product.images) ? product.images.filter((image): image is string => typeof image === 'string') : [],
+                    });
                     if (categoriesData.success) {
-                        setCategories(categoriesData.data);
+                        setCategories(
+                            Array.isArray(categoriesData.data)
+                                ? (categoriesData.data as unknown[])
+                                    .filter((item: unknown): item is CategoryOption => Boolean(
+                                        item &&
+                                        typeof item === 'object' &&
+                                        '_id' in item &&
+                                        'name' in item &&
+                                        typeof item._id === 'string' &&
+                                        typeof item.name === 'string',
+                                    ))
+                                : [],
+                        );
                     }
                     setStatus('idle');
                 } else {
@@ -75,9 +115,9 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
                 const data = await res.json();
 
                 if (data.success) {
-                    setFormData((prev: any) => ({ ...prev, images: [...(prev.images || []), data.url] }));
+                    setFormData((prev) => prev ? { ...prev, images: [...prev.images, data.url] } : prev);
                 }
-            } catch (err) {
+            } catch {
                 console.error('Upload failed');
             }
         }
@@ -85,10 +125,10 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
     };
 
     const removeImage = (indexToRemove: number) => {
-        setFormData((prev: any) => ({
+        setFormData((prev) => prev ? ({
             ...prev,
-            images: prev.images.filter((_: any, index: number) => index !== indexToRemove)
-        }));
+            images: prev.images.filter((_: string, index: number) => index !== indexToRemove)
+        }) : prev);
     };
 
     if (status === 'loading') return <div className="text-white">Loading...</div>;
@@ -146,8 +186,9 @@ export default function ProductEditor({ params }: { params: Promise<{ id: string
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2 relative group">
-                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors ml-1">Price ($)</label>
-                                <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 outline-none transition-all shadow-inner text-sm font-mono" required />
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors ml-1">Price (RWF)</label>
+                                <input type="number" min="0" step="1" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 outline-none transition-all shadow-inner text-sm font-mono" required />
+                                <p className="text-xs text-slate-500 ml-1">Live preview: {formatRwf(formData.price)}</p>
                             </div>
                             <div className="flex flex-col gap-2 relative group">
                                 <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors ml-1">Stock Status</label>

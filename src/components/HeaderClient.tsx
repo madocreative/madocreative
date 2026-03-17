@@ -20,6 +20,7 @@ type NavChildItem = {
 type HeaderClientProps = {
   siteName: string;
   logoUrl: string;
+  logoVersion?: string;
   contactInfo: {
     phone: string;
     email: string;
@@ -29,7 +30,13 @@ type HeaderClientProps = {
   serviceLinks: NavChildItem[];
 };
 
-export default function HeaderClient({ siteName, logoUrl, contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
+function buildLogoSrc(logoUrl: string, logoVersion?: string) {
+  if (!logoUrl) return '/logo.png';
+  if (!logoVersion) return logoUrl;
+  return `${logoUrl}${logoUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(logoVersion)}`;
+}
+
+export default function HeaderClient({ siteName, logoUrl, logoVersion, contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
@@ -92,6 +99,8 @@ export default function HeaderClient({ siteName, logoUrl, contactInfo, portfolio
     return pathname === basePath || pathname.startsWith(`${basePath}/`);
   };
 
+  const resolvedLogoUrl = buildLogoSrc(logoUrl, logoVersion);
+
   return (
     <>
       <header
@@ -110,7 +119,7 @@ export default function HeaderClient({ siteName, logoUrl, contactInfo, portfolio
                 <span className="material-symbols-outlined text-[19px] md:text-[20px]">menu</span>
               </button>
               <Link href="/" className="flex items-center gap-2.5 min-w-0">
-                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-10 sm:h-11 md:h-16 w-auto object-contain" />
+                <img src={resolvedLogoUrl} alt={siteName} className="h-10 sm:h-11 md:h-16 w-auto object-contain" />
                 <div className="hidden min-[380px]:block">
                   <p className="text-[9px] uppercase tracking-[0.28em] text-white/45">Creative Studio</p>
                   <p className="text-sm sm:text-base font-semibold text-white/88 leading-tight">{siteName}</p>
@@ -249,7 +258,7 @@ export default function HeaderClient({ siteName, logoUrl, contactInfo, portfolio
           <aside data-lenis-prevent="true" className={`relative h-full w-full sm:w-[min(88vw,420px)] border-r px-5 md:px-7 py-6 md:py-7 overflow-y-auto overscroll-contain ${themeClasses.sidebar}`}>
             <div className="flex items-center justify-between pb-6 border-b border-current/10">
               <div className="flex items-center gap-3 min-w-0">
-                <img src={logoUrl || '/logo.png'} alt={siteName} className="h-10 w-auto object-contain" />
+                <img src={resolvedLogoUrl} alt={siteName} className="h-10 w-auto object-contain" />
                 <div className="min-w-0">
                   <p className="text-[10px] uppercase tracking-[0.28em] opacity-55">Navigation</p>
                   <p className="text-sm font-semibold text-white/88 truncate">{siteName}</p>

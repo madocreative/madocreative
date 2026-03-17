@@ -1,9 +1,11 @@
+import { unstable_noStore } from 'next/cache';
 import SiteSettings from '@/models/SiteSettings';
 import dbConnect from '@/lib/mongodb';
 
 export type PublicSiteSettings = {
   siteName: string;
   logoUrl: string;
+  logoVersion: string;
   tagline: string;
   email: string;
   phone: string;
@@ -19,6 +21,7 @@ export type PublicSiteSettings = {
 export const defaultPublicSiteSettings: PublicSiteSettings = {
   siteName: 'Mado Creatives',
   logoUrl: '/logo.png',
+  logoVersion: '',
   tagline: 'Premium photography & cinematic storytelling for brands and moments that deserve to be remembered.',
   email: 'hello@madocreatives.com',
   phone: '+251 911 000 000',
@@ -33,6 +36,7 @@ export const defaultPublicSiteSettings: PublicSiteSettings = {
 
 export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
   try {
+    unstable_noStore();
     await dbConnect();
     const settings = await SiteSettings.findOne({ key: 'global' });
     if (!settings) return defaultPublicSiteSettings;
@@ -42,6 +46,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
     return {
       siteName: parsed.siteName || defaultPublicSiteSettings.siteName,
       logoUrl: parsed.logoUrl || defaultPublicSiteSettings.logoUrl,
+      logoVersion: parsed.updatedAt ? new Date(parsed.updatedAt).getTime().toString() : defaultPublicSiteSettings.logoVersion,
       tagline: parsed.tagline || defaultPublicSiteSettings.tagline,
       email: parsed.email || defaultPublicSiteSettings.email,
       phone: parsed.phone || defaultPublicSiteSettings.phone,
