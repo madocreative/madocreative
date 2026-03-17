@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { useTheme } from '@/components/ThemeProvider';
 
 type NavItem = {
   name: string;
@@ -38,7 +37,6 @@ function buildLogoSrc(logoUrl: string, logoVersion?: string) {
 
 export default function HeaderClient({ siteName, logoUrl, logoVersion, contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -207,18 +205,6 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
             </nav>
 
             <div className="flex items-center gap-2 md:gap-3">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className={`hidden sm:grid h-10 w-10 md:h-11 md:w-11 rounded-full place-items-center transition-colors ${themeClasses.roundBtn}`}
-                aria-label="Toggle theme"
-                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                <span className="material-symbols-outlined text-[18px] md:text-[20px]">
-                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-                </span>
-              </button>
-
               <Link
                 href="/booking"
                 className={`sm:hidden inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-semibold transition-colors ${themeClasses.primaryBtn}`}
@@ -332,7 +318,7 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-2.5">
+            <div className="mt-5 grid grid-cols-2 gap-2.5">
               <Link
                 href="/booking"
                 onClick={() => setSidebarOpen(false)}
@@ -347,15 +333,6 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
               >
                 Message Us
               </Link>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="h-10 rounded-full grid place-items-center text-sm font-semibold border border-current/20 hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-                </span>
-              </button>
             </div>
           </aside>
         </div>

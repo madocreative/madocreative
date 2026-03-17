@@ -119,6 +119,16 @@ const VIDEO_GALLERY_LAYOUTS: Array<{
     },
 ];
 
+function moveItem<T>(items: T[], fromIndex: number, direction: -1 | 1): T[] {
+    const toIndex = fromIndex + direction;
+    if (toIndex < 0 || toIndex >= items.length) return items;
+
+    const nextItems = [...items];
+    const [movedItem] = nextItems.splice(fromIndex, 1);
+    nextItems.splice(toIndex, 0, movedItem);
+    return nextItems;
+}
+
 async function uploadAsset(
     file: File,
     onProgress?: (percent: number) => void,
@@ -449,12 +459,14 @@ export default function CreativeServicePageEditor({
     };
     const addShowcaseVideo = () => set('showcaseVideos', [...showcaseVideos, { title: 'New Video', description: '', videoUrl: '', posterImage: '' }]);
     const removeShowcaseVideo = (i: number) => set('showcaseVideos', showcaseVideos.filter((_, idx) => idx !== i));
+    const moveShowcaseVideo = (i: number, direction: -1 | 1) => set('showcaseVideos', moveItem(showcaseVideos, i, direction));
 
     const updateVideoGalleryVideo = (i: number, field: keyof CreativeServiceVideoItem, value: string) => {
         set('videoGalleryVideos', videoGalleryVideos.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
     };
     const addVideoGalleryVideo = () => set('videoGalleryVideos', [...videoGalleryVideos, { title: 'New Gallery Video', description: '', videoUrl: '', posterImage: '' }]);
     const removeVideoGalleryVideo = (i: number) => set('videoGalleryVideos', videoGalleryVideos.filter((_, idx) => idx !== i));
+    const moveVideoGalleryVideo = (i: number, direction: -1 | 1) => set('videoGalleryVideos', moveItem(videoGalleryVideos, i, direction));
 
     const updateCollection = (i: number, field: keyof CreativeServiceCollection, value: string) => {
         set('collections', collections.map((item, idx) => idx === i ? { ...item, [field]: value } : item));
@@ -563,9 +575,31 @@ export default function CreativeServicePageEditor({
                                         </div>
                                         <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Showcase Video</span>
                                     </div>
-                                    <button type="button" onClick={() => removeShowcaseVideo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
-                                        <span className="material-symbols-outlined text-[16px]">delete</span>
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => moveShowcaseVideo(i, -1)}
+                                            disabled={i === 0}
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 hover:text-[#ffc000] disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                                            aria-label="Move video up"
+                                            title="Move up"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => moveShowcaseVideo(i, 1)}
+                                            disabled={i === showcaseVideos.length - 1}
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 hover:text-[#ffc000] disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                                            aria-label="Move video down"
+                                            title="Move down"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+                                        </button>
+                                        <button type="button" onClick={() => removeShowcaseVideo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <TextInput label="Video Title" value={video.title} onChange={v => updateShowcaseVideo(i, 'title', v)} />
@@ -649,9 +683,31 @@ export default function CreativeServicePageEditor({
                                         </div>
                                         <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Gallery Video</span>
                                     </div>
-                                    <button type="button" onClick={() => removeVideoGalleryVideo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
-                                        <span className="material-symbols-outlined text-[16px]">delete</span>
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => moveVideoGalleryVideo(i, -1)}
+                                            disabled={i === 0}
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 hover:text-[#ffc000] disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                                            aria-label="Move gallery video up"
+                                            title="Move up"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => moveVideoGalleryVideo(i, 1)}
+                                            disabled={i === videoGalleryVideos.length - 1}
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 hover:text-[#ffc000] disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                                            aria-label="Move gallery video down"
+                                            title="Move down"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+                                        </button>
+                                        <button type="button" onClick={() => removeVideoGalleryVideo(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                            <span className="material-symbols-outlined text-[16px]">delete</span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <TextInput label="Video Title" value={video.title} onChange={v => updateVideoGalleryVideo(i, 'title', v)} />
