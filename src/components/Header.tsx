@@ -40,7 +40,12 @@ const fixedServiceLinks: NavChildLink[] = [
     description: 'See all creative services and packages.',
   },
   {
-    name: 'Videography',
+    name: 'Photography',
+    path: '/photography',
+    description: 'Professional photography for every occasion.',
+  },
+  {
+    name: 'Video Production',
     path: '/videography',
     description: 'Cinematic films, event coverage, and editing.',
   },
