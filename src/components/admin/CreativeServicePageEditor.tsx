@@ -122,8 +122,88 @@ async function uploadAsset(file: File): Promise<string> {
     const fd = new FormData();
     fd.append('file', file);
     const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+    if (!res.ok) {
+        throw new Error('Upload failed. Please try again.');
+    }
     const data = await res.json();
+    if (!data?.url) {
+        throw new Error('Upload failed. Please try again.');
+    }
     return data.url as string;
+}
+
+async function getSignedVideoUploadParams(): Promise<{
+    apiKey: string;
+    cloudName: string;
+    folder: string;
+    resourceType: 'video';
+    signature: string;
+    timestamp: number;
+}> {
+    const res = await fetch('/api/admin/upload/signature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resourceType: 'video' }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Could not prepare video upload.');
+    }
+
+    return data as {
+        apiKey: string;
+        cloudName: string;
+        folder: string;
+        resourceType: 'video';
+        signature: string;
+        timestamp: number;
+    };
+}
+
+async function uploadVideoDirect(
+    file: File,
+    onProgress?: (percent: number) => void,
+): Promise<string> {
+    const params = await getSignedVideoUploadParams();
+
+    return await new Promise<string>((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('api_key', params.apiKey);
+        formData.append('timestamp', String(params.timestamp));
+        formData.append('signature', params.signature);
+        formData.append('folder', params.folder);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `https://api.cloudinary.com/v1_1/${params.cloudName}/${params.resourceType}/upload`);
+
+        xhr.upload.onprogress = (event) => {
+            if (!event.lengthComputable) return;
+            onProgress?.(Math.round((event.loaded / event.total) * 100));
+        };
+
+        xhr.onerror = () => reject(new Error('Video upload failed. Please try again.'));
+
+        xhr.onload = () => {
+            try {
+                const result = JSON.parse(xhr.responseText || '{}');
+
+                if (xhr.status >= 200 && xhr.status < 300 && result?.secure_url) {
+                    onProgress?.(100);
+                    resolve(result.secure_url as string);
+                    return;
+                }
+
+                reject(new Error(result?.error?.message || 'Video upload failed. Please try again.'));
+            } catch {
+                reject(new Error('Video upload failed. Please try again.'));
+            }
+        };
+
+        xhr.send(formData);
+    });
 }
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
@@ -202,15 +282,24 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
 
 function VideoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
     const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState<number | null>(null);
+    const [error, setError] = useState('');
 
     const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        setError('');
         setUploading(true);
+        setProgress(0);
         try {
-            onChange(await uploadAsset(file));
+            onChange(await uploadVideoDirect(file, setProgress));
+            setProgress(100);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Video upload failed. Please try again.');
         } finally {
             setUploading(false);
+            setTimeout(() => setProgress(null), 1200);
+            e.target.value = '';
         }
     };
 
@@ -234,12 +323,33 @@ function VideoField({ label, value, onChange }: { label: string; value: string; 
                 <label className="cursor-pointer group/btn relative bg-white/5 border border-white/10 hover:border-[#ffc000] px-6 py-3.5 rounded-xl text-slate-300 hover:text-[#0a0a08] transition-all text-sm font-bold uppercase tracking-wider whitespace-nowrap flex items-center justify-center gap-3 overflow-hidden shrink-0">
                     <div className="absolute inset-0 bg-[#ffc000] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                     <span className="relative z-10 flex items-center gap-2">
-                        {uploading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : <><span className="material-symbols-outlined text-[18px]">video_call</span> Upload Video</>}
+                        {uploading ? (
+                            <>
+                                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                {progress !== null ? `Uploading ${progress}%` : 'Uploading'}
+                            </>
+                        ) : <><span className="material-symbols-outlined text-[18px]">video_call</span> Upload Video</>}
                     </span>
                     <input type="file" accept="video/*" className="hidden" onChange={handleFile} disabled={uploading} />
                 </label>
             </div>
-            <p className="text-xs text-slate-500">MP4 and MOV work best here. Uploaded videos can be used directly on the public videography page.</p>
+            <p className="text-xs text-slate-500">
+                MP4 and MOV work best here. Videos now upload directly to Cloudinary, which is much better for larger files.
+            </p>
+            {progress !== null && (
+                <div className="flex flex-col gap-2">
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                        <div
+                            className="h-full bg-[#ffc000] transition-[width] duration-300"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    <p className="text-xs text-slate-400">
+                        {progress < 100 ? `Uploading video: ${progress}%` : 'Upload complete.'}
+                    </p>
+                </div>
+            )}
+            {error && <p className="text-xs text-red-400">{error}</p>}
         </div>
     );
 }
