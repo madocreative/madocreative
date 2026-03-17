@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { Be_Vietnam_Pro, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
@@ -62,7 +63,9 @@ export default function RootLayout({
         <ThemeProvider>
           <LenisProvider>
             <HideOnAdmin>
-              <RouteFeedback />
+              <Suspense fallback={null}>
+                <RouteFeedback />
+              </Suspense>
             </HideOnAdmin>
             <HideOnAdmin>
               <Header />
