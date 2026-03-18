@@ -9,6 +9,7 @@ import LenisProvider from '@/components/LenisProvider';
 import RouteFeedback from '@/components/RouteFeedback';
 import ScrollProgress from '@/components/ScrollProgress';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { getPublicSiteSettings } from '@/lib/siteSettings';
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ['latin'],
@@ -24,16 +25,28 @@ const cormorantGaramond = Cormorant_Garamond({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'Mado Creatives | Luxury Visual Storytelling',
-  description:
-    'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.',
-  icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
-  },
-};
+function buildIconUrl(url: string, version: string): string {
+  const source = url.trim() || '/logo.png';
+  if (!version) return source;
+  const separator = source.includes('?') ? '&' : '?';
+  return `${source}${separator}v=${version}`;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const iconUrl = buildIconUrl(settings.logoUrl, settings.logoVersion);
+
+  return {
+    title: 'Mado Creatives | Luxury Visual Storytelling',
+    description:
+      'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.',
+    icons: {
+      icon: iconUrl,
+      shortcut: iconUrl,
+      apple: iconUrl,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
