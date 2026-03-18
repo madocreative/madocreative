@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   title: 'Mado Creatives | Luxury Visual Storytelling',
   description:
     'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
