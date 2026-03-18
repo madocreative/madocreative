@@ -24,6 +24,25 @@ function getGalleryGroupName(gallery: any): string {
     return group || 'Uncategorized';
 }
 
+function formatLayoutLabel(layout: string | undefined): string {
+    const normalized = String(layout || 'masonry').trim().toLowerCase();
+
+    switch (normalized) {
+        case 'strip':
+            return 'Film Strip';
+        case 'spotlight':
+            return 'Spotlight';
+        case 'slideshow':
+            return 'Slideshow';
+        case 'editorial':
+            return 'Editorial';
+        case 'grid':
+            return 'Grid';
+        default:
+            return 'Masonry';
+    }
+}
+
 function toNoCropUrl(url: string): string {
     if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
     const marker = '/upload/';
@@ -176,35 +195,44 @@ function Lightbox({ imgs, idx, onClose, onPrev, onNext }: {
 /* ─────────────────────────────────────────────────────────────────
    GALLERY HEADER
 ───────────────────────────────────────────────────────────────── */
-function GalleryHeader({ gallery, index }: { gallery: any; index: number }) {
+function GalleryHeader({ gallery, index, frameCount }: { gallery: any; index: number; frameCount: number }) {
     const galleryLabel = getGalleryGroupName(gallery);
     const galleryTitle = String(gallery?.title || galleryLabel);
+    const layoutLabel = formatLayoutLabel(gallery?.layout);
 
     return (
-        <div className="mb-6 pb-4 border-b border-[var(--app-border)]">
-            <div className="flex items-end justify-between">
-                <div className="flex items-end gap-5">
-                    <span className="text-[#ffc000] font-display font-bold text-sm tabular-nums">
-                        {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <h2 className="text-2xl md:text-4xl font-display font-bold text-[var(--app-text)] leading-none">
+        <div className="mb-7 md:mb-9">
+            <div className="mb-4 h-px w-14 bg-[#d4af6a]/65 md:w-20" />
+            <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-8">
+                <div className="space-y-3 md:space-y-4">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <span className="text-[#d4af6a] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
+                            {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="h-px w-8 bg-[#d4af6a]/35 md:w-10" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/48">
+                            {galleryLabel}
+                        </span>
+                    </div>
+                    <h2 className="max-w-4xl font-display font-bold text-[2rem] leading-[0.95] tracking-[0.02em] text-[#EAEAEA] md:text-[2.8rem]">
                         {galleryTitle}
                     </h2>
+                    {gallery.description && (
+                        <p className="max-w-2xl text-[15px] leading-7 text-[rgba(255,255,255,0.68)] md:text-base md:leading-8">
+                            {gallery.description}
+                        </p>
+                    )}
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                    <span className="text-[10px] text-[var(--app-subtle)] font-bold uppercase tracking-[0.32em]">
-                        {galleryLabel}
+
+                <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-3 md:flex-col md:items-end md:justify-end md:border-t-0 md:pt-0">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.36em] text-[#EAEAEA]">
+                        {frameCount} Frame{frameCount !== 1 ? 's' : ''}
                     </span>
-                    <span className="text-[10px] text-[var(--app-muted)] font-bold uppercase tracking-[0.2em]">
-                        {gallery.layout || 'masonry'}
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/46">
+                        {layoutLabel}
                     </span>
                 </div>
             </div>
-            {gallery.description && (
-                <p className="mt-3 text-[var(--app-subtle)] text-sm leading-relaxed max-w-xl">
-                    {gallery.description}
-                </p>
-            )}
         </div>
     );
 }
@@ -446,14 +474,15 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
 
     const scroll = (dir: number) => {
         if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: dir * 360, behavior: 'smooth' });
+            const distance = Math.max(scrollRef.current.clientWidth * 0.82, 280);
+            scrollRef.current.scrollBy({ left: dir * distance, behavior: 'smooth' });
         }
     };
 
     return (
-        <div>
+        <div className="space-y-2 md:space-y-3">
             {/* Film-strip header decoration */}
-            <div className="flex items-center gap-0 mb-0.5 overflow-hidden h-3 bg-[#0d0c08]">
+            <div className="flex items-center gap-0 overflow-hidden h-2.5 rounded-full bg-[#0d0c08]">
                 {Array.from({ length: 40 }).map((_, i) => (
                     <div key={i} className="flex-none w-5 h-2 border border-[#1c1a12] mx-0.5 bg-[#0a0908]" />
                 ))}
@@ -463,32 +492,35 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
             <div className="relative">
                 <button
                     onClick={() => scroll(-1)}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#0a0a08]/90 hover:bg-[#ffc000] hover:text-[#0a0a08] text-white flex items-center justify-center transition-all duration-200"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#0a0a08]/88 text-white shadow-[0_18px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:border-[#ffc000] hover:bg-[#ffc000] hover:text-[#0a0a08] md:flex"
+                    aria-label="Scroll gallery left"
                 >
                     <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
 
                 <div
                     ref={scrollRef}
-                    className="flex gap-0.5 overflow-x-auto px-11"
+                    className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-0 sm:px-1 md:px-14"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {imgs.map((img, i) => (
                         <div
                             key={i}
-                            className="flex-none w-72 md:w-96 overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
+                            className="group flex-none snap-start overflow-hidden rounded-[1.4rem] border border-white/8 bg-[#0d0c08] shadow-[0_24px_50px_rgba(0,0,0,0.22)] w-[82vw] sm:w-[22rem] md:w-[26rem] cursor-zoom-in"
                             onClick={() => onOpen(i)}
                         >
-                            <img
-                                src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
-                                className="w-full h-72 md:h-96 object-contain group-hover:scale-[1.03] transition-transform duration-500"
-                            />
+                            <div className="relative bg-[radial-gradient(circle_at_top,rgba(212,175,106,0.16),transparent_62%)]">
+                                <img
+                                    src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
+                                    className="w-full aspect-[4/5] object-contain px-3 py-4 sm:px-4 sm:py-5 md:aspect-[5/6] md:px-5 md:py-6 group-hover:scale-[1.02] transition-transform duration-500"
+                                />
+                            </div>
                             {/* Frame number */}
-                            <div className="flex items-center justify-between px-2 py-1 bg-[#0a0908]">
-                                <span className="text-[9px] text-[var(--app-muted)] font-bold uppercase tracking-[0.3em]">
+                            <div className="flex items-center justify-between border-t border-white/8 bg-[#11151B] px-4 py-3">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#EAEAEA]">
                                     {String(i + 1).padStart(3, '0')}
                                 </span>
-                                <span className="w-3 h-px bg-[#2a2618]" />
+                                <span className="h-px w-8 bg-[#d4af6a]/40" />
                             </div>
                         </div>
                     ))}
@@ -496,14 +528,15 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
 
                 <button
                     onClick={() => scroll(1)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#0a0a08]/90 hover:bg-[#ffc000] hover:text-[#0a0a08] text-white flex items-center justify-center transition-all duration-200"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#0a0a08]/88 text-white shadow-[0_18px_40px_rgba(0,0,0,0.35)] transition-all duration-200 hover:border-[#ffc000] hover:bg-[#ffc000] hover:text-[#0a0a08] md:flex"
+                    aria-label="Scroll gallery right"
                 >
                     <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                 </button>
             </div>
 
             {/* Film-strip footer decoration */}
-            <div className="flex items-center gap-0 mt-0.5 overflow-hidden h-3 bg-[#0d0c08]">
+            <div className="flex items-center gap-0 overflow-hidden h-2.5 rounded-full bg-[#0d0c08]">
                 {Array.from({ length: 40 }).map((_, i) => (
                     <div key={i} className="flex-none w-5 h-2 border border-[#1c1a12] mx-0.5 bg-[#0a0908]" />
                 ))}
@@ -789,7 +822,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                 </div>
             </section>
 
-            <div id="portfolio-collections" className="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-24 scroll-mt-28">
+            <div id="portfolio-collections" className="max-w-7xl mx-auto px-6 lg:px-12 pt-14 pb-28 md:pt-16 md:pb-32 scroll-mt-28">
 
                 {/* ── Category filter ── */}
                 {categories.length > 1 && (
@@ -820,7 +853,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                         <p className="text-xl text-[var(--app-subtle)] font-display uppercase tracking-widest">No galleries yet. Add one in the admin.</p>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-20">
+                    <div className="flex flex-col gap-24 md:gap-28">
                         {filteredGalleries.map((gallery: any, gIdx: number) => {
                             const galleryImgs = [gallery.featuredImage, ...(gallery.images || [])].filter(Boolean);
                             return (
@@ -830,15 +863,13 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true, margin: '-80px' }}
                                     transition={{ duration: 0.9 }}
+                                    className="border-b border-white/8 pb-10 md:pb-12 last:border-b-0 last:pb-0"
                                 >
-                                    <GalleryHeader gallery={gallery} index={gIdx} />
+                                    <GalleryHeader gallery={gallery} index={gIdx} frameCount={galleryImgs.length} />
                                     <GalleryLayout
                                         gallery={gallery}
                                         onOpen={(i) => openLightbox(galleryImgs, i)}
                                     />
-                                    <p className="text-[var(--app-muted)] text-[10px] mt-3 text-right uppercase tracking-[0.24em] font-bold">
-                                        {galleryImgs.length} frame{galleryImgs.length !== 1 ? 's' : ''}
-                                    </p>
                                 </motion.section>
                             );
                         })}
@@ -850,20 +881,37 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: '-80px' }}
                                 transition={{ duration: 0.9 }}
+                                className="border-b border-white/8 pb-10 md:pb-12 last:border-b-0 last:pb-0"
                             >
-                                <div className="mb-6 pb-4 border-b border-[var(--app-border)]">
-                                    <div className="flex items-end justify-between">
-                                        <div className="flex items-end gap-5">
-                                            <span className="text-[#ffc000] font-display font-bold text-sm tabular-nums">
-                                                {String(filteredGalleries.length + 1).padStart(2, '0')}
-                                            </span>
-                                            <h2 className="text-2xl md:text-4xl font-display font-bold text-[var(--app-text)] leading-none">
+                                <div className="mb-7 md:mb-9">
+                                    <div className="mb-4 h-px w-14 bg-[#d4af6a]/65 md:w-20" />
+                                    <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-8">
+                                        <div className="space-y-3 md:space-y-4">
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                                <span className="text-[#d4af6a] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
+                                                    {String(filteredGalleries.length + 1).padStart(2, '0')}
+                                                </span>
+                                                <span className="h-px w-8 bg-[#d4af6a]/35 md:w-10" />
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/48">
+                                                    Studio Archive
+                                                </span>
+                                            </div>
+                                            <h2 className="max-w-4xl font-display font-bold text-[2rem] leading-[0.95] tracking-[0.02em] text-[#EAEAEA] md:text-[2.8rem]">
                                                 From the Archives
                                             </h2>
+                                            <p className="max-w-2xl text-[15px] leading-7 text-[rgba(255,255,255,0.68)] md:text-base md:leading-8">
+                                                A wider sweep of moments, studies, and frames from the studio archive.
+                                            </p>
                                         </div>
-                                        <span className="text-[10px] text-[var(--app-subtle)] font-bold uppercase tracking-[0.32em]">
-                                            {allMediaUrls.length} Images
-                                        </span>
+
+                                        <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-3 md:flex-col md:items-end md:justify-end md:border-t-0 md:pt-0">
+                                            <span className="text-[11px] font-bold uppercase tracking-[0.36em] text-[#EAEAEA]">
+                                                {allMediaUrls.length} Images
+                                            </span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/46">
+                                                Archive
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
