@@ -812,7 +812,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                         transition={{ duration: 0.7 }}
                         className="inline-flex flex-col gap-2 rounded-xl border border-white/20 bg-black/35 px-4 py-3 backdrop-blur-sm"
                     >
-                        <p className="text-[#ffd24d] font-bold uppercase tracking-[0.32em] text-[10px]">
+                        <p className="text-[#d4af6a] font-bold uppercase tracking-[0.32em] text-[10px]">
                             {heroLabel || 'Portfolio Collection'}
                         </p>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight text-white">

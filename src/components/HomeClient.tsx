@@ -795,7 +795,7 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
             <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-14 md:pb-16" style={{ zIndex: 4 }}>
                 <div className="max-w-[19rem] sm:max-w-[26rem] md:max-w-[34rem] lg:max-w-[38rem]">
                     {cleanHeroLabel && (
-                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffc000]/18 bg-black/32 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-[#f2d28b] backdrop-blur-md mb-5">
+                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#d4af6a]/18 bg-black/32 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-[#d4af6a] backdrop-blur-md mb-5">
                             <span className="h-px w-6 bg-[#d4af6a] shrink-0" />
                             <span>{cleanHeroLabel}</span>
                         </p>

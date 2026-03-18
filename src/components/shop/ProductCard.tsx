@@ -24,7 +24,7 @@ export default function ProductCard({
     product: ProductCardProduct;
     variant?: 'catalog' | 'related';
 }) {
-    const fallbackImage = 'https://placehold.co/400x400/111109/ffc000?text=No+Image';
+    const fallbackImage = 'https://placehold.co/400x400/111109/D4AF6A?text=No+Image';
     const touchStartX = useRef<number | null>(null);
     const images = useMemo(() => {
         const cleaned = (product.images || []).map((image) => image?.trim()).filter(Boolean) as string[];

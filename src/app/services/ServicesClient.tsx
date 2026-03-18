@@ -235,7 +235,7 @@ export default function ServicesClient({ data }: { data: PageData }) {
                                 {/* Large faded background number */}
                                 <span
                                     className="absolute right-6 top-1/2 -translate-y-1/2 text-[140px] lg:text-[180px] font-display font-bold leading-none select-none pointer-events-none"
-                                    style={{ color: 'rgba(255,192,0,0.04)' }}
+                                    style={{ color: 'rgba(212,175,106,0.06)' }}
                                     aria-hidden
                                 >
                                     {String(index + 1).padStart(2, '0')}
