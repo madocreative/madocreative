@@ -250,10 +250,13 @@ export default function HomeClient({
                             {featuredHighlights.length > 0 && (
                                 <div className="grid gap-4 sm:grid-cols-2 mb-10">
                                     {featuredHighlights.map((card, index) => (
-                                        <div key={`${card.title}-${index}`} className="border border-black/10 bg-white/65 px-5 py-5 backdrop-blur-sm">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#ffc000] mb-3">{card.stat}</p>
-                                            <h3 className="text-lg font-display font-bold text-[#111009] mb-2 leading-tight">{card.title}</h3>
-                                            <p className="text-sm text-[#6b6250] leading-relaxed">{card.description}</p>
+                                        <div
+                                            key={`${card.title}-${index}`}
+                                            className="rounded-[1.1rem] border border-[#d4af6a]/14 bg-[#11151B] px-5 py-5 shadow-[0_18px_40px_rgba(5,7,10,0.16)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#d4af6a]/30 hover:shadow-[0_22px_48px_rgba(5,7,10,0.22)]"
+                                        >
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#d4af6a] mb-3">{card.stat}</p>
+                                            <h3 className="text-lg font-display font-bold text-white mb-2 leading-tight">{card.title}</h3>
+                                            <p className="text-sm text-white/62 leading-relaxed">{card.description}</p>
                                         </div>
                                     ))}
                                 </div>
