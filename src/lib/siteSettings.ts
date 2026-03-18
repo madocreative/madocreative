@@ -1,6 +1,7 @@
 import { unstable_noStore } from 'next/cache';
 import SiteSettings from '@/models/SiteSettings';
 import dbConnect from '@/lib/mongodb';
+import { buildWhatsAppChatUrl, DEFAULT_WHATSAPP_NUMBER } from '@/lib/whatsapp';
 
 export type PublicSiteSettings = {
   siteName: string;
@@ -15,6 +16,8 @@ export type PublicSiteSettings = {
   facebookUrl: string;
   telegramUrl: string;
   whatsappUrl: string;
+  whatsappNumber: string;
+  whatsappChatUrl: string;
   acceptingClients: boolean;
 };
 
@@ -31,6 +34,8 @@ export const defaultPublicSiteSettings: PublicSiteSettings = {
   facebookUrl: 'https://www.facebook.com/madocreatives',
   telegramUrl: 'https://t.me/mado_creatives',
   whatsappUrl: 'https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C',
+  whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
+  whatsappChatUrl: buildWhatsAppChatUrl(DEFAULT_WHATSAPP_NUMBER, undefined, 'https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C'),
   acceptingClients: true,
 };
 
@@ -56,6 +61,12 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
       facebookUrl: parsed.facebookUrl || defaultPublicSiteSettings.facebookUrl,
       telegramUrl: parsed.telegramUrl || defaultPublicSiteSettings.telegramUrl,
       whatsappUrl: parsed.whatsappUrl || defaultPublicSiteSettings.whatsappUrl,
+      whatsappNumber: parsed.whatsappNumber || defaultPublicSiteSettings.whatsappNumber,
+      whatsappChatUrl: buildWhatsAppChatUrl(
+        parsed.whatsappNumber || defaultPublicSiteSettings.whatsappNumber,
+        undefined,
+        parsed.whatsappUrl || defaultPublicSiteSettings.whatsappUrl,
+      ),
       acceptingClients: typeof parsed.acceptingClients === 'boolean' ? parsed.acceptingClients : true,
     };
   } catch {

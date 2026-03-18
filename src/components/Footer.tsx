@@ -17,7 +17,7 @@ export default async function Footer() {
       youtubeUrl={settings.youtubeUrl}
       facebookUrl={settings.facebookUrl}
       telegramUrl={settings.telegramUrl}
-      whatsappUrl={settings.whatsappUrl}
+      whatsappUrl={settings.whatsappChatUrl}
       acceptingClients={settings.acceptingClients}
     />
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/shop/ProductCard';
+import { buildWhatsAppChatUrl } from '@/lib/whatsapp';
 
 interface Product {
     _id: string;
@@ -29,7 +30,14 @@ function stripHtml(html: string): string {
     let text = html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, '');
     text = text.replace(/<\/?(p|div|br|li|h[1-6]|article|section)[^>]*>/gi, '\n');
     text = text.replace(/<[^>]+>/g, '');
-    text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, '');
+    text = text
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&mdash;/g, '--')
+        .replace(/&ndash;/g, '-')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&#\d+;/g, '');
     text = text.replace(/\n{3,}/g, '\n\n').trim();
     return text;
 }
@@ -42,7 +50,17 @@ function formatRwf(amount: number): string {
     return `RWF ${amount.toLocaleString('en-RW', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
-export default function ProductDetailClient({ product, related }: { product: Product; related: Product[] }) {
+export default function ProductDetailClient({
+    product,
+    related,
+    whatsappNumber = '',
+    whatsappUrl = '#',
+}: {
+    product: Product;
+    related: Product[];
+    whatsappNumber?: string;
+    whatsappUrl?: string;
+}) {
     const [activeImg, setActiveImg] = useState(0);
     const [lightbox, setLightbox] = useState(false);
 
@@ -51,8 +69,8 @@ export default function ProductDetailClient({ product, related }: { product: Pro
         : ['https://placehold.co/800x800/111109/ffc000?text=No+Image'];
 
     const description = isHtml(product.description) ? stripHtml(product.description) : product.description;
-
-    const waMessage = encodeURIComponent(`Hi Mado Creatives! I'm interested in: *${product.name}* — Price: ${formatRwf(product.price)}. Please share more details.`);
+    const waMessage = `Hi Mado Creatives! I'm interested in: *${product.name}* - Price: ${formatRwf(product.price)}. Please share more details.`;
+    const waHref = buildWhatsAppChatUrl(whatsappNumber, waMessage, whatsappUrl);
 
     return (
         <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)] pt-[104px] md:pt-[116px] px-3 md:px-5">
@@ -71,7 +89,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
             <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 rounded-[1.55rem] border border-[var(--app-border)] bg-[#0a0a08]">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
 
-                    {/* ── Left: Image Gallery ── */}
+                    {/* Left: Image Gallery */}
                     <div className="flex flex-col gap-4">
                         {/* Main Image */}
                         <div
@@ -90,7 +108,6 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                                     className="w-full h-full object-contain p-4"
                                 />
                             </AnimatePresence>
-                            {/* Zoom hint */}
                             <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 border border-white/10 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span className="material-symbols-outlined text-[12px]">zoom_in</span>
                                 Click to zoom
@@ -100,7 +117,6 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                                     <span className="text-white font-bold uppercase tracking-widest border border-white/30 px-6 py-2">Out of Stock</span>
                                 </div>
                             )}
-                            {/* Image counter */}
                             {images.length > 1 && (
                                 <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 border border-white/10">
                                     {activeImg + 1} / {images.length}
@@ -108,7 +124,6 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                             )}
                         </div>
 
-                        {/* Thumbnails */}
                         {images.length > 1 && (
                             <div className="flex gap-2 overflow-x-auto pb-1">
                                 {images.map((img, i) => (
@@ -123,70 +138,73 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                             </div>
                         )}
 
-                        {/* Prev/Next nav for mobile */}
                         {images.length > 1 && (
                             <div className="flex items-center justify-center gap-3 lg:hidden">
-                                <button onClick={() => setActiveImg(i => (i - 1 + images.length) % images.length)}
-                                    className="w-9 h-9 bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#ffc000] hover:text-[#0a0a08] hover:border-[#ffc000] transition-all">
+                                <button
+                                    onClick={() => setActiveImg((i) => (i - 1 + images.length) % images.length)}
+                                    className="w-9 h-9 bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#ffc000] hover:text-[#0a0a08] hover:border-[#ffc000] transition-all"
+                                >
                                     <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                                 </button>
                                 <div className="flex gap-1.5">
                                     {images.map((_, i) => (
-                                        <button key={i} onClick={() => setActiveImg(i)}
-                                            className={`w-2 h-2 rounded-full transition-all ${i === activeImg ? 'bg-[#ffc000] scale-125' : 'bg-white/20'}`} />
+                                        <button
+                                            key={i}
+                                            onClick={() => setActiveImg(i)}
+                                            className={`w-2 h-2 rounded-full transition-all ${i === activeImg ? 'bg-[#ffc000] scale-125' : 'bg-white/20'}`}
+                                        />
                                     ))}
                                 </div>
-                                <button onClick={() => setActiveImg(i => (i + 1) % images.length)}
-                                    className="w-9 h-9 bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#ffc000] hover:text-[#0a0a08] hover:border-[#ffc000] transition-all">
+                                <button
+                                    onClick={() => setActiveImg((i) => (i + 1) % images.length)}
+                                    className="w-9 h-9 bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-[#ffc000] hover:text-[#0a0a08] hover:border-[#ffc000] transition-all"
+                                >
                                     <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                                 </button>
                             </div>
                         )}
                     </div>
 
-                    {/* ── Right: Product Info ── */}
+                    {/* Right: Product Info */}
                     <div className="flex flex-col gap-5">
-                        {/* Category badge */}
                         <div>
-                            <Link href={`/shop?category=${encodeURIComponent(product.category)}`}
-                                className="inline-flex items-center gap-1.5 text-[#ffc000] text-[10px] font-bold uppercase tracking-[0.3em] hover:underline">
+                            <Link
+                                href={`/shop?category=${encodeURIComponent(product.category)}`}
+                                className="inline-flex items-center gap-1.5 text-[#ffc000] text-[10px] font-bold uppercase tracking-[0.3em] hover:underline"
+                            >
                                 <span className="material-symbols-outlined text-[12px]">chevron_right</span>
                                 {product.category}
                             </Link>
                         </div>
 
-                        {/* Name */}
                         <h1 className="text-3xl md:text-4xl font-display font-extrabold uppercase text-white leading-tight">
                             {product.name}
                         </h1>
 
-                        {/* Price */}
                         <div className="flex items-baseline gap-3">
                             <span className="text-4xl font-bold text-[#ffc000]">
                                 {formatRwf(product.price)}
                             </span>
                         </div>
 
-                        {/* Stock */}
                         <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-widest w-fit ${product.inStock ? 'bg-[rgba(255,218,104,0.10)] border-[rgba(255,218,104,0.30)] text-[var(--gold)]' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
                             <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-[var(--gold)]' : 'bg-red-500'}`} />
                             {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </div>
 
-                        {/* Description */}
                         {description && (
                             <div className="border-t border-white/5 pt-5">
                                 <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-line">{description}</p>
                             </div>
                         )}
 
-                        {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             {product.inStock ? (
                                 <>
                                     <a
-                                        href={`https://wa.me/?text=${waMessage}`}
-                                        target="_blank" rel="noopener noreferrer"
+                                        href={waHref}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         className="flex-1 flex items-center justify-center gap-2 bg-[var(--gold)] text-black py-4 font-bold uppercase tracking-widest text-sm hover:bg-[var(--gold-hover)] transition-all"
                                     >
                                         <WhatsAppIcon />
@@ -202,12 +220,11 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                                 </>
                             ) : (
                                 <button disabled className="w-full py-4 font-bold uppercase tracking-widest text-sm bg-white/5 text-slate-600 cursor-not-allowed border border-white/5">
-                                    Out of Stock — Contact Us
+                                    Out of Stock - Contact Us
                                 </button>
                             )}
                         </div>
 
-                        {/* Trust badges */}
                         <div className="grid grid-cols-3 gap-2 pt-2">
                             {[
                                 { icon: 'verified', label: 'Authentic' },
@@ -221,23 +238,23 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                             ))}
                         </div>
 
-                        {/* Back to shop */}
-                        <Link href="/shop"
-                            className="inline-flex items-center gap-1.5 text-slate-500 text-xs hover:text-white transition-colors mt-1">
+                        <Link
+                            href="/shop"
+                            className="inline-flex items-center gap-1.5 text-slate-500 text-xs hover:text-white transition-colors mt-1"
+                        >
                             <span className="material-symbols-outlined text-[14px]">arrow_back</span>
                             Back to Shop
                         </Link>
                     </div>
                 </div>
 
-                {/* Related Products */}
                 {related.length > 0 && (
                     <div className="mt-20 border-t border-white/5 pt-12">
                         <h2 className="text-xl font-display font-extrabold uppercase text-white mb-6 tracking-wider">
                             More in <span className="text-[#ffc000]">{product.category}</span>
                         </h2>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-white/5">
-                            {related.map(p => (
+                            {related.map((p) => (
                                 <ProductCard key={p._id} product={p} variant="related" />
                             ))}
                         </div>
@@ -245,11 +262,12 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                 )}
             </div>
 
-            {/* Lightbox */}
             <AnimatePresence>
                 {lightbox && (
                     <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
                         onClick={() => setLightbox(false)}
                     >
@@ -257,21 +275,36 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                             key={activeImg}
                             src={images[activeImg]}
                             alt={product.name}
-                            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
                             className="max-w-[90vw] max-h-[90vh] object-contain"
-                            onClick={e => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
                         />
-                        <button onClick={() => setLightbox(false)} className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                        <button
+                            onClick={() => setLightbox(false)}
+                            className="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                        >
                             <span className="material-symbols-outlined">close</span>
                         </button>
                         {images.length > 1 && (
                             <>
-                                <button onClick={e => { e.stopPropagation(); setActiveImg(i => (i - 1 + images.length) % images.length); }}
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveImg((i) => (i - 1 + images.length) % images.length);
+                                    }}
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                                >
                                     <span className="material-symbols-outlined text-2xl">chevron_left</span>
                                 </button>
-                                <button onClick={e => { e.stopPropagation(); setActiveImg(i => (i + 1) % images.length); }}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveImg((i) => (i + 1) % images.length);
+                                    }}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                                >
                                     <span className="material-symbols-outlined text-2xl">chevron_right</span>
                                 </button>
                             </>

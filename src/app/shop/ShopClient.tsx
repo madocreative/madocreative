@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '@/components/shop/ProductCard';
+import { buildWhatsAppChatUrl } from '@/lib/whatsapp';
 
 const FALLBACK_CATEGORIES = [
     { label: 'All', icon: 'storefront', hasChildren: false },
@@ -48,11 +49,29 @@ function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
     );
 }
 
-export default function ShopClient({ products, categories = [] }: { products: Product[], categories?: Category[] }) {
+export default function ShopClient({
+    products,
+    categories = [],
+    whatsappNumber = '',
+    whatsappUrl = '#',
+}: {
+    products: Product[];
+    categories?: Category[];
+    whatsappNumber?: string;
+    whatsappUrl?: string;
+}) {
     const [activeCategory, setActiveCategory] = useState('All');
     const [sort, setSort] = useState<SortOption>('newest');
     const [search, setSearch] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const whatsappChatUrl = useMemo(
+        () => buildWhatsAppChatUrl(
+            whatsappNumber,
+            'Hi Mado Creatives! I would like help with a shop order or product inquiry.',
+            whatsappUrl,
+        ),
+        [whatsappNumber, whatsappUrl],
+    );
 
     useEffect(() => {
         if (!sidebarOpen) return;
@@ -318,10 +337,10 @@ export default function ShopClient({ products, categories = [] }: { products: Pr
                             <p className="text-slate-500 text-sm mb-5">
                                 Get instant answers about availability, pricing, and delivery. We respond within minutes.
                             </p>
-                            <a href="https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C" target="_blank" rel="noopener noreferrer"
+                            <a href={whatsappChatUrl} target="_blank" rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 bg-[var(--gold)] text-black px-6 py-3 font-bold uppercase tracking-wider text-xs hover:bg-[var(--gold-hover)] transition-all">
                                 <WhatsAppIcon />
-                                Follow on WhatsApp
+                                Chat on WhatsApp
                             </a>
                         </div>
                     </div>

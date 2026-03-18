@@ -22,6 +22,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     facebookUrl: { type: String, default: '#' },
     telegramUrl: { type: String, default: '#' },
     whatsappUrl: { type: String, default: '#' },
+    whatsappNumber: { type: String, default: '+1 (870) 417-1007' },
 
     // Appearance
     accentColor: { type: String, default: '#FFDA68' },

@@ -2,6 +2,7 @@ import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
 import ShopClient from './ShopClient';
+import { getPublicSiteSettings } from '@/lib/siteSettings';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +32,10 @@ type RawCategory = {
 
 export default async function ShopPage() {
     await dbConnect();
-    const raw = await Product.find({}).sort({ createdAt: -1 }).lean() as RawProduct[];
+    const [raw, settings] = await Promise.all([
+        Product.find({}).sort({ createdAt: -1 }).lean() as Promise<RawProduct[]>,
+        getPublicSiteSettings(),
+    ]);
 
     const products = raw.map((p) => ({
         _id: p._id.toString(),
@@ -55,7 +59,12 @@ export default async function ShopPage() {
 
     return (
         <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">
-            <ShopClient products={products} categories={categories} />
+            <ShopClient
+                products={products}
+                categories={categories}
+                whatsappNumber={settings.whatsappNumber}
+                whatsappUrl={settings.whatsappUrl}
+            />
         </div>
     );
 }

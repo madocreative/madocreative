@@ -2,13 +2,15 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import SiteSettings from '@/models/SiteSettings';
 import { getAdminSession } from '@/lib/auth';
+import { DEFAULT_WHATSAPP_NUMBER } from '@/lib/whatsapp';
 
-const SOCIAL_DEFAULTS: Record<string, string> = {
+const SETTINGS_DEFAULTS: Record<string, string> = {
     instagramUrl: 'https://www.instagram.com/madocreatives?igsh=aW1odHU3dHpicDN4&utm_source=qr',
     youtubeUrl: 'https://youtube.com/@mado_creatives?si=chXk0FZsbZDCzuB1',
     facebookUrl: 'https://www.facebook.com/share/1AzAt5JVpa/?mibextid=wwXIfr',
     telegramUrl: 'https://t.me/mado_creatives',
     whatsappUrl: 'https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C',
+    whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
 };
 
 export async function GET() {
@@ -16,13 +18,14 @@ export async function GET() {
         await dbConnect();
         let settings = await SiteSettings.findOne({ key: 'global' });
         if (!settings) {
-            settings = await SiteSettings.create({ key: 'global', ...SOCIAL_DEFAULTS });
+            settings = await SiteSettings.create({ key: 'global', ...SETTINGS_DEFAULTS });
         } else {
-            // Seed any missing/default social URLs on first access
+            // Seed any missing/default contact and social fields on first access
             let changed = false;
-            for (const [field, url] of Object.entries(SOCIAL_DEFAULTS)) {
-                if (!settings[field] || settings[field] === '#') {
-                    settings[field] = url;
+            for (const [field, value] of Object.entries(SETTINGS_DEFAULTS)) {
+                const currentValue = String(settings[field] || '').trim();
+                if (!currentValue || currentValue === '#') {
+                    settings[field] = value;
                     changed = true;
                 }
             }
