@@ -785,41 +785,42 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                 />
             </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/78 via-[#050403]/18 to-[#050403]/12 md:from-[#050403]/70 md:via-[#050403]/12 md:to-[#050403]/18" style={{ zIndex: 3 }} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#050403]/24 via-transparent to-transparent md:from-[#050403]/48" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 bg-black/18 md:bg-black/10" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050403]/88 via-[#050403]/34 to-[#050403]/16 md:from-[#050403]/78 md:via-[#050403]/18 md:to-[#050403]/18" style={{ zIndex: 3 }} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050403]/38 via-[#050403]/08 to-transparent md:from-[#050403]/54 md:via-[#050403]/12" style={{ zIndex: 3 }} />
 
             <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-14 md:pb-16" style={{ zIndex: 4 }}>
                 <div className="max-w-[19rem] sm:max-w-[26rem] md:max-w-[34rem] lg:max-w-[38rem]">
                     {cleanHeroLabel && (
-                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffc000]/20 bg-black/20 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#f2d28b] backdrop-blur-sm mb-5">
+                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffc000]/18 bg-black/32 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-[#f2d28b] backdrop-blur-md mb-5">
                             <span className="h-px w-6 bg-[#d4af6a] shrink-0" />
                             <span>{cleanHeroLabel}</span>
                         </p>
                     )}
 
                     <h1
-                        className="hero-title-line font-display font-bold text-white leading-[0.92] tracking-[-0.025em] mb-3 md:mb-4 text-balance"
+                        className="hero-title-line font-display font-bold text-white leading-[0.95] md:leading-[0.92] tracking-[-0.02em] mb-3 md:mb-4 text-balance"
                         style={{ fontSize: 'clamp(2.2rem, 7.8vw, 6.6rem)' }}
                         dangerouslySetInnerHTML={{ __html: withLineBreaks(heroTitle) }}
                     />
 
                     {cleanHeroSubtitle && (
-                        <p className="hero-meta hidden md:block max-w-xl text-sm md:text-base text-white/76 leading-relaxed mb-7 whitespace-pre-line">
+                        <p className="hero-meta hidden md:block max-w-lg text-sm md:text-[1.02rem] text-white/76 leading-[1.8] tracking-[0.01em] mb-8 whitespace-pre-line">
                             {cleanHeroSubtitle}
                         </p>
                     )}
 
-                    <div className="hero-ctas flex flex-wrap gap-3 items-center">
+                    <div className="hero-ctas flex flex-wrap gap-2.5 sm:gap-3.5 items-center">
                         <Link
                             href={ctaLink}
-                            className="inline-flex items-center gap-2 bg-[#d4af6a] text-[#050403] px-6 sm:px-7 h-11 text-[0.68rem] sm:text-[0.7rem] font-bold tracking-[0.18em] uppercase hover:bg-[#f2d28b] transition-colors"
+                            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d4af6a] text-[#050403] px-6 sm:px-8 h-11 sm:h-12 text-[0.68rem] sm:text-[0.72rem] font-bold tracking-[0.18em] uppercase shadow-[0_14px_35px_rgba(212,175,106,0.18)] hover:bg-[#f2d28b] hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(242,210,139,0.22)] transition-all duration-300 ease-out"
                         >
                             {ctaText}
                             <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
                         </Link>
                         <Link
                             href={secondaryCtaLink}
-                            className="hidden sm:inline-flex items-center gap-2 border border-white/30 text-white/90 px-7 h-11 text-[0.7rem] font-semibold tracking-[0.18em] uppercase hover:border-white/60 hover:bg-white/8 transition-colors"
+                            className="hidden sm:inline-flex items-center justify-center gap-2 rounded-full border border-white/26 bg-black/14 text-white/90 px-7 h-12 text-[0.72rem] font-semibold tracking-[0.18em] uppercase backdrop-blur-sm hover:border-white/50 hover:bg-white/10 hover:-translate-y-0.5 transition-all duration-300 ease-out"
                         >
                             {secondaryCtaText}
                         </Link>
