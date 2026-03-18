@@ -78,28 +78,30 @@ export default function TeamClient({ data }: { data: PageData }) {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: '-50px' }}
                                 transition={{ duration: 0.7, delay: (index % 3) * 0.1 }}
-                                className="group relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-[1.25rem] border border-white/6 bg-[#111109] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
+                                className="group relative overflow-hidden rounded-[1.25rem] border border-white/6 bg-[#11151B] shadow-[0_18px_40px_rgba(0,0,0,0.18)] sm:aspect-[3/4]"
                             >
-                                <span className="absolute top-3 left-3 z-20 rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[#ffc000]/72 font-display font-bold text-[11px] backdrop-blur-sm group-hover:text-[#ffc000] transition-colors">
-                                    {String(index + 1).padStart(2, '0')}
-                                </span>
+                                <div className="relative h-[13.5rem] overflow-hidden sm:absolute sm:inset-0 sm:h-auto">
+                                    <span className="absolute top-3 left-3 z-20 rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[#ffc000]/72 font-display font-bold text-[11px] backdrop-blur-sm group-hover:text-[#ffc000] transition-colors">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
 
-                                {member.image && (
-                                    <img
-                                        src={member.image}
-                                        alt={`${member.name}, ${member.role}`}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                                    />
-                                )}
+                                    {member.image && (
+                                        <img
+                                            src={member.image}
+                                            alt={`${member.name}, ${member.role}`}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                                        />
+                                    )}
 
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a]/92 via-[#05070a]/28 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#05070a]/78 via-[#05070a]/18 to-transparent sm:from-[#05070a]/92 sm:via-[#05070a]/28" />
+                                </div>
 
-                                <div className="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-4 sm:pb-4">
-                                    <div className="rounded-[1rem] border border-white/10 bg-black/42 px-4 py-4 sm:px-5 sm:py-5 backdrop-blur-md">
-                                        <p className="text-white font-bold text-[0.95rem] sm:text-[1.05rem] uppercase tracking-[0.08em] leading-tight group-hover:text-[#f2d28b] transition-colors">
+                                <div className="relative z-10 p-3 sm:absolute sm:inset-x-0 sm:bottom-0 sm:p-4">
+                                    <div className="rounded-[1rem] border border-white/10 bg-[linear-gradient(180deg,rgba(24,30,40,0.98),rgba(10,15,24,0.96))] px-4 py-4 shadow-[0_18px_38px_rgba(0,0,0,0.18)] sm:bg-black/42 sm:px-5 sm:py-5 sm:backdrop-blur-md">
+                                        <p className="text-white font-bold text-[0.9rem] sm:text-[1.05rem] uppercase tracking-[0.06em] leading-[1.04] group-hover:text-[#f2d28b] transition-colors">
                                             {member.name}
                                         </p>
-                                        <p className="mt-2 text-white/55 text-[10px] sm:text-[11px] uppercase tracking-[0.28em] leading-[1.65]">
+                                        <p className="mt-2 text-white/58 text-[10px] sm:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.28em] leading-[1.55]">
                                             {member.role}
                                         </p>
                                     </div>
