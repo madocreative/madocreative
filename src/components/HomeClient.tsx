@@ -252,9 +252,9 @@ export default function HomeClient({
                                     {featuredHighlights.map((card, index) => (
                                         <div
                                             key={`${card.title}-${index}`}
-                                            className="rounded-[1.1rem] border border-[#d4af6a]/14 bg-[#11151B] px-5 py-5 shadow-[0_18px_40px_rgba(5,7,10,0.16)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#d4af6a]/30 hover:shadow-[0_22px_48px_rgba(5,7,10,0.22)]"
+                                            className="rounded-[1.1rem] border border-[#ffda68]/14 bg-[#11151B] px-5 py-5 shadow-[0_18px_40px_rgba(5,7,10,0.16)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#ffda68]/30 hover:shadow-[0_22px_48px_rgba(5,7,10,0.22)]"
                                         >
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#d4af6a] mb-3">{card.stat}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-[#ffda68] mb-3">{card.stat}</p>
                                             <h3 className="text-lg font-display font-bold text-white mb-2 leading-tight">{card.title}</h3>
                                             <p className="text-sm text-white/62 leading-relaxed">{card.description}</p>
                                         </div>
@@ -795,8 +795,8 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
             <div className="hero-overlay absolute inset-0 flex flex-col justify-end px-5 sm:px-6 md:px-12 lg:px-20 pb-14 md:pb-16" style={{ zIndex: 4 }}>
                 <div className="max-w-[19rem] sm:max-w-[26rem] md:max-w-[34rem] lg:max-w-[38rem]">
                     {cleanHeroLabel && (
-                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#d4af6a]/18 bg-black/32 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-[#d4af6a] backdrop-blur-md mb-5">
-                            <span className="h-px w-6 bg-[#d4af6a] shrink-0" />
+                        <p className="hero-meta hidden md:inline-flex items-center gap-3 rounded-full border border-[#ffda68]/18 bg-black/32 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.38em] text-[#ffda68] backdrop-blur-md mb-5">
+                            <span className="h-px w-6 bg-[#ffda68] shrink-0" />
                             <span>{cleanHeroLabel}</span>
                         </p>
                     )}
@@ -816,7 +816,7 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                     <div className="hero-ctas flex flex-wrap gap-2.5 sm:gap-3.5 items-center">
                         <Link
                             href={ctaLink}
-                            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d4af6a] text-[#050403] px-6 sm:px-8 h-11 sm:h-12 text-[0.68rem] sm:text-[0.72rem] font-bold tracking-[0.18em] uppercase shadow-[0_14px_35px_rgba(212,175,106,0.18)] hover:bg-[#f2d28b] hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(242,210,139,0.22)] transition-all duration-300 ease-out"
+                            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#ffda68] text-[#050403] px-6 sm:px-8 h-11 sm:h-12 text-[0.68rem] sm:text-[0.72rem] font-bold tracking-[0.18em] uppercase shadow-[0_14px_35px_rgba(255,218,104,0.18)] hover:bg-[#f2d28b] hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(242,210,139,0.22)] transition-all duration-300 ease-out"
                         >
                             {ctaText}
                             <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
@@ -846,7 +846,7 @@ function HeroSection({ heroImgs, heroLabel, heroTitle, heroSubtitle, ctaText, ct
                             onClick={() => goTo(i)}
                             className={`transition-all duration-400 rounded-full ${
                                 i === slide
-                                    ? 'w-5 h-[3px] bg-[#d4af6a]'
+                                    ? 'w-5 h-[3px] bg-[#ffda68]'
                                     : 'w-[5px] h-[5px] bg-white/28 hover:bg-white/55'
                             }`}
                             aria-label={`Go to slide ${i + 1}`}

@@ -168,7 +168,7 @@ export default function ProductDetailClient({ product, related }: { product: Pro
                         </div>
 
                         {/* Stock */}
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-widest w-fit ${product.inStock ? 'bg-[rgba(212,175,106,0.10)] border-[rgba(212,175,106,0.30)] text-[var(--gold)]' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-widest w-fit ${product.inStock ? 'bg-[rgba(255,218,104,0.10)] border-[rgba(255,218,104,0.30)] text-[var(--gold)]' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
                             <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-[var(--gold)]' : 'bg-red-500'}`} />
                             {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </div>

@@ -202,14 +202,14 @@ function GalleryHeader({ gallery, index, frameCount }: { gallery: any; index: nu
 
     return (
         <div className="mb-7 md:mb-9">
-            <div className="mb-4 h-px w-14 bg-[#d4af6a]/65 md:w-20" />
+            <div className="mb-4 h-px w-14 bg-[#ffda68]/65 md:w-20" />
             <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-8">
                 <div className="space-y-3 md:space-y-4">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                        <span className="text-[#d4af6a] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
+                        <span className="text-[#ffda68] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
                             {String(index + 1).padStart(2, '0')}
                         </span>
-                        <span className="h-px w-8 bg-[#d4af6a]/35 md:w-10" />
+                        <span className="h-px w-8 bg-[#ffda68]/35 md:w-10" />
                         <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/48">
                             {galleryLabel}
                         </span>
@@ -509,7 +509,7 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
                             className="group flex-none snap-start overflow-hidden rounded-[1.4rem] border border-white/8 bg-[#0d0c08] shadow-[0_24px_50px_rgba(0,0,0,0.22)] w-[82vw] sm:w-[22rem] md:w-[26rem] cursor-zoom-in"
                             onClick={() => onOpen(i)}
                         >
-                            <div className="relative bg-[radial-gradient(circle_at_top,rgba(212,175,106,0.16),transparent_62%)]">
+                            <div className="relative bg-[radial-gradient(circle_at_top,rgba(255,218,104,0.16),transparent_62%)]">
                                 <img
                                     src={toNoCropUrl(img)} alt={`${title} ${i + 1}`}
                                     className="w-full aspect-[4/5] object-contain px-3 py-4 sm:px-4 sm:py-5 md:aspect-[5/6] md:px-5 md:py-6 group-hover:scale-[1.02] transition-transform duration-500"
@@ -520,7 +520,7 @@ function LayoutStrip({ imgs, title, onOpen }: { imgs: string[]; title: string; o
                                 <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#EAEAEA]">
                                     {String(i + 1).padStart(3, '0')}
                                 </span>
-                                <span className="h-px w-8 bg-[#d4af6a]/40" />
+                                <span className="h-px w-8 bg-[#ffda68]/40" />
                             </div>
                         </div>
                     ))}
@@ -812,7 +812,7 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                         transition={{ duration: 0.7 }}
                         className="inline-flex flex-col gap-2 rounded-xl border border-white/20 bg-black/35 px-4 py-3 backdrop-blur-sm"
                     >
-                        <p className="text-[#d4af6a] font-bold uppercase tracking-[0.32em] text-[10px]">
+                        <p className="text-[#ffda68] font-bold uppercase tracking-[0.32em] text-[10px]">
                             {heroLabel || 'Portfolio Collection'}
                         </p>
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-[0.95] tracking-tight text-white">
@@ -884,14 +884,14 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                                 className="border-b border-white/8 pb-10 md:pb-12 last:border-b-0 last:pb-0"
                             >
                                 <div className="mb-7 md:mb-9">
-                                    <div className="mb-4 h-px w-14 bg-[#d4af6a]/65 md:w-20" />
+                                    <div className="mb-4 h-px w-14 bg-[#ffda68]/65 md:w-20" />
                                     <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-8">
                                         <div className="space-y-3 md:space-y-4">
                                             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                                <span className="text-[#d4af6a] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
+                                                <span className="text-[#ffda68] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
                                                     {String(filteredGalleries.length + 1).padStart(2, '0')}
                                                 </span>
-                                                <span className="h-px w-8 bg-[#d4af6a]/35 md:w-10" />
+                                                <span className="h-px w-8 bg-[#ffda68]/35 md:w-10" />
                                                 <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/48">
                                                     Studio Archive
                                                 </span>

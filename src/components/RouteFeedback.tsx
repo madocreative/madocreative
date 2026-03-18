@@ -91,7 +91,7 @@ export default function RouteFeedback() {
         aria-hidden="true"
       >
         <div
-          className="h-full bg-[var(--gold)] shadow-[0_0_18px_rgba(212,175,106,0.55)] transition-[width] duration-300 ease-out"
+          className="h-full bg-[var(--gold)] shadow-[0_0_18px_rgba(255,218,104,0.55)] transition-[width] duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
