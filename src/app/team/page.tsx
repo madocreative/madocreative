@@ -18,16 +18,32 @@ const defaultMembers = [
     { name: 'Aria Vossen', role: 'Client Relations & Projects', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971892/mado-creatives/zupngrotm2mt5yqblvta.jpg' },
 ];
 
+type TeamSections = {
+    teamMembers?: typeof defaultMembers;
+    ctaTitle?: string;
+    ctaSubtitle?: string;
+    ctaButton?: string;
+    philosophyQuote?: string;
+    philosophyAttribution?: string;
+};
+
 export default async function TeamPage() {
-    await dbConnect();
-    const raw = await Content.findOne({ page: 'team' });
-    const content = raw ? JSON.parse(JSON.stringify(raw)) : null;
-    const sections = content?.sections || {};
+    let content = null;
+    let sections: TeamSections = {};
+
+    try {
+        await dbConnect();
+        const raw = await Content.findOne({ page: 'team' });
+        content = raw ? JSON.parse(JSON.stringify(raw)) : null;
+        sections = (content?.sections || {}) as TeamSections;
+    } catch (error) {
+        console.error('Failed to load team page data. Falling back to defaults.', error);
+    }
 
     const pageData = {
         title: content?.title || 'The Collective Vision',
         subtitle: content?.subtitle || 'A curated group of visionaries dedicated to the art of high-fashion photography and visual storytelling. At Mado Creatives, we blend raw emotion with sophisticated aesthetics to redefine modern elegance.',
-        teamMembers: sections.teamMembers || defaultMembers,
+        teamMembers: Array.isArray(sections.teamMembers) ? sections.teamMembers : defaultMembers,
         ctaTitle: sections.ctaTitle || 'Have a project in mind?',
         ctaSubtitle: sections.ctaSubtitle || "Let's create something extraordinary together.",
         ctaButton: sections.ctaButton || 'Get in Touch',

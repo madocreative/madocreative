@@ -163,42 +163,47 @@ export async function getCreativeServicePageData(
   page: string,
   defaults: CreativeServicePageData,
 ): Promise<CreativeServicePageData> {
-  await dbConnect();
-  const raw = await Content.findOne({ page }).lean();
-  const content = raw ? JSON.parse(JSON.stringify(raw)) : null;
-  const sections = (content?.sections ?? {}) as Record<string, unknown>;
-  const heroImagesFallback =
-    typeof content?.heroImage === 'string' && content.heroImage.trim().length > 0
-      ? [content.heroImage.trim(), ...defaults.heroImages]
-      : defaults.heroImages;
+  try {
+    await dbConnect();
+    const raw = await Content.findOne({ page }).lean();
+    const content = raw ? JSON.parse(JSON.stringify(raw)) : null;
+    const sections = (content?.sections ?? {}) as Record<string, unknown>;
+    const heroImagesFallback =
+      typeof content?.heroImage === 'string' && content.heroImage.trim().length > 0
+        ? [content.heroImage.trim(), ...defaults.heroImages]
+        : defaults.heroImages;
 
-  return {
-    title: getString(content?.title, defaults.title),
-    heroLabel: getString(sections.heroLabel, defaults.heroLabel),
-    subtitle: getString(content?.subtitle, defaults.subtitle),
-    heroImages: getStringArray(sections.heroImages, heroImagesFallback),
-    stats: normalizeStats(sections.stats, defaults.stats),
-    services: normalizeServices(sections.services, defaults.services),
-    showcaseLabel: getString(sections.showcaseLabel, defaults.showcaseLabel ?? ''),
-    showcaseTitle: getString(sections.showcaseTitle, defaults.showcaseTitle ?? ''),
-    showcaseSubtitle: getString(sections.showcaseSubtitle, defaults.showcaseSubtitle ?? ''),
-    showcaseVideos: normalizeVideos(sections.showcaseVideos, defaults.showcaseVideos ?? []),
-    videoGalleryLabel: getString(sections.videoGalleryLabel, defaults.videoGalleryLabel ?? ''),
-    videoGalleryTitle: getString(sections.videoGalleryTitle, defaults.videoGalleryTitle ?? ''),
-    videoGallerySubtitle: getString(sections.videoGallerySubtitle, defaults.videoGallerySubtitle ?? ''),
-    videoGalleryLayout: normalizeVideoGalleryLayout(sections.videoGalleryLayout, defaults.videoGalleryLayout ?? 'masonry'),
-    videoGalleryVideos: normalizeVideos(sections.videoGalleryVideos, defaults.videoGalleryVideos ?? []),
-    collectionsLabel: getString(sections.collectionsLabel, defaults.collectionsLabel),
-    collectionsTitle: getString(sections.collectionsTitle, defaults.collectionsTitle),
-    collections: normalizeCollections(sections.collections, defaults.collections),
-    processLabel: getString(sections.processLabel, defaults.processLabel),
-    processTitle: getString(sections.processTitle, defaults.processTitle),
-    process: normalizeProcess(sections.process, defaults.process),
-    ctaTitle: getString(sections.ctaTitle, defaults.ctaTitle),
-    ctaSubtitle: getString(sections.ctaSubtitle, defaults.ctaSubtitle),
-    ctaButton: getString(sections.ctaButton, defaults.ctaButton),
-    ctaLink: getString(sections.ctaLink, defaults.ctaLink),
-    ctaSecondaryButton: getString(sections.ctaSecondaryButton, defaults.ctaSecondaryButton),
-    ctaSecondaryLink: getString(sections.ctaSecondaryLink, defaults.ctaSecondaryLink),
-  };
+    return {
+      title: getString(content?.title, defaults.title),
+      heroLabel: getString(sections.heroLabel, defaults.heroLabel),
+      subtitle: getString(content?.subtitle, defaults.subtitle),
+      heroImages: getStringArray(sections.heroImages, heroImagesFallback),
+      stats: normalizeStats(sections.stats, defaults.stats),
+      services: normalizeServices(sections.services, defaults.services),
+      showcaseLabel: getString(sections.showcaseLabel, defaults.showcaseLabel ?? ''),
+      showcaseTitle: getString(sections.showcaseTitle, defaults.showcaseTitle ?? ''),
+      showcaseSubtitle: getString(sections.showcaseSubtitle, defaults.showcaseSubtitle ?? ''),
+      showcaseVideos: normalizeVideos(sections.showcaseVideos, defaults.showcaseVideos ?? []),
+      videoGalleryLabel: getString(sections.videoGalleryLabel, defaults.videoGalleryLabel ?? ''),
+      videoGalleryTitle: getString(sections.videoGalleryTitle, defaults.videoGalleryTitle ?? ''),
+      videoGallerySubtitle: getString(sections.videoGallerySubtitle, defaults.videoGallerySubtitle ?? ''),
+      videoGalleryLayout: normalizeVideoGalleryLayout(sections.videoGalleryLayout, defaults.videoGalleryLayout ?? 'masonry'),
+      videoGalleryVideos: normalizeVideos(sections.videoGalleryVideos, defaults.videoGalleryVideos ?? []),
+      collectionsLabel: getString(sections.collectionsLabel, defaults.collectionsLabel),
+      collectionsTitle: getString(sections.collectionsTitle, defaults.collectionsTitle),
+      collections: normalizeCollections(sections.collections, defaults.collections),
+      processLabel: getString(sections.processLabel, defaults.processLabel),
+      processTitle: getString(sections.processTitle, defaults.processTitle),
+      process: normalizeProcess(sections.process, defaults.process),
+      ctaTitle: getString(sections.ctaTitle, defaults.ctaTitle),
+      ctaSubtitle: getString(sections.ctaSubtitle, defaults.ctaSubtitle),
+      ctaButton: getString(sections.ctaButton, defaults.ctaButton),
+      ctaLink: getString(sections.ctaLink, defaults.ctaLink),
+      ctaSecondaryButton: getString(sections.ctaSecondaryButton, defaults.ctaSecondaryButton),
+      ctaSecondaryLink: getString(sections.ctaSecondaryLink, defaults.ctaSecondaryLink),
+    };
+  } catch (error) {
+    console.error(`Failed to load ${page} service page data. Falling back to defaults.`, error);
+    return defaults;
+  }
 }

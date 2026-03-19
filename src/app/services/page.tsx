@@ -41,17 +41,35 @@ const defaultStats = [
     { value: '4', label: 'Locations' },
 ];
 
+type ServicesSections = {
+    stats?: typeof defaultStats;
+    services?: typeof defaultServices;
+    ctaTitle?: string;
+    ctaSubtitle?: string;
+    ctaButton?: string;
+    ctaLink?: string;
+    ctaSecondaryButton?: string;
+    ctaSecondaryLink?: string;
+};
+
 export default async function ServicesPage() {
-    await dbConnect();
-    const raw = await Content.findOne({ page: 'services' });
-    const content = raw ? JSON.parse(JSON.stringify(raw)) : null;
-    const sections = content?.sections || {};
+    let content = null;
+    let sections: ServicesSections = {};
+
+    try {
+        await dbConnect();
+        const raw = await Content.findOne({ page: 'services' });
+        content = raw ? JSON.parse(JSON.stringify(raw)) : null;
+        sections = (content?.sections || {}) as ServicesSections;
+    } catch (error) {
+        console.error('Failed to load services page data. Falling back to defaults.', error);
+    }
 
     const pageData = {
         title: content?.title || 'Our Services',
         subtitle: content?.subtitle || 'We provide comprehensive creative solutions for absolute visionaries. Our approach is bespoke, ensuring every project is an authentic reflection of your brand\'s unique narrative.',
-        stats: sections.stats || defaultStats,
-        services: sections.services || defaultServices,
+        stats: Array.isArray(sections.stats) ? sections.stats : defaultStats,
+        services: Array.isArray(sections.services) ? sections.services : defaultServices,
         ctaTitle: sections.ctaTitle || 'Ready to elevate your visual identity?',
         ctaSubtitle: sections.ctaSubtitle || 'Contact us today to discuss your vision and how Mado Creatives can bring it to life.',
         ctaButton: sections.ctaButton || 'Start a Project',

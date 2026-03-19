@@ -11,8 +11,21 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
-    await dbConnect();
-    const posts = await Post.find({ published: true }).sort({ createdAt: -1 });
+    let posts: Array<{
+        _id: { toString: () => string };
+        slug: string;
+        title: string;
+        excerpt: string;
+        featuredImage?: string;
+        createdAt: string | Date;
+    }> = [];
+
+    try {
+        await dbConnect();
+        posts = await Post.find({ published: true }).sort({ createdAt: -1 });
+    } catch (error) {
+        console.error('Failed to load blog page data. Falling back to empty state.', error);
+    }
 
     return (
         <div className="bg-[var(--app-bg)] min-h-screen text-[var(--app-text)]">

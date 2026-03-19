@@ -11,14 +11,21 @@ export const metadata = {
 };
 
 export default async function Home() {
-  await dbConnect();
+  let content = null;
+  let teamContent = null;
+  let galleries: unknown[] = [];
 
-  // Fetch home content, team content, and galleries together.
-  const [content, teamContent, galleries] = await Promise.all([
-    Content.findOne({ page: 'home' }),
-    Content.findOne({ page: 'team' }),
-    Gallery.find({}).sort({ createdAt: -1 }).limit(20),
-  ]);
+  try {
+    await dbConnect();
+
+    [content, teamContent, galleries] = await Promise.all([
+      Content.findOne({ page: 'home' }),
+      Content.findOne({ page: 'team' }),
+      Gallery.find({}).sort({ createdAt: -1 }).limit(20),
+    ]);
+  } catch (error) {
+    console.error('Failed to load home page data. Falling back to defaults.', error);
+  }
 
   // Team page fallback images used in Team page defaults.
   const defaultTeamImages = [

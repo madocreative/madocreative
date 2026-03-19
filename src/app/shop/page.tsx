@@ -31,11 +31,19 @@ type RawCategory = {
 };
 
 export default async function ShopPage() {
-    await dbConnect();
-    const [raw, settings] = await Promise.all([
-        Product.find({}).sort({ createdAt: -1 }).lean() as Promise<RawProduct[]>,
-        getPublicSiteSettings(),
-    ]);
+    let raw: RawProduct[] = [];
+    let rawCategories: RawCategory[] = [];
+    const settings = await getPublicSiteSettings();
+
+    try {
+        await dbConnect();
+        [raw, rawCategories] = await Promise.all([
+            Product.find({}).sort({ createdAt: -1 }).lean() as Promise<RawProduct[]>,
+            Category.find({}).sort({ order: 1, name: 1 }).lean() as Promise<RawCategory[]>,
+        ]);
+    } catch (error) {
+        console.error('Failed to load shop page data. Falling back to empty catalog.', error);
+    }
 
     const products = raw.map((p) => ({
         _id: p._id.toString(),
@@ -48,7 +56,6 @@ export default async function ShopPage() {
         inStock: p.inStock ?? true,
     }));
 
-    const rawCategories = await Category.find({}).sort({ order: 1, name: 1 }).lean() as RawCategory[];
     const categories = rawCategories.map((c) => ({
         _id: c._id.toString(),
         name: c.name,
