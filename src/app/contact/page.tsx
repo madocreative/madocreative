@@ -44,7 +44,7 @@ export default async function ContactPage() {
         title: content?.title || "Let's Connect",
         subtitle: content?.subtitle || "Whether you're looking to launch a new campaign or redefine your brand's visual identity, we're here to bring your vision to life.",
         inquiryTypes: Array.isArray(sections.inquiryTypes) ? sections.inquiryTypes : ['General Inquiry', 'New Project', 'Press & Media', 'Careers'],
-        email: settings?.email || 'hello@madocreatives.com',
+        email: settings?.email || 'info@madocreatives.com',
         phone: settings?.phone || '+33 (0) 1 23 45 67 89',
         address: settings?.address || '12 Rue de l\'Avenir, Paris',
         responseTime: sections.responseTime || 'We respond within 24 hours',

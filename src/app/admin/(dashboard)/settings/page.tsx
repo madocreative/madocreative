@@ -235,7 +235,7 @@ export default function SettingsPage() {
 
                         <div className="flex flex-col gap-6 relative z-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Field label="Email Address" name="email" type="email" placeholder="hello@madocreatives.com" />
+                                <Field label="Email Address" name="email" type="email" placeholder="info@madocreatives.com" />
                                 <Field label="Phone Number" name="phone" placeholder="+33 (0) 1 23 45 67 89" />
                             </div>
                             <Field label="WhatsApp Floating Button Number" name="whatsappNumber" placeholder="+250 793 004 501" />

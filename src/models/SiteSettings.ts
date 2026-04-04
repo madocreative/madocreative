@@ -10,7 +10,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     tagline: { type: String, default: 'An independent creative studio based in Paris, serving luxury brands worldwide with premium imagery and creative direction.' },
 
     // Contact
-    email: { type: String, default: 'hello@madocreatives.com' },
+    email: { type: String, default: 'info@madocreatives.com' },
     phone: { type: String, default: '+33 (0) 1 23 45 67 89' },
     address: { type: String, default: '12 Rue de l\'Avenir, Paris' },
     locationLabel: { type: String, default: 'Paris HQ • Worldwide Travel' },

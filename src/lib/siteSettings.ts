@@ -26,7 +26,7 @@ export const defaultPublicSiteSettings: PublicSiteSettings = {
   logoUrl: '/logo.png',
   logoVersion: '',
   tagline: 'Premium photography & cinematic storytelling for brands and moments that deserve to be remembered.',
-  email: 'hello@madocreatives.com',
+  email: 'info@madocreatives.com',
   phone: '+251 911 000 000',
   address: 'KG 3 AVE Kacyiru, Kigali',
   instagramUrl: 'https://www.instagram.com/madocreatives',
