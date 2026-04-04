@@ -1,4 +1,4 @@
-export const DEFAULT_WHATSAPP_NUMBER = '+1 (870) 417-1007';
+export const DEFAULT_WHATSAPP_NUMBER = '+250 793 004 501';
 
 export function normalizeWhatsAppNumber(value: string | undefined | null): string {
   return String(value || '').replace(/[^\d]/g, '');

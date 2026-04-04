@@ -19,7 +19,7 @@ export default function SettingsPage() {
         facebookUrl: '',
         telegramUrl: '',
         whatsappUrl: '',
-        whatsappNumber: '+1 (870) 417-1007',
+        whatsappNumber: '+250 793 004 501',
         bookingCta: 'Book a Session',
         acceptingClients: true,
     });
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                                 <Field label="Email Address" name="email" type="email" placeholder="hello@madocreatives.com" />
                                 <Field label="Phone Number" name="phone" placeholder="+33 (0) 1 23 45 67 89" />
                             </div>
-                            <Field label="WhatsApp Call Number" name="whatsappNumber" placeholder="+1 (870) 417-1007" />
+                            <Field label="WhatsApp Floating Button Number" name="whatsappNumber" placeholder="+250 793 004 501" />
                             <Field label="Studio Address" name="address" placeholder="12 Rue de l'Avenir, Paris" />
                             <Field label="Location Label (shown on booking page)" name="locationLabel" placeholder="Paris HQ • Worldwide Travel" />
                         </div>

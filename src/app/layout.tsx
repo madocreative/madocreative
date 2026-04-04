@@ -8,6 +8,7 @@ import HideOnAdmin from '@/components/HideOnAdmin';
 import LenisProvider from '@/components/LenisProvider';
 import RouteFeedback from '@/components/RouteFeedback';
 import ScrollProgress from '@/components/ScrollProgress';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { getPublicSiteSettings } from '@/lib/siteSettings';
 
@@ -48,11 +49,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getPublicSiteSettings();
+
   return (
     <html lang="en" suppressHydrationWarning data-theme="dark">
       <head>
@@ -94,6 +97,9 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <HideOnAdmin>
               <Footer />
+            </HideOnAdmin>
+            <HideOnAdmin>
+              <WhatsAppButton number={settings.whatsappNumber} />
             </HideOnAdmin>
           </LenisProvider>
         </ThemeProvider>
