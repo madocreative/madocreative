@@ -24,20 +24,29 @@ const INQUIRY_COLOR: Record<string, string> = {
 };
 
 export default async function AdminWelcomePage() {
-    await dbConnect();
+    let galleries = 0, products = 0, posts = 0, totalBookings = 0, totalContacts = 0;
+    let pendingCount = 0, unreadCount = 0;
+    let recentBookings: unknown[] = [], recentMessages: unknown[] = [];
+    let dbError = false;
 
-    const [galleries, products, posts, totalBookings, totalContacts,
-           pendingCount, unreadCount, recentBookings, recentMessages] = await Promise.all([
-        Gallery.countDocuments(),
-        Product.countDocuments(),
-        Post.countDocuments(),
-        Booking.countDocuments(),
-        Contact.countDocuments(),
-        Booking.countDocuments({ status: 'pending' }),
-        Contact.countDocuments({ read: false }),
-        Booking.find({ status: 'pending' }).sort({ createdAt: -1 }).limit(5).lean(),
-        Contact.find({ read: false }).sort({ createdAt: -1 }).limit(5).lean(),
-    ]);
+    try {
+        await dbConnect();
+
+        [galleries, products, posts, totalBookings, totalContacts,
+         pendingCount, unreadCount, recentBookings, recentMessages] = await Promise.all([
+            Gallery.countDocuments(),
+            Product.countDocuments(),
+            Post.countDocuments(),
+            Booking.countDocuments(),
+            Contact.countDocuments(),
+            Booking.countDocuments({ status: 'pending' }),
+            Contact.countDocuments({ read: false }),
+            Booking.find({ status: 'pending' }).sort({ createdAt: -1 }).limit(5).lean(),
+            Contact.find({ read: false }).sort({ createdAt: -1 }).limit(5).lean(),
+        ]);
+    } catch {
+        dbError = true;
+    }
 
     const stats = [
         { label: 'Galleries',  value: galleries,      icon: 'photo_library',     color: 'text-purple-400', bg: 'bg-purple-500/10', href: '/admin/galleries' },
@@ -74,6 +83,19 @@ export default async function AdminWelcomePage() {
                     </p>
                 </div>
             </div>
+
+            {/* ── DB Error Banner ────────────────────────────────────────────── */}
+            {dbError && (
+                <div className="flex items-start gap-4 bg-red-500/10 border border-red-500/30 p-5 text-red-400">
+                    <span className="material-symbols-outlined text-[22px] shrink-0 mt-0.5">warning</span>
+                    <div>
+                        <p className="font-bold text-sm uppercase tracking-widest mb-1">Database Temporarily Unavailable</p>
+                        <p className="text-xs text-red-400/80 leading-relaxed">
+                            Could not connect to MongoDB. Stats are showing zeros. Please check your <strong>MONGODB_URI</strong> env variable in Vercel, or try refreshing — the connection may recover automatically.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* ── Stats ──────────────────────────────────────────────────────── */}
             <div>
