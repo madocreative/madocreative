@@ -32,8 +32,9 @@ export async function GET() {
             if (changed) await settings.save();
         }
         return NextResponse.json({ success: true, data: settings });
-    } catch {
-        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ success: false, error: msg }, { status: 500 });
     }
 }
 
