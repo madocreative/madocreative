@@ -1,5 +1,6 @@
 import dbConnect from '@/lib/mongodb';
 import Content from '@/models/Content';
+import { defaultTeamMembers, teamPageDefaults } from '@/lib/teamPageDefaults';
 import TeamClient from './TeamClient';
 
 export const dynamic = 'force-dynamic';
@@ -9,17 +10,8 @@ export const metadata = {
     description: 'Meet the talented collective behind Mado Creatives.',
 };
 
-const defaultMembers = [
-    { name: 'Yonathan Ayele', role: 'Founder & Creative Director', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971882/mado-creatives/nlw9iu68433ngreltzwt.jpg' },
-    { name: 'Elena Vance', role: 'Head of Photography', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971885/mado-creatives/kgwmhi695gjdyey0qauv.jpg' },
-    { name: 'Marcus Thorne', role: 'Lead Videographer & Editor', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971887/mado-creatives/enbiztasgcryipz6x8py.jpg' },
-    { name: 'Sofia Chen', role: 'Branding & Design Specialist', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971889/mado-creatives/lgrj87iype8vbp5qiuzn.jpg' },
-    { name: 'Leo Rossi', role: 'Electronics & Tech Ops', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971891/mado-creatives/kw9xzrjaw2mk62tv7z0o.jpg' },
-    { name: 'Aria Vossen', role: 'Client Relations & Projects', image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971892/mado-creatives/zupngrotm2mt5yqblvta.jpg' },
-];
-
 type TeamSections = {
-    teamMembers?: typeof defaultMembers;
+    teamMembers?: typeof defaultTeamMembers;
     ctaTitle?: string;
     ctaSubtitle?: string;
     ctaButton?: string;
@@ -41,14 +33,16 @@ export default async function TeamPage() {
     }
 
     const pageData = {
-        title: content?.title || 'The Collective Vision',
-        subtitle: content?.subtitle || 'A curated group of visionaries dedicated to the art of high-fashion photography and visual storytelling. At Mado Creatives, we blend raw emotion with sophisticated aesthetics to redefine modern elegance.',
-        teamMembers: Array.isArray(sections.teamMembers) ? sections.teamMembers : defaultMembers,
-        ctaTitle: sections.ctaTitle || 'Have a project in mind?',
-        ctaSubtitle: sections.ctaSubtitle || "Let's create something extraordinary together.",
-        ctaButton: sections.ctaButton || 'Get in Touch',
-        philosophyQuote: sections.philosophyQuote || "We don't just take photographs — we craft visual narratives that outlive the moment.",
-        philosophyAttribution: sections.philosophyAttribution || '— Mado Creatives Studio Philosophy',
+        title: content?.title || teamPageDefaults.title,
+        subtitle: content?.subtitle || teamPageDefaults.subtitle,
+        teamMembers: Array.isArray(sections.teamMembers)
+            ? sections.teamMembers
+            : teamPageDefaults.teamMembers,
+        ctaTitle: sections.ctaTitle || teamPageDefaults.ctaTitle,
+        ctaSubtitle: sections.ctaSubtitle || teamPageDefaults.ctaSubtitle,
+        ctaButton: sections.ctaButton || teamPageDefaults.ctaButton,
+        philosophyQuote: sections.philosophyQuote || teamPageDefaults.philosophyQuote,
+        philosophyAttribution: sections.philosophyAttribution || teamPageDefaults.philosophyAttribution,
     };
 
     return <TeamClient data={pageData} />;

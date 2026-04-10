@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import CreativeServicePageEditor from '@/components/admin/CreativeServicePageEditor';
+import { defaultTeamMembers, teamPageDefaults } from '@/lib/teamPageDefaults';
 
 // ---------- types ----------
 interface ServiceItem { title: string; description: string; image: string; tags: string }
@@ -675,10 +676,7 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
 // TEAM page fields
 // ────────────────────────────────────────────────────────────
 function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: string, fb?: unknown) => unknown; set: (k: string, v: unknown) => void }) {
-    const defaultMembers: TeamMember[] = [
-        { name: 'Yonathan Ayele', role: 'Founder & Creative Director', image: '' },
-    ];
-    const members: TeamMember[] = (get('teamMembers', defaultMembers) as TeamMember[]);
+    const members: TeamMember[] = (get('teamMembers', defaultTeamMembers) as TeamMember[]);
 
     const updateMember = (i: number, field: keyof TeamMember, val: string) => {
         set('teamMembers', members.map((m, idx) => idx === i ? { ...m, [field]: val } : m));
@@ -689,10 +687,10 @@ function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
     return (
         <>
             <Section title="Page Header" icon="group">
-                <TextInput label="Page Title" value={String(get('title', 'The Collective Vision'))} onChange={v => set('title', v)} />
+                <TextInput label="Page Title" value={String(get('title', teamPageDefaults.title))} onChange={v => set('title', v)} />
                 <div className="flex flex-col gap-2 relative group">
                     <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Page Subtitle</label>
-                    <textarea rows={3} value={String(get('subtitle', ''))} onChange={e => set('subtitle', e.target.value)}
+                    <textarea rows={3} value={String(get('subtitle', teamPageDefaults.subtitle))} onChange={e => set('subtitle', e.target.value)}
                         className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                 </div>
             </Section>
@@ -727,16 +725,16 @@ function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
             <Section title="Philosophy Pull-Quote" icon="format_quote">
                 <div className="flex flex-col gap-2 relative group">
                     <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Studio Philosophy Quote</label>
-                    <textarea rows={3} value={String(get('philosophyQuote', "We don't just take photographs — we craft visual narratives that outlive the moment."))} onChange={e => set('philosophyQuote', e.target.value)}
+                    <textarea rows={3} value={String(get('philosophyQuote', teamPageDefaults.philosophyQuote))} onChange={e => set('philosophyQuote', e.target.value)}
                         className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                 </div>
-                <TextInput label="Attribution Line" value={String(get('philosophyAttribution', '— Mado Creatives Studio Philosophy'))} onChange={v => set('philosophyAttribution', v)} />
+                <TextInput label="Attribution Line" value={String(get('philosophyAttribution', teamPageDefaults.philosophyAttribution))} onChange={v => set('philosophyAttribution', v)} />
             </Section>
 
             <Section title="CTA Section" icon="handshake">
-                <TextInput label="CTA Headline" value={String(get('ctaTitle', 'Have a project in mind?'))} onChange={v => set('ctaTitle', v)} />
-                <TextInput label="CTA Subtitle" value={String(get('ctaSubtitle', "Let's create something extraordinary together."))} onChange={v => set('ctaSubtitle', v)} />
-                <TextInput label="CTA Button Text" value={String(get('ctaButton', 'Get in Touch'))} onChange={v => set('ctaButton', v)} />
+                <TextInput label="CTA Headline" value={String(get('ctaTitle', teamPageDefaults.ctaTitle))} onChange={v => set('ctaTitle', v)} />
+                <TextInput label="CTA Subtitle" value={String(get('ctaSubtitle', teamPageDefaults.ctaSubtitle))} onChange={v => set('ctaSubtitle', v)} />
+                <TextInput label="CTA Button Text" value={String(get('ctaButton', teamPageDefaults.ctaButton))} onChange={v => set('ctaButton', v)} />
             </Section>
         </>
     );

@@ -2,6 +2,7 @@ import dbConnect from '@/lib/mongodb';
 import Content from '@/models/Content';
 import Gallery from '@/models/Gallery';
 import HomeClient from '@/components/HomeClient';
+import { defaultTeamImages } from '@/lib/teamPageDefaults';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,16 +27,6 @@ export default async function Home() {
   } catch (error) {
     console.error('Failed to load home page data. Falling back to defaults.', error);
   }
-
-  // Team page fallback images used in Team page defaults.
-  const defaultTeamImages = [
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971882/mado-creatives/nlw9iu68433ngreltzwt.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971885/mado-creatives/kgwmhi695gjdyey0qauv.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971887/mado-creatives/enbiztasgcryipz6x8py.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971889/mado-creatives/lgrj87iype8vbp5qiuzn.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971891/mado-creatives/kw9xzrjaw2mk62tv7z0o.jpg',
-    'https://res.cloudinary.com/dwvpeeepl/image/upload/v1771971892/mado-creatives/zupngrotm2mt5yqblvta.jpg',
-  ];
 
   const teamSections = (teamContent?.sections || {}) as { teamMembers?: Array<{ image?: string }> };
   const cmsTeamImages = Array.isArray(teamSections.teamMembers)

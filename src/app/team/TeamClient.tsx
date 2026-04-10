@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { teamPageDefaults } from '@/lib/teamPageDefaults';
 
 interface TeamMember {
     name: string;
@@ -128,10 +129,10 @@ export default function TeamClient({ data }: { data: PageData }) {
                         className="border-l-4 border-[#ffc000] pl-6 md:pl-12"
                     >
                         <p className="max-w-3xl mb-5 md:mb-6 text-[1.7rem] md:text-4xl font-display font-bold text-white leading-[1.16]">
-                            &ldquo;{data.philosophyQuote || "We don't just take photographs - we craft visual narratives that outlive the moment."}&rdquo;
+                            &ldquo;{data.philosophyQuote || teamPageDefaults.philosophyQuote}&rdquo;
                         </p>
                         <p className="text-[#6b6250] text-sm uppercase tracking-[0.3em] font-bold">
-                            {data.philosophyAttribution || '- Mado Creatives Studio Philosophy'}
+                            {data.philosophyAttribution || teamPageDefaults.philosophyAttribution}
                         </p>
                     </motion.div>
                 </div>
