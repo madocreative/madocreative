@@ -18,6 +18,17 @@ if (!cached) {
     cached = global.mongoose = { conn: null, promise: null };
 }
 
+function formatMongoConnectionError(error: unknown) {
+    if (error instanceof Error && /ip .*whitelist|ip address.*whitelist|whitelisted/i.test(error.message)) {
+        return new Error(
+            'MongoDB Atlas rejected the connection. Check Atlas Network Access / IP allowlist for Vercel and any local machines that need access. Original error: ' + error.message,
+            { cause: error }
+        );
+    }
+
+    return error;
+}
+
 async function dbConnect() {
     const MONGODB_URI = process.env.MONGODB_URI;
     if (!MONGODB_URI) {
@@ -32,8 +43,8 @@ async function dbConnect() {
         const opts = {
             bufferCommands: false,
             family: 4,
-            serverSelectionTimeoutMS: 20000,
-            connectTimeoutMS: 20000,
+            serverSelectionTimeoutMS: 10000,
+            connectTimeoutMS: 10000,
             socketTimeoutMS: 45000,
             maxPoolSize: 10,
         };
@@ -45,9 +56,9 @@ async function dbConnect() {
 
     try {
         cached.conn = await cached.promise;
-    } catch (e) {
+    } catch (error) {
         cached.promise = null;
-        throw e;
+        throw formatMongoConnectionError(error);
     }
 
     return cached.conn;

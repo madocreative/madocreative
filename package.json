@@ -10,7 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cloudinary:sync": "node scripts/sync-cloudinary.js"
   },
   "dependencies": {
     "@tinymce/tinymce-react": "^6.3.0",
