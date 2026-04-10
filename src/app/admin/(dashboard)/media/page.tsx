@@ -20,6 +20,7 @@ export default function MediaLibraryPage() {
     const [copied, setCopied] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
     const [seeding, setSeeding] = useState(false);
+    const [importingCloudinary, setImportingCloudinary] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const load = async () => {
@@ -79,6 +80,23 @@ export default function MediaLibraryPage() {
         }
     };
 
+    const handleCloudinaryImport = async () => {
+        setImportingCloudinary(true);
+        const res = await fetch('/api/admin/media/import', { method: 'POST' });
+        const d = await res.json();
+        setImportingCloudinary(false);
+
+        if (d.success) {
+            alert(
+                `Imported ${d.imported} new image(s) and refreshed ${d.updated} existing item(s) from Cloudinary.`
+            );
+            await load();
+            return;
+        }
+
+        alert(d.error || 'Failed to import Cloudinary images.');
+    };
+
     const selectedItem = items.find(i => i._id === selected);
     const formatBytes = (b?: number) => b ? (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`) : '';
 
@@ -91,6 +109,11 @@ export default function MediaLibraryPage() {
                     <p className="text-slate-400">Manage all your uploaded images and assets in one place.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
+                    <button onClick={handleCloudinaryImport} disabled={importingCloudinary}
+                        className="bg-[#111109] border border-white/10 text-slate-300 hover:text-white hover:border-[#ffc000]/50 px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 disabled:opacity-50 group">
+                        <span className="material-symbols-outlined text-[18px] group-hover:text-[#ffc000] transition-colors">cloud_sync</span>
+                        {importingCloudinary ? 'Importing...' : 'Import Cloudinary'}
+                    </button>
                     <button onClick={handleSeed} disabled={seeding}
                         className="bg-[#111109] border border-white/10 text-slate-300 hover:text-white hover:border-[#ffc000]/50 px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 disabled:opacity-50 group">
                         <span className="material-symbols-outlined text-[18px] group-hover:text-[#ffc000] transition-colors">auto_awesome</span>
