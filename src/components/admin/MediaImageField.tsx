@@ -276,25 +276,25 @@ export default function MediaImageField({
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                 )}
-                <div className="flex flex-col gap-3 md:flex-row">
+                <div className="flex flex-col gap-3 xl:flex-row">
                     <input
                         type="text"
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Paste image URL..."
-                        className="flex-1 rounded-xl border border-white/10 bg-[#1a1812] px-5 py-3.5 text-sm text-white shadow-inner transition-all focus:border-[#ffc000] focus:outline-none focus:ring-1 focus:ring-[#ffc000]/50"
+                        className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#1a1812] px-4 sm:px-5 py-3.5 text-sm text-white shadow-inner transition-all focus:border-[#ffc000] focus:outline-none focus:ring-1 focus:ring-[#ffc000]/50"
                     />
 
                     <button
                         type="button"
                         onClick={openMediaPicker}
-                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm font-bold uppercase tracking-wider text-slate-300 transition-all hover:border-[#ffc000] hover:bg-[#ffc000] hover:text-[#0a0a08]"
+                        className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 sm:px-5 py-3.5 text-sm font-bold uppercase tracking-wider text-slate-300 transition-all hover:border-[#ffc000] hover:bg-[#ffc000] hover:text-[#0a0a08] xl:w-auto"
                     >
                         <span className="material-symbols-outlined text-[18px]">photo_library</span>
                         Library
                     </button>
 
-                    <label className="group/btn relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-slate-300 transition-all hover:border-[#ffc000] hover:text-[#0a0a08]">
+                    <label className="group/btn relative inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 sm:px-6 py-3.5 text-sm font-bold uppercase tracking-wider text-slate-300 transition-all hover:border-[#ffc000] hover:text-[#0a0a08] xl:w-auto">
                         <div className="absolute inset-0 translate-y-full bg-[#ffc000] transition-transform duration-300 group-hover/btn:translate-y-0" />
                         <span className="relative z-10 flex items-center gap-2">
                             {uploading ? (

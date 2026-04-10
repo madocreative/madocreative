@@ -664,17 +664,17 @@ function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
             </Section>
 
             <Section title="Team Members" icon="people">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                     {members.map((m, i) => (
-                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-5 hover:border-[#ffc000]/30 transition-colors shadow-sm">
-                            <div className="flex justify-between items-center mb-1">
+                        <div key={i} className="bg-[#1a1812] p-4 sm:p-6 rounded-2xl border border-white/5 flex flex-col gap-5 hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                            <div className="flex items-start justify-between gap-3 mb-1">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-[#111109] border border-white/5 flex items-center justify-center">
                                         <span className="text-[#ffc000] font-mono text-sm font-bold">{i + 1}</span>
                                     </div>
-                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Member Profile</span>
+                                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest">Member Profile</span>
                                 </div>
-                                <button type="button" onClick={() => removeMember(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                <button type="button" onClick={() => removeMember(i)} className="w-8 h-8 shrink-0 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
                                     <span className="material-symbols-outlined text-[16px]">delete</span>
                                 </button>
                             </div>
