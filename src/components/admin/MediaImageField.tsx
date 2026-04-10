@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface MediaItem {
     _id: string;
@@ -34,6 +35,35 @@ export default function MediaImageField({
     const [mediaLoading, setMediaLoading] = useState(false);
     const [importingCloudinary, setImportingCloudinary] = useState(false);
     const [importMessage, setImportMessage] = useState('');
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!showMediaPicker) return;
+
+        const previousBodyOverflow = document.body.style.overflow;
+        const previousHtmlOverflow = document.documentElement.style.overflow;
+
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setShowMediaPicker(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = previousBodyOverflow;
+            document.documentElement.style.overflow = previousHtmlOverflow;
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showMediaPicker]);
 
     const loadMediaItems = async (force = false) => {
         if (mediaLoading || (!force && mediaItems.length > 0)) return;
@@ -105,114 +135,139 @@ export default function MediaImageField({
         }
     };
 
-    return (
-        <>
-            {showMediaPicker && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
-                    <div className="flex max-h-[80vh] w-full max-w-5xl flex-col rounded-2xl border border-white/10 bg-[#1a1812] shadow-2xl">
-                        <div className="flex items-center justify-between gap-4 border-b border-white/10 p-5">
-                            <div>
-                                <h3 className="text-lg font-bold text-white">Choose from Media Library</h3>
-                                <p className="text-sm text-slate-400">Select any imported Cloudinary image or recent upload.</p>
+    const mediaPickerModal = mounted && showMediaPicker
+        ? createPortal(
+            <div
+                className="fixed inset-0 z-[90] flex items-stretch justify-center bg-black/90 p-0 sm:items-center sm:p-4"
+                onClick={() => setShowMediaPicker(false)}
+            >
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Media library picker"
+                    data-lenis-prevent="true"
+                    className="flex h-[100dvh] w-full flex-col overflow-hidden border border-white/10 bg-[#1a1812] shadow-2xl sm:h-auto sm:max-h-[82vh] sm:max-w-5xl sm:rounded-2xl"
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <div className="border-b border-white/10 bg-[#1a1812]/95 px-4 py-4 backdrop-blur sm:px-5 sm:py-5">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="pr-8 sm:pr-0">
+                                <h3 className="text-base font-bold text-white sm:text-lg">Choose from Media Library</h3>
+                                <p className="mt-1 text-sm text-slate-400">
+                                    Select any imported Cloudinary image or recent upload.
+                                </p>
+                                {mediaItems.length > 0 && (
+                                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+                                        {mediaItems.length} image{mediaItems.length === 1 ? '' : 's'} available
+                                    </p>
+                                )}
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => loadMediaItems(true)}
-                                    disabled={mediaLoading}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-300 transition-all hover:border-[#ffc000]/60 hover:text-[#ffc000] disabled:opacity-50"
-                                >
-                                    <span className="material-symbols-outlined text-[16px]">refresh</span>
-                                    Refresh
-                                </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setShowMediaPicker(false)}
+                                className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-all hover:border-white/20 hover:text-white sm:static"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                            <button
+                                type="button"
+                                onClick={() => loadMediaItems(true)}
+                                disabled={mediaLoading}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-slate-300 transition-all hover:border-[#ffc000]/60 hover:text-[#ffc000] disabled:opacity-50 sm:w-auto"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">refresh</span>
+                                Refresh
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCloudinaryImport}
+                                disabled={importingCloudinary}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#ffc000]/30 bg-[#ffc000]/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-[#ffc000] transition-all hover:bg-[#ffc000]/20 disabled:opacity-50 sm:w-auto"
+                            >
+                                <span className="material-symbols-outlined text-[16px]">cloud_sync</span>
+                                {importingCloudinary ? 'Importing...' : 'Import Cloudinary'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {(importMessage || error) && (
+                        <div className="border-b border-white/10 px-4 py-3 sm:px-5">
+                            {importMessage && <p className="text-sm text-green-400">{importMessage}</p>}
+                            {error && <p className="text-sm text-red-400">{error}</p>}
+                        </div>
+                    )}
+
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+                        {mediaLoading ? (
+                            <div className="flex justify-center py-16">
+                                <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#ffc000] border-t-transparent" />
+                            </div>
+                        ) : mediaItems.length === 0 ? (
+                            <div className="flex min-h-[50vh] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#111109] px-5 py-12 text-center sm:min-h-[360px] sm:px-6 sm:py-16">
+                                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ffc000]/10 text-[#ffc000]">
+                                    <span className="material-symbols-outlined text-[30px]">imagesmode</span>
+                                </div>
+                                <h4 className="mb-2 text-lg font-bold text-white">No media imported yet</h4>
+                                <p className="mb-6 max-w-md text-sm text-slate-500">
+                                    Import your Cloudinary library here and the images will become selectable in this editor.
+                                </p>
                                 <button
                                     type="button"
                                     onClick={handleCloudinaryImport}
                                     disabled={importingCloudinary}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-[#ffc000]/30 bg-[#ffc000]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#ffc000] transition-all hover:bg-[#ffc000]/20 disabled:opacity-50"
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#ffc000] px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#0a0a08] transition-all hover:brightness-110 disabled:opacity-50 sm:w-auto"
                                 >
-                                    <span className="material-symbols-outlined text-[16px]">cloud_sync</span>
-                                    {importingCloudinary ? 'Importing...' : 'Import Cloudinary'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowMediaPicker(false)}
-                                    className="text-slate-400 transition-colors hover:text-white"
-                                >
-                                    <span className="material-symbols-outlined">close</span>
+                                    <span className="material-symbols-outlined text-[18px]">cloud_sync</span>
+                                    {importingCloudinary ? 'Importing...' : 'Import Cloudinary Images'}
                                 </button>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                                {mediaItems.map((item) => {
+                                    const selected = value === item.url;
 
-                        <div className="flex-1 overflow-y-auto p-5">
-                            {mediaLoading ? (
-                                <div className="flex justify-center py-12">
-                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#ffc000] border-t-transparent" />
-                                </div>
-                            ) : mediaItems.length === 0 ? (
-                                <div className="flex flex-col items-center rounded-2xl border border-dashed border-white/10 bg-[#111109] px-6 py-16 text-center">
-                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ffc000]/10 text-[#ffc000]">
-                                        <span className="material-symbols-outlined text-[30px]">imagesmode</span>
-                                    </div>
-                                    <h4 className="mb-2 text-lg font-bold text-white">No media imported yet</h4>
-                                    <p className="mb-6 max-w-md text-sm text-slate-500">
-                                        Import your Cloudinary library here and the images will become selectable in this editor.
-                                    </p>
-                                    <button
-                                        type="button"
-                                        onClick={handleCloudinaryImport}
-                                        disabled={importingCloudinary}
-                                        className="inline-flex items-center gap-2 rounded-xl bg-[#ffc000] px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#0a0a08] transition-all hover:brightness-110 disabled:opacity-50"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">cloud_sync</span>
-                                        {importingCloudinary ? 'Importing...' : 'Import Cloudinary Images'}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                                    {mediaItems.map((item) => {
-                                        const selected = value === item.url;
-
-                                        return (
-                                            <button
-                                                key={item._id}
-                                                type="button"
-                                                onClick={() => {
-                                                    onChange(item.url);
-                                                    setShowMediaPicker(false);
-                                                }}
-                                                className={`relative aspect-square overflow-hidden rounded-xl border-2 bg-[#0a0a08] transition-all ${
-                                                    selected ? 'border-[#ffc000]' : 'border-transparent hover:border-[#ffc000]/60'
-                                                }`}
-                                            >
-                                                <img src={item.url} alt={item.filename || ''} className="h-full w-full object-contain" />
-                                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-3 pb-2 pt-6 text-left">
-                                                    <p className="truncate text-[10px] font-bold uppercase tracking-widest text-white">
-                                                        {item.filename || 'Cloudinary image'}
-                                                    </p>
+                                    return (
+                                        <button
+                                            key={item._id}
+                                            type="button"
+                                            onClick={() => {
+                                                onChange(item.url);
+                                                setShowMediaPicker(false);
+                                            }}
+                                            className={`relative aspect-square overflow-hidden rounded-xl border-2 bg-[#0a0a08] transition-all ${
+                                                selected ? 'border-[#ffc000] shadow-[0_0_24px_rgba(255,192,0,0.12)]' : 'border-transparent hover:border-[#ffc000]/60'
+                                            }`}
+                                        >
+                                            <img src={item.url} alt={item.filename || ''} className="h-full w-full object-contain" />
+                                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-3 pb-2 pt-6 text-left">
+                                                <p className="truncate text-[10px] font-bold uppercase tracking-widest text-white">
+                                                    {item.filename || 'Cloudinary image'}
+                                                </p>
+                                            </div>
+                                            {selected && (
+                                                <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#ffc000] text-[#0a0a08]">
+                                                    <span className="material-symbols-outlined text-[14px]">check</span>
                                                 </div>
-                                                {selected && (
-                                                    <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#ffc000] text-[#0a0a08]">
-                                                        <span className="material-symbols-outlined text-[14px]">check</span>
-                                                    </div>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-
-                        {(importMessage || error) && (
-                            <div className="border-t border-white/10 px-5 py-4">
-                                {importMessage && <p className="text-sm text-green-400">{importMessage}</p>}
-                                {error && <p className="text-sm text-red-400">{error}</p>}
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
                 </div>
-            )}
+            </div>,
+            document.body,
+        )
+        : null;
 
+    return (
+        <>
+            {mediaPickerModal}
             <div className="flex flex-col gap-3 relative group">
                 <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
                 {value && (
