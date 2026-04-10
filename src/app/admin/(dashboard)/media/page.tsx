@@ -19,15 +19,22 @@ export default function MediaLibraryPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [copied, setCopied] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [seeding, setSeeding] = useState(false);
     const [importingCloudinary, setImportingCloudinary] = useState(false);
+    const [deletingSelected, setDeletingSelected] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const load = async () => {
         setLoading(true);
         const res = await fetch('/api/admin/media');
         const d = await res.json();
-        if (d.success) setItems(d.data);
+        if (d.success) {
+            const nextItems = d.data as MediaItem[];
+            setItems(nextItems);
+            setSelected(prev => nextItems.some(item => item._id === prev) ? prev : null);
+            setSelectedIds(prev => prev.filter(id => nextItems.some(item => item._id === id)));
+        }
         setLoading(false);
     };
 
@@ -58,6 +65,48 @@ export default function MediaLibraryPage() {
         });
         setItems(prev => prev.filter(i => i._id !== id));
         if (selected === id) setSelected(null);
+        setSelectedIds(prev => prev.filter(itemId => itemId !== id));
+    };
+
+    const toggleBulkSelection = (id: string) => {
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]);
+    };
+
+    const handleSelectAll = () => {
+        setSelectedIds(items.map(item => item._id));
+    };
+
+    const handleClearSelection = () => {
+        setSelectedIds([]);
+    };
+
+    const handleDeleteSelected = async () => {
+        if (selectedIds.length === 0) return;
+        if (!confirm(`Delete ${selectedIds.length} selected media item(s)? This will also remove matching Cloudinary images when available.`)) return;
+
+        const idsToDelete = [...selectedIds];
+        setDeletingSelected(true);
+
+        try {
+            const res = await fetch('/api/admin/media', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: idsToDelete }),
+            });
+            const d = await res.json();
+
+            if (!res.ok || !d.success) {
+                throw new Error(d.error || 'Failed to delete selected media.');
+            }
+
+            setItems(prev => prev.filter(item => !idsToDelete.includes(item._id)));
+            setSelected(prev => prev && idsToDelete.includes(prev) ? null : prev);
+            setSelectedIds([]);
+        } catch (error) {
+            alert(error instanceof Error ? error.message : 'Failed to delete selected media.');
+        } finally {
+            setDeletingSelected(false);
+        }
     };
 
     const copyUrl = (url: string, id: string) => {
@@ -98,6 +147,7 @@ export default function MediaLibraryPage() {
     };
 
     const selectedItem = items.find(i => i._id === selected);
+    const selectedCount = selectedIds.length;
     const formatBytes = (b?: number) => b ? (b > 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`) : '';
 
     return (
@@ -170,19 +220,75 @@ export default function MediaLibraryPage() {
                         </div>
                     ) : (
                         <div className="relative z-10">
-                            <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                            <div className="flex flex-col gap-4 mb-6 border-b border-white/5 pb-4 lg:flex-row lg:items-center lg:justify-between">
                                 <h3 className="font-display font-bold text-white flex items-center gap-2">
                                     <span className="material-symbols-outlined text-[#ffc000] text-[18px]">grid_view</span>
                                     All Media <span className="text-slate-500 font-normal text-sm ml-2">({items.length} total)</span>
                                 </h3>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleSelectAll}
+                                        disabled={items.length === 0}
+                                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-slate-300 transition-all hover:border-[#ffc000]/50 hover:text-[#ffc000] disabled:opacity-40"
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">done_all</span>
+                                        Select All
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleClearSelection}
+                                        disabled={selectedCount === 0}
+                                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-slate-300 transition-all hover:border-white/20 hover:text-white disabled:opacity-40"
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">deselect</span>
+                                        Clear
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteSelected}
+                                        disabled={selectedCount === 0 || deletingSelected}
+                                        className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-red-400 transition-all hover:bg-red-500 hover:text-white disabled:opacity-40"
+                                    >
+                                        <span className="material-symbols-outlined text-[16px]">delete_sweep</span>
+                                        {deletingSelected ? 'Deleting...' : `Delete Selected${selectedCount > 0 ? ` (${selectedCount})` : ''}`}
+                                    </button>
+                                </div>
                             </div>
+                            {selectedCount > 0 && (
+                                <div className="mb-5 flex items-center gap-3 rounded-2xl border border-[#ffc000]/20 bg-[#ffc000]/8 px-4 py-3 text-sm text-slate-200">
+                                    <span className="material-symbols-outlined text-[#ffc000] text-[18px]">checklist</span>
+                                    <p>{selectedCount} media item{selectedCount === 1 ? '' : 's'} selected for bulk actions.</p>
+                                </div>
+                            )}
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                                 {items.map(item => (
                                     <div
                                         key={item._id}
                                         onClick={() => setSelected(selected === item._id ? null : item._id)}
-                                        className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer group border-2 transition-all shadow-sm ${selected === item._id ? 'border-[#ffc000] scale-[0.98]' : 'border-transparent hover:border-[#ffc000]/50 bg-[#0a0a08]'}`}
+                                        className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer group border-2 transition-all shadow-sm ${
+                                            selected === item._id || selectedIds.includes(item._id)
+                                                ? 'border-[#ffc000] scale-[0.98]'
+                                                : 'border-transparent hover:border-[#ffc000]/50 bg-[#0a0a08]'
+                                        }`}
                                     >
+                                        <button
+                                            type="button"
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                toggleBulkSelection(item._id);
+                                            }}
+                                            className={`absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border transition-all ${
+                                                selectedIds.includes(item._id)
+                                                    ? 'border-[#ffc000] bg-[#ffc000] text-[#0a0a08]'
+                                                    : 'border-white/20 bg-black/50 text-white hover:border-[#ffc000]/60 hover:text-[#ffc000]'
+                                            }`}
+                                            title={selectedIds.includes(item._id) ? 'Remove from selection' : 'Select for bulk delete'}
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">
+                                                {selectedIds.includes(item._id) ? 'check' : 'radio_button_unchecked'}
+                                            </span>
+                                        </button>
                                         <img src={item.url} alt={item.filename || ''} className="w-full h-full object-contain transition-opacity duration-300" />
                                         <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 flex items-end justify-center pb-3 ${selected === item._id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                                             <button
@@ -253,12 +359,25 @@ export default function MediaLibraryPage() {
                                 </div>
 
                                 <div className="pt-5 border-t border-white/5 relative z-10">
-                                    <button
-                                        onClick={() => selectedItem && handleDelete(selectedItem._id)}
-                                        className="w-full py-3.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">delete_forever</span> Delete Image
-                                    </button>
+                                    <div className="flex flex-col gap-3">
+                                        <button
+                                            onClick={() => selectedItem && handleDelete(selectedItem._id)}
+                                            className="w-full py-3.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">delete_forever</span> Delete Image
+                                        </button>
+                                        <button
+                                            onClick={() => selectedItem && toggleBulkSelection(selectedItem._id)}
+                                            className={`w-full py-3.5 rounded-xl border font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm ${
+                                                selectedItem && selectedIds.includes(selectedItem._id)
+                                                    ? 'border-[#ffc000]/40 bg-[#ffc000]/10 text-[#ffc000] hover:bg-[#ffc000]/20'
+                                                    : 'border-white/10 text-slate-300 hover:border-[#ffc000]/50 hover:text-[#ffc000]'
+                                            }`}
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">checklist</span>
+                                            {selectedItem && selectedIds.includes(selectedItem._id) ? 'Selected For Bulk Delete' : 'Add To Bulk Selection'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </>
