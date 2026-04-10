@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import CreativeServicePageEditor from '@/components/admin/CreativeServicePageEditor';
+import ImageField from '@/components/admin/MediaImageField';
 import { defaultTeamMembers, teamPageDefaults } from '@/lib/teamPageDefaults';
 
 // ---------- types ----------
@@ -186,39 +187,6 @@ function TextInput({ label, value, onChange, placeholder = '' }: { label: string
     );
 }
 
-function ImageField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-    const [uploading, setUploading] = useState(false);
-    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setUploading(true);
-        try { onChange(await uploadImage(file)); } finally { setUploading(false); }
-    };
-    return (
-        <div className="flex flex-col gap-3 relative group">
-            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
-            {value && (
-                <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-[#ffc000]/30 transition-colors">
-                    <img src={value} alt="" className="w-full h-48 md:h-64 object-contain" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                </div>
-            )}
-            <div className="flex flex-col md:flex-row gap-3">
-                <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder="Paste image URL..."
-                    className="flex-1 bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm shadow-inner" />
-
-                <label className="cursor-pointer group/btn relative bg-white/5 border border-white/10 hover:border-[#ffc000] px-6 py-3.5 rounded-xl text-slate-300 hover:text-[#0a0a08] transition-all text-sm font-bold uppercase tracking-wider whitespace-nowrap flex items-center justify-center gap-3 overflow-hidden shrink-0">
-                    <div className="absolute inset-0 bg-[#ffc000] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
-                    <span className="relative z-10 flex items-center gap-2">
-                        {uploading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : <><span className="material-symbols-outlined text-[18px]">cloud_upload</span> Upload Image</>}
-                    </span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
-                </label>
-            </div>
-        </div>
-    );
-}
-
 function ImageListField({
     label,
     values,
@@ -267,7 +235,7 @@ function ImageListField({
                             <span className="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
-                    <ImageField label={`${label} ${index + 1}`} value={value} onChange={(nextValue) => updateItem(index, nextValue)} />
+                    <ImageField label={`${label} ${index + 1}`} value={value} onChange={(nextValue) => updateItem(index, nextValue)} upload={uploadImage} />
                 </div>
             ))}
         </div>
@@ -381,7 +349,7 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                         className="bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner"
                         placeholder="Luxury photography and film studio for modern brands, weddings, and campaigns." />
                 </div>
-                <ImageField label="Hero Background Image" value={String(get('heroImage', ''))} onChange={v => set('heroImage', v)} />
+                <ImageField label="Hero Background Image" value={String(get('heroImage', ''))} onChange={v => set('heroImage', v)} upload={uploadImage} />
                 <TextInput label="Hero Label" value={String(get('heroLabel', 'Premium Visual Studio · Kigali'))} onChange={v => set('heroLabel', v)} />
                 <TextInput label="CTA Button Text" value={String(get('ctaText', 'View Our Work'))} onChange={v => set('ctaText', v)} />
                 <TextInput label="CTA Button Link" value={String(get('ctaLink', '/portfolio'))} onChange={v => set('ctaLink', v)} />
@@ -399,16 +367,16 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                     onChange={v => set('heroImages', v)}
                     addLabel="Add Hero Image"
                 />
-                <ImageField label="Intro Feature Image" value={String(get('introImage', ''))} onChange={v => set('introImage', v)} />
+                <ImageField label="Intro Feature Image" value={String(get('introImage', ''))} onChange={v => set('introImage', v)} upload={uploadImage} />
                 <ImageListField
                     label="Selected Work Image"
                     values={workImages}
                     onChange={v => set('workImages', v)}
                     addLabel="Add Work Image"
                 />
-                <ImageField label="Services Section Image" value={String(get('servicesImage', ''))} onChange={v => set('servicesImage', v)} />
-                <ImageField label="Stats Background Image" value={String(get('statsImage', ''))} onChange={v => set('statsImage', v)} />
-                <ImageField label="Final CTA Background Image" value={String(get('ctaImage', ''))} onChange={v => set('ctaImage', v)} />
+                <ImageField label="Services Section Image" value={String(get('servicesImage', ''))} onChange={v => set('servicesImage', v)} upload={uploadImage} />
+                <ImageField label="Stats Background Image" value={String(get('statsImage', ''))} onChange={v => set('statsImage', v)} upload={uploadImage} />
+                <ImageField label="Final CTA Background Image" value={String(get('ctaImage', ''))} onChange={v => set('ctaImage', v)} upload={uploadImage} />
             </Section>
 
             <Section title="Studio Intro + Highlights" icon="auto_stories">
@@ -532,7 +500,7 @@ function HomeFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                                 </button>
                             </div>
                             <TextInput label="Client Name" value={logo.name} onChange={v => updateLogo(i, 'name', v)} />
-                            <ImageField label="Logo Image" value={logo.image} onChange={v => updateLogo(i, 'image', v)} />
+                            <ImageField label="Logo Image" value={logo.image} onChange={v => updateLogo(i, 'image', v)} upload={uploadImage} />
                         </div>
                     ))}
                 </div>
@@ -650,7 +618,7 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
                                     className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                             </div>
                             <TextInput label="Tags (comma separated)" value={svc.tags} onChange={v => updateService(i, 'tags', v)} placeholder="Photography, Video, Content" />
-                            <ImageField label="Service Image" value={svc.image} onChange={v => updateService(i, 'image', v)} />
+                            <ImageField label="Service Image" value={svc.image} onChange={v => updateService(i, 'image', v)} upload={uploadImage} />
                         </div>
                     ))}
                     <button type="button" onClick={addService}
@@ -712,7 +680,7 @@ function TeamFields({ get, set }: { data: Record<string, unknown>; get: (k: stri
                             </div>
                             <TextInput label="Name" value={m.name} onChange={v => updateMember(i, 'name', v)} />
                             <TextInput label="Role / Title" value={m.role} onChange={v => updateMember(i, 'role', v)} />
-                            <ImageField label="Portrait Photo" value={m.image} onChange={v => updateMember(i, 'image', v)} />
+                            <ImageField label="Portrait Photo" value={m.image} onChange={v => updateMember(i, 'image', v)} upload={uploadImage} />
                         </div>
                     ))}
                 </div>

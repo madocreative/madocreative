@@ -4,8 +4,6 @@ import dbConnect from '@/lib/mongodb';
 import MediaItem from '@/models/MediaItem';
 import { getAdminSession } from '@/lib/auth';
 
-const CLOUDINARY_PREFIX = 'mado-creatives';
-
 type CloudinaryImageResource = {
     public_id: string;
     secure_url: string;
@@ -17,14 +15,13 @@ type CloudinaryImageResource = {
     folder?: string;
 };
 
-async function listCloudinaryImages(prefix: string) {
+async function listCloudinaryImages() {
     const resources: CloudinaryImageResource[] = [];
     let nextCursor: string | undefined;
 
     do {
         const response = await cloudinary.api.resources({
             type: 'upload',
-            prefix,
             resource_type: 'image',
             max_results: 500,
             next_cursor: nextCursor,
@@ -41,6 +38,13 @@ function getFallbackFilename(resource: CloudinaryImageResource) {
     return resource.public_id.split('/').pop() || resource.public_id;
 }
 
+function getFallbackFolder(resource: CloudinaryImageResource) {
+    if (resource.folder) return resource.folder;
+
+    const parts = resource.public_id.split('/');
+    return parts.length > 1 ? parts.slice(0, -1).join('/') : 'root';
+}
+
 export async function POST() {
     try {
         const session = await getAdminSession();
@@ -50,7 +54,7 @@ export async function POST() {
 
         await dbConnect();
 
-        const resources = await listCloudinaryImages(CLOUDINARY_PREFIX);
+        const resources = await listCloudinaryImages();
         let imported = 0;
         let updated = 0;
 
@@ -63,7 +67,7 @@ export async function POST() {
                 height: resource.height,
                 format: resource.format,
                 bytes: resource.bytes,
-                folder: resource.folder || CLOUDINARY_PREFIX,
+                folder: getFallbackFolder(resource),
             };
 
             const existing = await MediaItem.findOne({
@@ -85,6 +89,7 @@ export async function POST() {
 
         return NextResponse.json({
             success: true,
+            scope: 'all-images',
             totalCloudinaryImages: resources.length,
             imported,
             updated,

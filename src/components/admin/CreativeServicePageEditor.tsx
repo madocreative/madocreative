@@ -14,6 +14,7 @@ import { digitalMarketingPageDefaults } from '@/lib/digitalMarketingPageDefaults
 import { photographyPageDefaults } from '@/lib/photographyPageDefaults';
 import { videographyPageDefaults } from '@/lib/videographyPageDefaults';
 import { getCloudinaryVideoSources } from '@/lib/cloudinaryVideo';
+import ImageField from '@/components/admin/MediaImageField';
 
 type CreativeServicePageId = 'photography' | 'videography' | 'digital-marketing';
 
@@ -271,78 +272,6 @@ function TextInput({ label, value, onChange, placeholder = '' }: { label: string
     );
 }
 
-function ImageField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState<number | null>(null);
-    const [error, setError] = useState('');
-
-    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setError('');
-        setUploading(true);
-        setProgress(0);
-        try {
-            onChange(await uploadAsset(file, setProgress));
-            setProgress(100);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
-        } finally {
-            setUploading(false);
-            setTimeout(() => setProgress(null), 1200);
-            e.target.value = '';
-        }
-    };
-
-    return (
-        <div className="flex flex-col gap-3 relative group">
-            <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">{label}</label>
-            {value && (
-                <div className="relative rounded-xl overflow-hidden border border-white/10 group-hover:border-[#ffc000]/30 transition-colors">
-                    <img src={value} alt="" className="w-full h-48 md:h-64 object-contain" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                </div>
-            )}
-            <div className="flex flex-col md:flex-row gap-3">
-                <input
-                    type="text"
-                    value={value}
-                    onChange={e => onChange(e.target.value)}
-                    placeholder="Paste image URL..."
-                    className="flex-1 bg-[#1a1812] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm shadow-inner"
-                />
-
-                <label className="cursor-pointer group/btn relative bg-white/5 border border-white/10 hover:border-[#ffc000] px-6 py-3.5 rounded-xl text-slate-300 hover:text-[#0a0a08] transition-all text-sm font-bold uppercase tracking-wider whitespace-nowrap flex items-center justify-center gap-3 overflow-hidden shrink-0">
-                    <div className="absolute inset-0 bg-[#ffc000] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
-                    <span className="relative z-10 flex items-center gap-2">
-                        {uploading ? (
-                            <>
-                                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                {progress !== null ? `Uploading ${progress}%` : 'Uploading'}
-                            </>
-                        ) : <><span className="material-symbols-outlined text-[18px]">cloud_upload</span> Upload Image</>}
-                    </span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
-                </label>
-            </div>
-            {progress !== null && (
-                <div className="flex flex-col gap-2">
-                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                        <div
-                            className="h-full bg-[#ffc000] transition-[width] duration-300"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                    <p className="text-xs text-slate-400">
-                        {progress < 100 ? `Uploading image: ${progress}%` : 'Upload complete.'}
-                    </p>
-                </div>
-            )}
-            {error && <p className="text-xs text-red-400">{error}</p>}
-        </div>
-    );
-}
-
 function VideoField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState<number | null>(null);
@@ -498,6 +427,7 @@ export default function CreativeServicePageEditor({
                     label="Hero Background Image"
                     value={primaryHeroImage}
                     onChange={v => set('heroImages', v.trim().length > 0 ? [v] : [])}
+                    upload={uploadAsset}
                 />
                 <p className="text-xs text-slate-500 leading-relaxed">Only one hero image is shown on the public page for a cleaner first impression.</p>
             </Section>
@@ -545,7 +475,7 @@ export default function CreativeServicePageEditor({
                                     className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                             </div>
                             <TextInput label="Tags (comma separated)" value={service.tags} onChange={v => updateService(i, 'tags', v)} />
-                            <ImageField label="Service Image" value={service.image} onChange={v => updateService(i, 'image', v)} />
+                            <ImageField label="Service Image" value={service.image} onChange={v => updateService(i, 'image', v)} upload={uploadAsset} />
                         </div>
                     ))}
                     <button type="button" onClick={addService}
@@ -609,7 +539,7 @@ export default function CreativeServicePageEditor({
                                         className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                                 </div>
                                 <VideoField label="Video File / URL" value={video.videoUrl} onChange={v => updateShowcaseVideo(i, 'videoUrl', v)} />
-                                <ImageField label="Poster Image (optional)" value={video.posterImage} onChange={v => updateShowcaseVideo(i, 'posterImage', v)} />
+                                <ImageField label="Poster Image (optional)" value={video.posterImage} onChange={v => updateShowcaseVideo(i, 'posterImage', v)} upload={uploadAsset} />
                             </div>
                         ))}
 
@@ -717,7 +647,7 @@ export default function CreativeServicePageEditor({
                                         className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
                                 </div>
                                 <VideoField label="Video File / URL" value={video.videoUrl} onChange={v => updateVideoGalleryVideo(i, 'videoUrl', v)} />
-                                <ImageField label="Poster Image (optional)" value={video.posterImage} onChange={v => updateVideoGalleryVideo(i, 'posterImage', v)} />
+                                <ImageField label="Poster Image (optional)" value={video.posterImage} onChange={v => updateVideoGalleryVideo(i, 'posterImage', v)} upload={uploadAsset} />
                             </div>
                         ))}
 
