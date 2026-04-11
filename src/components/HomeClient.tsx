@@ -337,7 +337,7 @@ export default function HomeClient({
                             </Link>
                         </div>
 
-                        <SelectedWorkGallery images={workImages.slice(0, 24)} />
+                        <SelectedWorkGallery images={workImages.slice(0, 12)} />
 
                         <div className="mt-10 md:mt-12 flex justify-center">
                             <Link
