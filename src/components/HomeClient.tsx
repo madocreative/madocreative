@@ -615,31 +615,31 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
     const displayed = images.slice(0, 4);
 
     return (
-        <div className="flex flex-col divide-y divide-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0 divide-y divide-white/10 md:divide-y-0">
             {displayed.map((img, index) => {
                 const label = workLabels[index] ?? { category: 'Selected Work', description: '' };
                 return (
-                    <div key={`${img}-${index}`} className="pt-8 pb-10 flex flex-col gap-6">
-
+                    <div
+                        key={`${img}-${index}`}
+                        className="pt-8 pb-10 flex flex-col gap-5 md:border-t md:border-white/10"
+                    >
                         {/* — Text block — */}
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                            <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-3">
-                                    <span className="font-mono text-xs text-[#ffc000] tracking-[0.3em]">
-                                        {String(index + 1).padStart(2, '0')}
-                                    </span>
-                                    <span className="h-px w-8 bg-[#ffc000]/40" />
-                                    <span className="text-xs uppercase tracking-[0.2em] text-white/50">
-                                        {label.category}
-                                    </span>
-                                </div>
-                                <p className="mt-2 text-sm md:text-base text-white/65 leading-relaxed max-w-lg">
-                                    {label.description}
-                                </p>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <span className="font-mono text-xs text-[#ffc000] tracking-[0.3em]">
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
+                                <span className="h-px w-8 bg-[#ffc000]/40" />
+                                <span className="text-xs uppercase tracking-[0.2em] text-white/50">
+                                    {label.category}
+                                </span>
                             </div>
+                            <p className="text-sm text-white/60 leading-relaxed">
+                                {label.description}
+                            </p>
                             <Link
                                 href="/portfolio"
-                                className="self-start shrink-0 inline-flex items-center gap-2 border border-white/20 px-4 h-9 text-[11px] uppercase tracking-[0.18em] text-white/60 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
+                                className="self-start inline-flex items-center gap-2 border border-white/20 px-4 h-8 text-[11px] uppercase tracking-[0.18em] text-white/55 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
                             >
                                 View Work
                                 <span className="material-symbols-outlined text-[13px]">north_east</span>
@@ -652,10 +652,9 @@ function SelectedWorkGallery({ images }: { images: string[] }) {
                                 src={img}
                                 alt={label.category}
                                 loading="lazy"
-                                className="w-full h-auto object-contain group-hover:opacity-90 transition-opacity duration-500"
+                                className="w-full h-auto object-contain group-hover:opacity-85 transition-opacity duration-500"
                             />
                         </Link>
-
                     </div>
                 );
             })}
