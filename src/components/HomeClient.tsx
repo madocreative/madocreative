@@ -337,7 +337,7 @@ export default function HomeClient({
                             </Link>
                         </div>
 
-                        <SelectedWorkGallery images={workImages.slice(0, 12)} />
+                        <SelectedWorkGallery images={workImages.slice(0, 4)} />
 
                         <div className="mt-10 md:mt-12 flex justify-center">
                             <Link
@@ -604,85 +604,57 @@ export default function HomeClient({
 /* ─────────────────────────────────────────────────────────────────
    HERO — full-screen image slider
 ───────────────────────────────────────────────────────────────── */
-const selectedWorkTileSpans = [
-    'row-span-2',
-    'row-span-3',
-    'row-span-2',
-    'row-span-3',
-    'row-span-2',
-    'row-span-2',
-    'row-span-3',
-    'row-span-2',
-    'row-span-3',
-    'row-span-2',
-    'row-span-2',
-    'row-span-3',
-];
+const workLabels = ['Editorial', 'Commercial', 'Portrait', 'Lifestyle'];
 
 function SelectedWorkGallery({ images }: { images: string[] }) {
-    const galleryRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!galleryRef.current || images.length === 0) return;
-
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                '.selected-work-card',
-                { autoAlpha: 0, y: 24 },
-                {
-                    autoAlpha: 1,
-                    y: 0,
-                    duration: 0.72,
-                    stagger: 0.05,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: galleryRef.current,
-                        start: 'top 82%',
-                        once: true,
-                    },
-                },
-            );
-        }, galleryRef);
-
-        return () => ctx.revert();
-    }, [images.length]);
+    const displayed = images.slice(0, 4);
 
     return (
-        <div
-            ref={galleryRef}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 auto-rows-[120px] sm:auto-rows-[150px] lg:auto-rows-[180px]"
-        >
-            {images.map((img, index) => {
-                const spanClass = selectedWorkTileSpans[index % selectedWorkTileSpans.length];
-
-                return (
-                    <div
-                        key={`${img}-${index}`}
-                        className={`selected-work-card relative overflow-hidden bg-[var(--app-card)] ${spanClass}`}
-                    >
-                        <Link href="/portfolio" className="group relative block h-full w-full">
-                            <img
-                                src={img}
-                                alt=""
-                                loading="lazy"
-                                className="h-full w-full object-cover scale-100 group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
-                            />
-                            {/* Dark overlay — brightens on hover to reveal image more */}
-                            <div className="absolute inset-0 bg-[#05070a]/40 group-hover:bg-[#05070a]/0 transition-colors duration-500" />
-                            {/* Bottom gradient + info strip */}
-                            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#05070a]/80 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500" />
-                            <div className="absolute left-3 right-3 bottom-3 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-white/70 group-hover:text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-400">
-                                <span>View</span>
-                                <span className="material-symbols-outlined text-[14px]">north_east</span>
-                            </div>
-                            {/* Index badge */}
-                            <div className="absolute left-3 top-3 border border-white/20 bg-black/30 px-2 h-5 flex items-center text-[9px] tracking-[0.2em] uppercase text-white/60 group-hover:border-[#ffc000]/60 group-hover:text-[#ffc000] transition-colors duration-400">
-                                {String(index + 1).padStart(2, '0')}
-                            </div>
+        <div className="flex flex-col">
+            {displayed.map((img, index) => (
+                <div key={`${img}-${index}`}>
+                    {/* Text strip between images */}
+                    <div className="flex items-center gap-4 py-4 border-t border-white/10">
+                        <span className="font-mono text-[11px] text-[#ffc000]/80 tracking-[0.25em]">
+                            {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="h-px flex-1 bg-white/10" />
+                        <span className="text-[10px] uppercase tracking-[0.22em] text-white/40">
+                            {workLabels[index] ?? 'Selected Work'}
+                        </span>
+                        <Link
+                            href="/portfolio"
+                            className="text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-[#ffc000] transition-colors flex items-center gap-1"
+                        >
+                            View
+                            <span className="material-symbols-outlined text-[12px]">north_east</span>
                         </Link>
                     </div>
-                );
-            })}
+
+                    {/* Full-width image */}
+                    <Link href="/portfolio" className="group block relative overflow-hidden w-full aspect-[4/3] sm:aspect-[16/9]">
+                        <img
+                            src={img}
+                            alt=""
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
+                        />
+                        <div className="absolute inset-0 bg-black/25 group-hover:bg-black/0 transition-colors duration-500" />
+                    </Link>
+                </div>
+            ))}
+
+            {/* closing line */}
+            <div className="flex items-center gap-4 py-4 border-t border-white/10">
+                <span className="h-px flex-1 bg-white/10" />
+                <Link
+                    href="/portfolio"
+                    className="text-[10px] uppercase tracking-[0.22em] text-white/40 hover:text-[#ffc000] transition-colors flex items-center gap-1"
+                >
+                    Full Portfolio
+                    <span className="material-symbols-outlined text-[12px]">north_east</span>
+                </Link>
+            </div>
         </div>
     );
 }
