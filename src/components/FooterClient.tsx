@@ -54,6 +54,7 @@ export default function FooterClient({
     { label: 'Facebook', href: facebookUrl },
     { label: 'Telegram', href: telegramUrl },
     { label: 'WhatsApp', href: whatsappUrl },
+    ...(email ? [{ label: email, href: `mailto:${email}` }] : []),
   ].filter((item) => typeof item.href === 'string' && item.href.trim().length > 0);
 
   return (
