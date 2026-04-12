@@ -604,57 +604,61 @@ export default function HomeClient({
 /* ─────────────────────────────────────────────────────────────────
    HERO — full-screen image slider
 ───────────────────────────────────────────────────────────────── */
-const workLabels = ['Editorial', 'Commercial', 'Portrait', 'Lifestyle'];
+const workLabels = [
+    { category: 'Editorial', description: 'Crafted visuals that tell a story — from concept to final frame.' },
+    { category: 'Commercial', description: 'High-impact imagery built for brands that refuse to blend in.' },
+    { category: 'Portrait', description: 'Authentic expressions, extraordinary light, timeless character.' },
+    { category: 'Lifestyle', description: 'Real moments elevated into premium, publication-ready shots.' },
+];
 
 function SelectedWorkGallery({ images }: { images: string[] }) {
     const displayed = images.slice(0, 4);
 
     return (
-        <div className="flex flex-col">
-            {displayed.map((img, index) => (
-                <div key={`${img}-${index}`}>
-                    {/* Text strip between images */}
-                    <div className="flex items-center gap-4 py-4 border-t border-white/10">
-                        <span className="font-mono text-[11px] text-[#ffc000]/80 tracking-[0.25em]">
-                            {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <span className="h-px flex-1 bg-white/10" />
-                        <span className="text-[10px] uppercase tracking-[0.22em] text-white/40">
-                            {workLabels[index] ?? 'Selected Work'}
-                        </span>
-                        <Link
-                            href="/portfolio"
-                            className="text-[10px] uppercase tracking-[0.2em] text-white/50 hover:text-[#ffc000] transition-colors flex items-center gap-1"
-                        >
-                            View
-                            <span className="material-symbols-outlined text-[12px]">north_east</span>
+        <div className="flex flex-col divide-y divide-white/10">
+            {displayed.map((img, index) => {
+                const label = workLabels[index] ?? { category: 'Selected Work', description: '' };
+                return (
+                    <div key={`${img}-${index}`} className="pt-8 pb-10 flex flex-col gap-6">
+
+                        {/* — Text block — */}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-3">
+                                    <span className="font-mono text-xs text-[#ffc000] tracking-[0.3em]">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <span className="h-px w-8 bg-[#ffc000]/40" />
+                                    <span className="text-xs uppercase tracking-[0.2em] text-white/50">
+                                        {label.category}
+                                    </span>
+                                </div>
+                                <p className="mt-2 text-sm md:text-base text-white/65 leading-relaxed max-w-lg">
+                                    {label.description}
+                                </p>
+                            </div>
+                            <Link
+                                href="/portfolio"
+                                className="self-start shrink-0 inline-flex items-center gap-2 border border-white/20 px-4 h-9 text-[11px] uppercase tracking-[0.18em] text-white/60 hover:border-[#ffc000] hover:text-[#ffc000] transition-colors"
+                            >
+                                View Work
+                                <span className="material-symbols-outlined text-[13px]">north_east</span>
+                            </Link>
+                        </div>
+
+                        {/* — Full image, no crop — */}
+                        <Link href="/portfolio" className="group block w-full overflow-hidden">
+                            <img
+                                src={img}
+                                alt={label.category}
+                                loading="lazy"
+                                className="w-full h-auto object-contain group-hover:opacity-90 transition-opacity duration-500"
+                            />
                         </Link>
+
                     </div>
-
-                    {/* Full-width image */}
-                    <Link href="/portfolio" className="group block relative overflow-hidden w-full aspect-[4/3] sm:aspect-[16/9]">
-                        <img
-                            src={img}
-                            alt=""
-                            loading="lazy"
-                            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.22,1)]"
-                        />
-                        <div className="absolute inset-0 bg-black/25 group-hover:bg-black/0 transition-colors duration-500" />
-                    </Link>
-                </div>
-            ))}
-
-            {/* closing line */}
-            <div className="flex items-center gap-4 py-4 border-t border-white/10">
-                <span className="h-px flex-1 bg-white/10" />
-                <Link
-                    href="/portfolio"
-                    className="text-[10px] uppercase tracking-[0.22em] text-white/40 hover:text-[#ffc000] transition-colors flex items-center gap-1"
-                >
-                    Full Portfolio
-                    <span className="material-symbols-outlined text-[12px]">north_east</span>
-                </Link>
-            </div>
+                );
+            })}
         </div>
     );
 }
