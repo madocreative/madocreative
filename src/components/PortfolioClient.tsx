@@ -847,7 +847,7 @@ export default function PortfolioClient({ galleries, heroTitle, heroLabel }: Pro
                 )}
 
                 {/* ── Gallery sections ── */}
-                {filteredGalleries.length === 0 && allMediaUrls.length === 0 ? (
+                {filteredGalleries.length === 0 ? (
                     <div className="py-24 text-center border border-[var(--app-border)]">
                         <p className="text-xl text-[var(--app-subtle)] font-display uppercase tracking-widest">No galleries yet. Add one in the admin.</p>
                     </div>
