@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation';
 
 interface Props {
     galleries: any[];
-    allMediaUrls: string[];
     heroTitle?: string;
     heroLabel?: string;
 }
@@ -639,13 +638,13 @@ function GalleryLayout({ gallery, onOpen }: { gallery: any; onOpen: (i: number) 
 /* ─────────────────────────────────────────────────────────────────
    MAIN EXPORT
 ───────────────────────────────────────────────────────────────── */
-export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, heroLabel }: Props) {
+export default function PortfolioClient({ galleries, heroTitle, heroLabel }: Props) {
     const [lightbox, setLightbox] = useState<{ imgs: string[]; idx: number } | null>(null);
     const [activeCategory, setActiveCategory] = useState('All');
     const searchParams = useSearchParams();
 
     const allGalleryImages = galleries.flatMap((g: any) => [g.featuredImage, ...(g.images || [])].filter(Boolean));
-    const heroImgs = (allGalleryImages.length > 0 ? allGalleryImages : allMediaUrls).slice(0, 5);
+    const heroImgs = allGalleryImages.slice(0, 5);
 
     const galleriesWithGroup = useMemo(
         () =>
@@ -874,65 +873,6 @@ export default function PortfolioClient({ galleries, allMediaUrls, heroTitle, he
                             );
                         })}
 
-                        {/* From the Archives */}
-                        {activeCategory === 'All' && allMediaUrls.length > 0 && (
-                            <motion.section
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: '-80px' }}
-                                transition={{ duration: 0.9 }}
-                                className="border-b border-white/8 pb-10 md:pb-12 last:border-b-0 last:pb-0"
-                            >
-                                <div className="mb-7 md:mb-9">
-                                    <div className="mb-4 h-px w-14 bg-[#ffda68]/65 md:w-20" />
-                                    <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-8">
-                                        <div className="space-y-3 md:space-y-4">
-                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                                <span className="text-[#ffda68] font-display font-bold text-[11px] tracking-[0.28em] tabular-nums">
-                                                    {String(filteredGalleries.length + 1).padStart(2, '0')}
-                                                </span>
-                                                <span className="h-px w-8 bg-[#ffda68]/35 md:w-10" />
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.34em] text-white/48">
-                                                    Studio Archive
-                                                </span>
-                                            </div>
-                                            <h2 className="max-w-4xl font-display font-bold text-[2rem] leading-[0.95] tracking-[0.02em] text-[#EAEAEA] md:text-[2.8rem]">
-                                                From the Archives
-                                            </h2>
-                                            <p className="max-w-2xl text-[15px] leading-7 text-[rgba(255,255,255,0.68)] md:text-base md:leading-8">
-                                                A wider sweep of moments, studies, and frames from the studio archive.
-                                            </p>
-                                        </div>
-
-                                        <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-3 md:flex-col md:items-end md:justify-end md:border-t-0 md:pt-0">
-                                            <span className="text-[11px] font-bold uppercase tracking-[0.36em] text-[#EAEAEA]">
-                                                {allMediaUrls.length} Images
-                                            </span>
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/46">
-                                                Archive
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0.5">
-                                    {allMediaUrls.map((url: string, i: number) => (
-                                        <motion.div
-                                            key={url}
-                                            initial={{ opacity: 0 }}
-                                            whileInView={{ opacity: 1 }}
-                                            viewport={{ once: true }}
-                                            transition={{ duration: 0.4, delay: Math.min(i * 0.03, 0.5) }}
-                                            className="overflow-hidden cursor-zoom-in group bg-[#0d0c08]"
-                                            onClick={() => openLightbox(allMediaUrls, i)}
-                                        >
-                                            <img src={toNoCropUrl(url)} alt={`Archive ${i + 1}`}
-                                                className="w-full h-auto object-contain group-hover:scale-[1.03] transition-transform duration-500" />
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </motion.section>
-                        )}
                     </div>
                 )}
             </div>

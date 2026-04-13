@@ -79,6 +79,7 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
   const navItems = useMemo<NavItem[]>(
     () => [
       { name: 'Home', path: '/' },
+      { name: 'About', path: '/about' },
       { name: 'Portfolio', path: '/portfolio', children: portfolioLinks },
       { name: 'Services', path: '/services', children: serviceLinks },
       { name: 'Team', path: '/team' },
