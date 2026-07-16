@@ -85,6 +85,7 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
       { name: 'About', path: '/about' },
       { name: 'Portfolio', path: '/portfolio', children: portfolioLinks },
       { name: 'Services', path: '/services', children: serviceLinks },
+      { name: 'Pricing', path: '/pricing' },
       { name: 'Team', path: '/team' },
       { name: 'Shop', path: '/shop' },
       { name: 'Blog', path: '/blog' },

@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/mongodb';
 import Content from '@/models/Content';
 import ServicesClient from './ServicesClient';
+import { defaultServicePackages } from '@/lib/servicePackages';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,28 +42,10 @@ const defaultStats = [
     { value: '4', label: 'Locations' },
 ];
 
-const defaultPackages = [
-    {
-        name: 'iPhone Monthly Shoot Package',
-        description: 'One shoot every week with ideas, content strategy, professional editing, and consistent delivery for impact.',
-        price: 'USD 500 / month',
-    },
-    {
-        name: 'Camera Monthly Shoot Package',
-        description: 'One shoot every week with creative planning, professional post-production, and high-end camera equipment included.',
-        price: 'USD 800 / month',
-    },
-    {
-        name: 'Complete Production & Digital Marketing Package',
-        description: 'Full production plus full digital marketing for businesses that want content creation and online growth handled together.',
-        price: 'USD 1500 / month',
-    },
-];
-
 type ServicesSections = {
     stats?: typeof defaultStats;
     services?: typeof defaultServices;
-    packages?: typeof defaultPackages;
+    packages?: typeof defaultServicePackages;
     ctaTitle?: string;
     ctaSubtitle?: string;
     ctaButton?: string;
@@ -89,7 +72,7 @@ export default async function ServicesPage() {
         subtitle: content?.subtitle || 'We provide comprehensive creative solutions for absolute visionaries. Our approach is bespoke, ensuring every project is an authentic reflection of your brand\'s unique narrative.',
         stats: Array.isArray(sections.stats) ? sections.stats : defaultStats,
         services: Array.isArray(sections.services) ? sections.services : defaultServices,
-        packages: Array.isArray(sections.packages) ? sections.packages : defaultPackages,
+        packages: Array.isArray(sections.packages) ? sections.packages : defaultServicePackages,
         ctaTitle: sections.ctaTitle || 'Ready to elevate your visual identity?',
         ctaSubtitle: sections.ctaSubtitle || 'Contact us today to discuss your vision and how Mado Creatives can bring it to life.',
         ctaButton: sections.ctaButton || 'Start a Project',

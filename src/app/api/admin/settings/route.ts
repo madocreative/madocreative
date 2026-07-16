@@ -13,7 +13,7 @@ const SETTINGS_DEFAULTS: Record<string, string> = {
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
 };
 
-const NAV_PAGE_PATHS = new Set(['/', '/about', '/portfolio', '/services', '/team', '/shop', '/blog', '/contact']);
+const NAV_PAGE_PATHS = new Set(['/', '/about', '/portfolio', '/services', '/pricing', '/team', '/shop', '/blog', '/contact']);
 
 function normalizeHiddenNavPages(value: unknown) {
     if (!Array.isArray(value)) return [];

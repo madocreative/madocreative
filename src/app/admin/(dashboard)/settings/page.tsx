@@ -8,6 +8,7 @@ const NAV_PAGE_OPTIONS = [
     { label: 'About', path: '/about', description: 'About page link.' },
     { label: 'Portfolio', path: '/portfolio', description: 'Portfolio page and dropdown entry.' },
     { label: 'Services', path: '/services', description: 'Services page and dropdown entry.' },
+    { label: 'Pricing', path: '/pricing', description: 'Monthly packages and pricing page link.' },
     { label: 'Team', path: '/team', description: 'Team page link.' },
     { label: 'Shop', path: '/shop', description: 'Shop page link.' },
     { label: 'Blog', path: '/blog', description: 'Blog page link.' },
