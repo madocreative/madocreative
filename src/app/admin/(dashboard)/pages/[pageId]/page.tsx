@@ -559,8 +559,26 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
         { value: '15+', label: 'Years Experience' },
         { value: '4', label: 'Locations' },
     ];
+    const defaultPackages: PackageItem[] = [
+        {
+            name: 'iPhone Monthly Shoot Package',
+            description: 'One shoot every week with ideas, content strategy, professional editing, and consistent delivery for impact.',
+            price: 'USD 500 / month',
+        },
+        {
+            name: 'Camera Monthly Shoot Package',
+            description: 'One shoot every week with creative planning, professional post-production, and high-end camera equipment included.',
+            price: 'USD 800 / month',
+        },
+        {
+            name: 'Complete Production & Digital Marketing Package',
+            description: 'Full production plus full digital marketing for businesses that want content creation and online growth handled together.',
+            price: 'USD 1500 / month',
+        },
+    ];
     const services: ServiceItem[] = (get('services', defaultServices) as ServiceItem[]);
     const stats: StatItem[] = (get('stats', defaultStats) as StatItem[]);
+    const packages: PackageItem[] = (get('packages', defaultPackages) as PackageItem[]);
 
     const updateService = (i: number, field: keyof ServiceItem, val: string) => {
         const updated = services.map((s, idx) => idx === i ? { ...s, [field]: val } : s);
@@ -573,6 +591,11 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
         const updated = stats.map((s, idx) => idx === i ? { ...s, [field]: val } : s);
         set('stats', updated);
     };
+    const updatePackage = (i: number, field: keyof PackageItem, val: string) => {
+        set('packages', packages.map((pkg, idx) => idx === i ? { ...pkg, [field]: val } : pkg));
+    };
+    const addPackage = () => set('packages', [...packages, { name: 'New Monthly Package', description: '', price: 'USD 0 / month' }]);
+    const removePackage = (i: number) => set('packages', packages.filter((_, idx) => idx !== i));
 
     return (
         <>
@@ -624,6 +647,37 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
                     <button type="button" onClick={addService}
                         className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
                         <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Service
+                    </button>
+                </div>
+            </Section>
+
+            <Section title="Monthly Pricing Packages" icon="payments">
+                <div className="flex flex-col gap-6">
+                    {packages.map((pkg, i) => (
+                        <div key={i} className="bg-[#1a1812] p-6 rounded-2xl border border-white/5 flex flex-col gap-4 hover:border-[#ffc000]/30 transition-colors shadow-sm">
+                            <div className="flex justify-between items-center mb-1">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#111109] border border-white/5 flex items-center justify-center">
+                                        <span className="text-[#ffc000] font-mono text-sm font-bold">{i + 1}</span>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Service Package</span>
+                                </div>
+                                <button type="button" onClick={() => removePackage(i)} className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors">
+                                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                                </button>
+                            </div>
+                            <TextInput label="Package Name" value={pkg.name} onChange={v => updatePackage(i, 'name', v)} />
+                            <div className="flex flex-col gap-2 relative group">
+                                <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
+                                <textarea rows={3} value={pkg.description} onChange={e => updatePackage(i, 'description', e.target.value)}
+                                    className="bg-[#111109] border border-white/10 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-[#ffc000] focus:ring-1 focus:ring-[#ffc000]/50 transition-all text-sm resize-none shadow-inner" />
+                            </div>
+                            <TextInput label="Price Label" value={pkg.price} onChange={v => updatePackage(i, 'price', v)} placeholder="USD 500 / month" />
+                        </div>
+                    ))}
+                    <button type="button" onClick={addPackage}
+                        className="w-full py-4 border-2 border-dashed border-white/10 rounded-2xl text-slate-400 hover:text-[#ffc000] hover:border-[#ffc000]/50 hover:bg-[#ffc000]/5 transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px]">add_circle</span> Add Package
                     </button>
                 </div>
             </Section>
