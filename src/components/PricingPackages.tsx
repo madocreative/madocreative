@@ -45,51 +45,51 @@ export default function PricingPackages({ packages, compact = false }: PricingPa
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.65, delay: index * 0.08 }}
-                className={`relative overflow-hidden rounded-[1.35rem] border p-6 md:p-7 min-h-[360px] flex flex-col ${
-                  featured
-                    ? 'bg-[#ffc000] text-[#080704] border-[#ffc000] shadow-[0_22px_70px_rgba(255,192,0,0.18)]'
-                    : 'bg-[#111109] text-white border-white/10'
-                }`}
+                className="relative overflow-hidden rounded-[1.35rem] border border-white/10 bg-[#111109] shadow-[0_22px_70px_rgba(0,0,0,0.25)]"
               >
-                <div className={`absolute right-5 top-5 text-[96px] leading-none font-display font-bold pointer-events-none select-none ${
-                  featured ? 'text-black/[0.07]' : 'text-[#ffc000]/[0.08]'
-                }`}>
-                  {String(index + 1).padStart(2, '0')}
-                </div>
-
-                <div className="relative z-10 flex flex-col h-full">
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-7 ${
-                    featured ? 'bg-black text-[#ffc000]' : 'bg-[#ffc000] text-[#090805]'
+                {pkg.image ? (
+                  <img
+                    src={pkg.image}
+                    alt={pkg.name}
+                    className="block w-full h-auto"
+                  />
+                ) : (
+                  <div className={`relative p-6 md:p-7 min-h-[360px] flex flex-col ${
+                    featured
+                      ? 'bg-[#ffc000] text-[#080704]'
+                      : 'bg-[#111109] text-white'
                   }`}>
-                    <span className="material-symbols-outlined text-[28px]">{icon}</span>
-                  </div>
+                    <div className={`absolute right-5 top-5 text-[96px] leading-none font-display font-bold pointer-events-none select-none ${
+                      featured ? 'text-black/[0.07]' : 'text-[#ffc000]/[0.08]'
+                    }`}>
+                      {String(index + 1).padStart(2, '0')}
+                    </div>
 
-                  <h3 className="text-2xl md:text-3xl font-display font-bold leading-tight mb-4">
-                    {pkg.name}
-                  </h3>
-                  <p className={`text-sm leading-relaxed mb-8 ${featured ? 'text-black/70' : 'text-[#9a9078]'}`}>
-                    {pkg.description}
-                  </p>
+                    <div className="relative z-10 flex flex-col h-full">
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-7 ${
+                        featured ? 'bg-black text-[#ffc000]' : 'bg-[#ffc000] text-[#090805]'
+                      }`}>
+                        <span className="material-symbols-outlined text-[28px]">{icon}</span>
+                      </div>
 
-                  <div className="mt-auto">
-                    <p className={`text-[10px] uppercase tracking-[0.32em] font-bold mb-2 ${featured ? 'text-black/55' : 'text-[#ffc000]'}`}>
-                      Starting at
-                    </p>
-                    <p className="text-3xl md:text-4xl font-display font-bold">
-                      {pkg.price}
-                    </p>
-                    <Link
-                      href={`/contact?package=${encodeURIComponent(pkg.name)}`}
-                      className={`mt-7 inline-flex items-center justify-center gap-2 h-12 px-5 rounded-full text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
-                        featured
-                          ? 'bg-black text-white hover:bg-white hover:text-black'
-                          : 'bg-white/[0.06] border border-white/10 text-white hover:bg-[#ffc000] hover:text-[#090805] hover:border-[#ffc000]'
-                      }`}
-                    >
-                      Request Package
-                      <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
-                    </Link>
+                      <h3 className="text-2xl md:text-3xl font-display font-bold leading-tight mb-4">
+                        {pkg.name}
+                      </h3>
+                      <p className={`text-sm leading-relaxed mb-8 ${featured ? 'text-black/70' : 'text-[#9a9078]'}`}>
+                        {pkg.description}
+                      </p>
+                    </div>
                   </div>
+                )}
+
+                <div className="p-4 bg-[#090805] border-t border-white/10">
+                  <Link
+                    href={`/contact?package=${encodeURIComponent(pkg.name)}`}
+                    className="inline-flex w-full items-center justify-center gap-2 h-12 px-5 rounded-full text-xs font-bold uppercase tracking-[0.18em] transition-colors bg-[#ffc000] text-[#090805] hover:bg-white"
+                  >
+                    Request Package
+                    <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
+                  </Link>
                 </div>
               </motion.article>
             );

@@ -10,7 +10,7 @@ import { defaultTeamMembers, teamPageDefaults } from '@/lib/teamPageDefaults';
 // ---------- types ----------
 interface ServiceItem { title: string; description: string; image: string; tags: string }
 interface TeamMember { name: string; role: string; image: string }
-interface PackageItem { name: string; description: string; price: string }
+interface PackageItem { name: string; description: string; price: string; image?: string }
 interface StatItem { value: string; label: string }
 interface HighlightCard { stat: string; title: string; description: string }
 interface ServicePillar { title: string; description: string; note: string }
@@ -564,16 +564,19 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
             name: 'iPhone Monthly Shoot Package',
             description: 'One shoot every week with ideas, content strategy, professional editing, and consistent delivery for impact.',
             price: 'USD 500 / month',
+            image: '/pricing/iphone-monthly-shoot.png',
         },
         {
             name: 'Camera Monthly Shoot Package',
             description: 'One shoot every week with creative planning, professional post-production, and high-end camera equipment included.',
             price: 'USD 800 / month',
+            image: '/pricing/camera-monthly-shoot.png',
         },
         {
             name: 'Complete Production & Digital Marketing Package',
             description: 'Full production plus full digital marketing for businesses that want content creation and online growth handled together.',
             price: 'USD 1500 / month',
+            image: '/pricing/complete-production-digital-marketing.png',
         },
     ];
     const services: ServiceItem[] = (get('services', defaultServices) as ServiceItem[]);
@@ -594,7 +597,7 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
     const updatePackage = (i: number, field: keyof PackageItem, val: string) => {
         set('packages', packages.map((pkg, idx) => idx === i ? { ...pkg, [field]: val } : pkg));
     };
-    const addPackage = () => set('packages', [...packages, { name: 'New Monthly Package', description: '', price: 'USD 0 / month' }]);
+    const addPackage = () => set('packages', [...packages, { name: 'New Monthly Package', description: '', price: 'USD 0 / month', image: '' }]);
     const removePackage = (i: number) => set('packages', packages.filter((_, idx) => idx !== i));
 
     return (
@@ -667,6 +670,7 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
                                 </button>
                             </div>
                             <TextInput label="Package Name" value={pkg.name} onChange={v => updatePackage(i, 'name', v)} />
+                            <ImageField label="Package Flyer Image" value={pkg.image || ''} onChange={v => updatePackage(i, 'image', v)} upload={uploadImage} />
                             <div className="flex flex-col gap-2 relative group">
                                 <label className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-[#ffc000] transition-colors">Description</label>
                                 <textarea rows={3} value={pkg.description} onChange={e => updatePackage(i, 'description', e.target.value)}
