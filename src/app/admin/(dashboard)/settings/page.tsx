@@ -74,7 +74,7 @@ export default function SettingsPage() {
                 body: data,
             });
 
-            const payload = await res.json();
+            const payload = await res.json().catch(() => ({ success: false, error: 'Upload failed' }));
             if (!res.ok || !payload.success || !payload.url) {
                 throw new Error(payload.error || 'Upload failed');
             }
@@ -82,9 +82,9 @@ export default function SettingsPage() {
             setForm((current) => ({ ...current, logoUrl: payload.url }));
             setLogoUploadState('idle');
             setLogoUploadMessage('Logo uploaded. Click Publish Settings to apply it site-wide.');
-        } catch {
+        } catch (error) {
             setLogoUploadState('error');
-            setLogoUploadMessage('Logo upload failed. Try again.');
+            setLogoUploadMessage(error instanceof Error ? error.message : 'Logo upload failed. Try again.');
         } finally {
             event.target.value = '';
         }

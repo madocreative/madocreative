@@ -4,12 +4,30 @@ import cloudinary from '@/lib/cloudinary';
 import dbConnect from '@/lib/mongodb';
 import MediaItem from '@/models/MediaItem';
 
+function getMissingCloudinaryEnv() {
+    return ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'].filter(
+        (key) => !process.env[key]
+    );
+}
+
 export async function POST(req: Request) {
     try {
         const session = await getAdminSession();
 
         if (!session || session.role !== 'admin') {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const missingCloudinaryEnv = getMissingCloudinaryEnv();
+        if (missingCloudinaryEnv.length > 0) {
+            console.error('Cloudinary upload is not configured. Missing env vars:', missingCloudinaryEnv.join(', '));
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: `Cloudinary is not configured. Missing: ${missingCloudinaryEnv.join(', ')}`,
+                },
+                { status: 500 }
+            );
         }
 
         const data = await req.formData();
@@ -27,7 +45,7 @@ export async function POST(req: Request) {
                 async (error, result) => {
                     if (error || !result) {
                         console.error('Cloudinary Upload Error:', error);
-                        reject(NextResponse.json({ success: false, error: 'Upload failed' }, { status: 500 }));
+                        reject(NextResponse.json({ success: false, error: error?.message || 'Upload failed' }, { status: 500 }));
                     } else {
                         // Save images to the media library. Video uploads are returned directly
                         // for use in the videography editor and should not pollute image pickers.
