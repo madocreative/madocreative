@@ -19,6 +19,7 @@ export default async function Footer() {
       telegramUrl={settings.telegramUrl}
       whatsappUrl={settings.whatsappChatUrl}
       acceptingClients={settings.acceptingClients}
+      hiddenNavPages={settings.hiddenNavPages}
     />
   );
 }

@@ -3,6 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const NAV_PAGE_OPTIONS = [
+    { label: 'Home', path: '/', description: 'Homepage link in the public menu.' },
+    { label: 'About', path: '/about', description: 'About page link.' },
+    { label: 'Portfolio', path: '/portfolio', description: 'Portfolio page and dropdown entry.' },
+    { label: 'Services', path: '/services', description: 'Services page and dropdown entry.' },
+    { label: 'Team', path: '/team', description: 'Team page link.' },
+    { label: 'Shop', path: '/shop', description: 'Shop page link.' },
+    { label: 'Blog', path: '/blog', description: 'Blog page link.' },
+    { label: 'Contact', path: '/contact', description: 'Contact page link.' },
+];
+
 export default function SettingsPage() {
     const router = useRouter();
     const [form, setForm] = useState({
@@ -22,6 +33,7 @@ export default function SettingsPage() {
         whatsappNumber: '+250 793 004 501',
         bookingCta: 'Book a Session',
         acceptingClients: true,
+        hiddenNavPages: [] as string[],
     });
     const [status, setStatus] = useState<'loading' | 'idle' | 'saving' | 'success' | 'error'>('loading');
     const [logoUploadState, setLogoUploadState] = useState<'idle' | 'uploading' | 'error'>('idle');
@@ -105,6 +117,19 @@ export default function SettingsPage() {
             setStatus('success');
             setTimeout(() => setStatus('idle'), 3000);
         } catch { setStatus('error'); }
+    };
+
+    const togglePageVisibility = (path: string) => {
+        setForm((current) => {
+            const hidden = new Set(current.hiddenNavPages);
+            if (hidden.has(path)) {
+                hidden.delete(path);
+            } else {
+                hidden.add(path);
+            }
+
+            return { ...current, hiddenNavPages: Array.from(hidden) };
+        });
     };
 
     if (status === 'loading') return (
@@ -266,6 +291,56 @@ export default function SettingsPage() {
                                 {form.acceptingClients ? 'Accepting Clients' : 'Not Accepting Clients'}
                             </span>
                         </button>
+                    </section>
+
+                    {/* Navigation Visibility */}
+                    <section className="bg-[#111109] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#ffc000]/5 blur-[80px] pointer-events-none" />
+                        <div className="relative z-10">
+                            <h2 className="font-display font-bold text-white text-xl flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                                    <span className="material-symbols-outlined text-[#ffc000] text-[18px]">visibility</span>
+                                </div>
+                                Navigation Visibility
+                            </h2>
+                            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+                                Hide pages from the public header and footer menus without deleting the pages.
+                            </p>
+                        </div>
+
+                        <div className="relative z-10 flex flex-col gap-3">
+                            {NAV_PAGE_OPTIONS.map((page) => {
+                                const isVisible = !form.hiddenNavPages.includes(page.path);
+
+                                return (
+                                    <button
+                                        key={page.path}
+                                        type="button"
+                                        onClick={() => togglePageVisibility(page.path)}
+                                        className={`w-full text-left rounded-xl border px-4 py-3 transition-all ${
+                                            isVisible
+                                                ? 'bg-[#ffc000]/10 border-[#ffc000]/25 text-white hover:border-[#ffc000]/50'
+                                                : 'bg-white/[0.03] border-white/10 text-slate-400 hover:border-white/20'
+                                        }`}
+                                    >
+                                        <span className="flex items-center justify-between gap-4">
+                                            <span>
+                                                <span className="block text-sm font-bold">{page.label}</span>
+                                                <span className="block mt-1 text-[11px] leading-relaxed opacity-70">{page.description}</span>
+                                            </span>
+                                            <span className={`shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${
+                                                isVisible ? 'bg-[#ffc000] text-[#0a0a08]' : 'bg-white/10 text-slate-300'
+                                            }`}>
+                                                <span className="material-symbols-outlined text-[14px]">
+                                                    {isVisible ? 'visibility' : 'visibility_off'}
+                                                </span>
+                                                {isVisible ? 'Shown' : 'Hidden'}
+                                            </span>
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </section>
 
                     {/* Social */}

@@ -16,6 +16,7 @@ type FooterClientProps = {
   telegramUrl: string;
   whatsappUrl: string;
   acceptingClients: boolean;
+  hiddenNavPages?: string[];
 };
 
 function buildLogoSrc(logoUrl: string, logoVersion?: string) {
@@ -30,6 +31,8 @@ const navLinks = [
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'Services', href: '/services' },
   { label: 'Team', href: '/team' },
+  { label: 'Shop', href: '/shop' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -95,8 +98,11 @@ export default function FooterClient({
   telegramUrl,
   whatsappUrl,
   acceptingClients,
+  hiddenNavPages = [],
 }: FooterClientProps) {
   const resolvedLogoUrl = buildLogoSrc(logoUrl, logoVersion);
+  const hiddenNavPageSet = new Set(hiddenNavPages);
+  const visibleNavLinks = navLinks.filter((link) => !hiddenNavPageSet.has(link.href));
 
   const socialLinks = [
     { label: 'YouTube', href: youtubeUrl, Icon: YouTubeIcon },
@@ -129,7 +135,7 @@ export default function FooterClient({
             </div>
 
             <nav className="flex flex-wrap gap-3">
-              {navLinks.map((link) => (
+              {visibleNavLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

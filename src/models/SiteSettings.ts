@@ -28,6 +28,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     accentColor: { type: String, default: '#FFDA68' },
     bookingCta: { type: String, default: 'Book a Session' },
     acceptingClients: { type: Boolean, default: true },
+    hiddenNavPages: { type: [String], default: [] },
 
     updatedAt: { type: Date, default: Date.now },
 });

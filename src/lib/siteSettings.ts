@@ -19,6 +19,7 @@ export type PublicSiteSettings = {
   whatsappNumber: string;
   whatsappChatUrl: string;
   acceptingClients: boolean;
+  hiddenNavPages: string[];
 };
 
 export const defaultPublicSiteSettings: PublicSiteSettings = {
@@ -37,6 +38,7 @@ export const defaultPublicSiteSettings: PublicSiteSettings = {
   whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
   whatsappChatUrl: buildWhatsAppChatUrl(DEFAULT_WHATSAPP_NUMBER, undefined, 'https://whatsapp.com/channel/0029VbCPDBL1NCrUoC6L771C'),
   acceptingClients: true,
+  hiddenNavPages: [],
 };
 
 export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
@@ -68,6 +70,9 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
         parsed.whatsappUrl || defaultPublicSiteSettings.whatsappUrl,
       ),
       acceptingClients: typeof parsed.acceptingClients === 'boolean' ? parsed.acceptingClients : true,
+      hiddenNavPages: Array.isArray(parsed.hiddenNavPages)
+        ? parsed.hiddenNavPages.filter((item: unknown): item is string => typeof item === 'string')
+        : defaultPublicSiteSettings.hiddenNavPages,
     };
   } catch {
     return defaultPublicSiteSettings;

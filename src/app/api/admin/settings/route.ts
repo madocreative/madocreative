@@ -13,6 +13,14 @@ const SETTINGS_DEFAULTS: Record<string, string> = {
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
 };
 
+const NAV_PAGE_PATHS = new Set(['/', '/about', '/portfolio', '/services', '/team', '/shop', '/blog', '/contact']);
+
+function normalizeHiddenNavPages(value: unknown) {
+    if (!Array.isArray(value)) return [];
+
+    return value.filter((item): item is string => typeof item === 'string' && NAV_PAGE_PATHS.has(item));
+}
+
 export async function GET() {
     try {
         await dbConnect();
@@ -28,6 +36,10 @@ export async function GET() {
                     settings[field] = value;
                     changed = true;
                 }
+            }
+            if (!Array.isArray(settings.hiddenNavPages)) {
+                settings.hiddenNavPages = [];
+                changed = true;
             }
             if (changed) await settings.save();
         }
@@ -46,6 +58,7 @@ export async function POST(req: Request) {
         }
         await dbConnect();
         const body = await req.json();
+        body.hiddenNavPages = normalizeHiddenNavPages(body.hiddenNavPages);
         const updated = await SiteSettings.findOneAndUpdate(
             { key: 'global' },
             { ...body, updatedAt: new Date() },

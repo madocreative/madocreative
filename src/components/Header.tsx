@@ -124,8 +124,9 @@ export default async function Header() {
         email: settings.email,
         address: settings.address,
       }}
-      portfolioLinks={[]}
+      portfolioLinks={portfolioLinks}
       serviceLinks={fixedServiceLinks}
+      hiddenNavPages={settings.hiddenNavPages}
     />
   );
 }

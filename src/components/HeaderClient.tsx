@@ -27,6 +27,7 @@ type HeaderClientProps = {
   };
   portfolioLinks: NavChildItem[];
   serviceLinks: NavChildItem[];
+  hiddenNavPages?: string[];
 };
 
 function buildLogoSrc(logoUrl: string, logoVersion?: string) {
@@ -35,7 +36,7 @@ function buildLogoSrc(logoUrl: string, logoVersion?: string) {
   return `${logoUrl}${logoUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(logoVersion)}`;
 }
 
-export default function HeaderClient({ siteName, logoUrl, logoVersion, contactInfo, portfolioLinks, serviceLinks }: HeaderClientProps) {
+export default function HeaderClient({ siteName, logoUrl, logoVersion, contactInfo, portfolioLinks, serviceLinks, hiddenNavPages = [] }: HeaderClientProps) {
   const pathname = usePathname();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -76,6 +77,8 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
     };
   }, []);
 
+  const hiddenNavPageSet = useMemo(() => new Set(hiddenNavPages), [hiddenNavPages]);
+
   const navItems = useMemo<NavItem[]>(
     () => [
       { name: 'Home', path: '/' },
@@ -86,8 +89,8 @@ export default function HeaderClient({ siteName, logoUrl, logoVersion, contactIn
       { name: 'Shop', path: '/shop' },
       { name: 'Blog', path: '/blog' },
       { name: 'Contact', path: '/contact' },
-    ],
-    [portfolioLinks, serviceLinks],
+    ].filter((item) => !hiddenNavPageSet.has(item.path)),
+    [portfolioLinks, serviceLinks, hiddenNavPageSet],
   );
 
   const getBasePath = (path: string) => path.split('#')[0];
