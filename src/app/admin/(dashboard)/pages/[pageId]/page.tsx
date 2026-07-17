@@ -17,6 +17,27 @@ interface ServicePillar { title: string; description: string; note: string }
 interface ProcessStep { title: string; description: string }
 interface ClientLogo { name: string; image: string }
 
+const packageFlyerImages = {
+    iphone: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282227/pricing/iphone-monthly-shoot.png',
+    camera: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282231/pricing/camera-monthly-shoot.png',
+    complete: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282235/pricing/complete-production-digital-marketing.png',
+};
+
+function normalizePackageFlyer(image: string, name = '') {
+    if (image.includes('/pricing/iphone-monthly-shoot.png')) return packageFlyerImages.iphone;
+    if (image.includes('/pricing/camera-monthly-shoot.png')) return packageFlyerImages.camera;
+    if (image.includes('/pricing/complete-production-digital-marketing.png')) return packageFlyerImages.complete;
+
+    const normalizedName = name.toLowerCase();
+    if (!image && normalizedName.includes('iphone')) return packageFlyerImages.iphone;
+    if (!image && normalizedName.includes('camera')) return packageFlyerImages.camera;
+    if (!image && (normalizedName.includes('complete') || normalizedName.includes('digital marketing'))) {
+        return packageFlyerImages.complete;
+    }
+
+    return image;
+}
+
 // ---------- Upload helper ----------
 async function uploadImage(file: File): Promise<string> {
     const fd = new FormData();
@@ -50,7 +71,18 @@ export default function PageEditor({ params }: { params: Promise<{ pageId: strin
                     delete rest.updatedAt;
                     // flatten sections into top-level for easier editing
                     const { sections, ...top } = rest as Record<string, unknown>;
-                    setData({ ...top, ...(sections as Record<string, unknown> || {}) });
+                    const normalizedSections = { ...(sections as Record<string, unknown> || {}) };
+                    if (pageId === 'services' && Array.isArray(normalizedSections.packages)) {
+                        normalizedSections.packages = normalizedSections.packages.map((pkg) => {
+                            if (!pkg || typeof pkg !== 'object') return pkg;
+                            const item = pkg as PackageItem;
+                            return {
+                                ...item,
+                                image: normalizePackageFlyer(String(item.image || ''), item.name),
+                            };
+                        });
+                    }
+                    setData({ ...top, ...normalizedSections });
                 }
                 setStatus('idle');
             })
@@ -564,19 +596,19 @@ function ServicesFields({ get, set }: { data: Record<string, unknown>; get: (k: 
             name: 'iPhone Monthly Shoot Package',
             description: 'One shoot every week with ideas, content strategy, professional editing, and consistent delivery for impact.',
             price: 'USD 500 / month',
-            image: '/pricing/iphone-monthly-shoot.png',
+            image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282227/pricing/iphone-monthly-shoot.png',
         },
         {
             name: 'Camera Monthly Shoot Package',
             description: 'One shoot every week with creative planning, professional post-production, and high-end camera equipment included.',
             price: 'USD 800 / month',
-            image: '/pricing/camera-monthly-shoot.png',
+            image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282231/pricing/camera-monthly-shoot.png',
         },
         {
             name: 'Complete Production & Digital Marketing Package',
             description: 'Full production plus full digital marketing for businesses that want content creation and online growth handled together.',
             price: 'USD 1500 / month',
-            image: '/pricing/complete-production-digital-marketing.png',
+            image: 'https://res.cloudinary.com/dwvpeeepl/image/upload/v1784282235/pricing/complete-production-digital-marketing.png',
         },
     ];
     const services: ServiceItem[] = (get('services', defaultServices) as ServiceItem[]);
